@@ -1,0 +1,16 @@
+services:
+  backend:
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/
+          target: /app/
+          ignore:
+            - .venv
+            - __pycache__
+            - .DS_Store
+        - action: rebuild
+          path: ./pyproject.toml
+    environment:
+      ENVIRONMENT: local
+      POSTGRES_SERVER: db
