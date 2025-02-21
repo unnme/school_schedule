@@ -13,7 +13,7 @@ def import_routers(app: FastAPI):
 
     for _, module_name, _ in pkgutil.iter_modules(api_path):
         try:
-            module = import_module(f"{settings.base.API_V1_DIR}.{module_name}")
+            module = import_module(f"app.api.api_v1.{module_name}")
             if hasattr(module, "router"):
                 app.include_router(
                     module.router, prefix=settings.base.API_V1_STR

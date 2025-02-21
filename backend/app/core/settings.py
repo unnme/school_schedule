@@ -21,8 +21,8 @@ else:
 class BaseConfig(BaseSettings):
 
     BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
-    ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
     API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
+    ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
 
     ENVIRONMENT: Literal["local", "staging", "production"]
     API_V1_STR: str
