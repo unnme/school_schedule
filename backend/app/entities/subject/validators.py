@@ -21,6 +21,7 @@ class SubjectValidator:
         self._subject_id = subject_id
 
     async def check_duplicate_subject(self):
+        """Проверяет имя предмета на уникальность"""
         stmt = select(Subject).where(Subject.name == self._request_data.name)
 
         if self._subject_id is not None:
