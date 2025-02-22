@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.subject.schemas import SubjectRequest, SubjectUpdateRequest, _SubjectCreateResponse, _SubjectUpdateResponse, _SubjectDeleteResponse
+from app.entities.subject.schemas import SubjectCreateRequest, SubjectUpdateRequest, _SubjectCreateResponse, _SubjectUpdateResponse, _SubjectDeleteResponse
 from app.entities.subject.models import Subject
 from app.entities.subject.validators import validate_subject_request
 from app.services.base_managers import BaseManager
@@ -13,7 +13,7 @@ class SubjectManager(BaseManager):
     @classmethod
     @validate_subject_request
     async def create_subject(
-        cls, db: AsyncSession, request_data: SubjectRequest
+        cls, db: AsyncSession, request_data: SubjectCreateRequest
     ) -> _SubjectCreateResponse:
         new_subject = Subject(name=request_data.name)
         db.add(new_subject)

@@ -14,7 +14,7 @@ from app.utils.router_manager import import_routers
 async def lifespan(app: FastAPI):
                 
     await db_manager.check_db_connection()
-    await db_manager.create_tables()
+    # await db_manager.create_tables()
 
     yield
 

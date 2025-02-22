@@ -17,9 +17,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY start-dev.sh /app/start-dev.sh
-RUN chmod +x /app/start-dev.sh
 
-ENTRYPOINT ["/app/start-dev.sh"]
-
+ENTRYPOINT ["uv", "run", "uvicorn"]
+CMD ["app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
