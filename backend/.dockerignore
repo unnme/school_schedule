@@ -1,1 +1,48 @@
-.venv
+# 💻 Системные файлы macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# 🔥 Python файлы и кеши
+__pycache__/
+.cache/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# 🐍 Виртуальное окружение
+.venv/
+env/
+pip-log.txt
+pip-cache/
+
+# 📂 Git файлы
+.git/
+.gitignore
+.gitattributes
+
+# 🔧 Логи и временные файлы
+logs/
+*.log
+*.tmp
+*.bak
+
+# 🛠️ Файлы редакторов
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# 📦 Docker файлы (если `Dockerfile` в подпапке)
+docker-compose.yml
+docker/
+
+# 🚀 Java файлы (скомпилированный байт-код)
+**/*.class
+
+# 🔥 Игнорировать ВСЕ markdown-файлы, кроме README-secret.md
+*.md
+!README-secret.md
