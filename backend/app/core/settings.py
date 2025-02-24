@@ -49,8 +49,6 @@ class DatabaseConfig(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
-    DB_ECHO: bool
-
     @property
     def sync_db_url(self) -> str:
         password = quote(self.POSTGRES_PASSWORD)

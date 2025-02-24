@@ -2,21 +2,18 @@ from typing import AsyncGenerator, Generator
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.settings import settings
 from app.core.logging_config import logger
 
-def camel_case_to_snake_case(name: str) -> str:
-    import re
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 class Base(DeclarativeBase):
     __abstract__= True
 
-    # metadata = MetaData(naming_convention=...)
+
 
 class DatabaseManager:
 
@@ -24,15 +21,15 @@ class DatabaseManager:
     WAIT_SECONDS = 10  # Время ожидания между попытками
 
     def __init__(self):
+        self.logger = logger
+
         self.async_engine = create_async_engine(
             settings.database.async_db_url,
-            echo=settings.database.DB_ECHO,
             future=True,
         )
 
         self.sync_engine = create_engine(
             settings.database.sync_db_url,
-            echo=settings.database.DB_ECHO,
             future=True,
         )
 
@@ -51,7 +48,6 @@ class DatabaseManager:
             expire_on_commit=False,
         )
 
-        self.logger = logger
 
     @staticmethod
     def _before_retry(retry_state):
@@ -106,9 +102,19 @@ class DatabaseManager:
             await db.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
             await db.execute(text("GRANT ALL ON SCHEMA public TO public"))
 
-    async def create_tables(self):
+    async def create_tables_if_not_exist(self):
         async with self.async_engine.begin() as db:
-            await db.run_sync(Base.metadata.create_all)
+            def check_tables(conn):
+                inspector = inspect(conn)
+                return inspector.get_table_names()
+
+            if not (existing_tables := await db.run_sync(check_tables)):
+                self.logger.info("🔄 Создание таблиц БД")
+                await db.run_sync(Base.metadata.create_all)
+                self.logger.info("✅ Таблицы успешно созданны")
+
+
+
 
 
 db_manager = DatabaseManager()

@@ -35,7 +35,7 @@ class TeacherValidator:
             stmt = stmt.where(Teacher.id != self._teacher_id)
 
         if existing_teacher := await self._session.scalar(stmt):
-            raise DuplicateTeacherException(existing_teacher)
+            raise DuplicateTeacherException(existing_teacher.name)
 
     async def check_teacher_subjects_validity(self):
         user_ids = [subj.id for subj in self._request_data.subjects]

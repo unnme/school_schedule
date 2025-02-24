@@ -27,7 +27,7 @@ sqlalchemy_logger.handlers.clear()
 sqlalchemy_logger.addHandler(rich_handler)
 
 # Устанавливаем уровень логирования (можно изменить на DEBUG, если надо)
-sqlalchemy_logger.setLevel(logging.INFO)
+sqlalchemy_logger.setLevel(logging.WARNING)
 
 # Полностью отключаем пропагирование, чтобы логи SQLAlchemy не дублировались в root-логгер
 sqlalchemy_logger.propagate = False
