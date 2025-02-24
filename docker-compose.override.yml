@@ -7,10 +7,7 @@ services:
           target: /app/
           ignore:
             - .venv
-            - __pycache__
-            - .DS_Store
+            - ./backend/.venv
+
         - action: rebuild
-          path: ./pyproject.toml
-    environment:
-      ENVIRONMENT: local
-      POSTGRES_SERVER: db
+          path: ./backend/pyproject.toml

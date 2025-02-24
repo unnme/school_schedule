@@ -10,7 +10,7 @@ from app.core.exceptions import (
 from app.utils.inspect import func_inspect
 from app.entities.subject.models import Subject
 
-
+print("")
 class SubjectValidator:
     def __init__(self, session, request_data, subject_id: Optional[int]):
         self._session = session

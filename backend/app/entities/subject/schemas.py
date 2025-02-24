@@ -18,16 +18,16 @@ class SubjectBaseSchema(CustomBaseModel):
 
     model_config = ConfigDict(json_schema_extra={"example": {"name": "Биология"}})
 
-    # @field_validator("name")
-    # @classmethod
-    # def validate_subject_name(cls, value: str) -> str:
-    #     if not re.fullmatch(
-    #         r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value
-    #     ):
-    #         raise ValueError(
-    #             f"Название предмета '{value}' содержит недопустимые символы или имеет неверный формат."
-    #         )
-    #     return value
+    @field_validator("name")
+    @classmethod
+    def validate_subject_name(cls, value: str) -> str:
+        if not re.fullmatch(
+            r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value
+        ):
+            raise ValueError(
+                f"Название предмета '{value}' содержит недопустимые символы или имеет неверный формат."
+            )
+        return value
 
 
 # REQUEST

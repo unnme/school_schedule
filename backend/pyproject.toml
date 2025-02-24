@@ -18,5 +18,16 @@ dependencies = [
     "fastapi[standard]>=0.115.8",
 ]
 
-[dependency-groups]
-dev = ["pytest"]
+# [tool.hatch.build.targets.wheel]
+# packages = ["app"]
+#
+#
+# [build-system]
+# requires = ["hatchling"]
+# build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.6.2",
+    "fastapi-cli>=0.0.5",
+]
