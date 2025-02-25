@@ -26,24 +26,12 @@ class DatabaseManager:
             future=True,
         )
 
-        self.sync_engine = create_engine(
-            settings.database.sync_db_url,
-            future=True,
-        )
-
         self.AsyncSessionFactory = async_sessionmaker(
             bind=self.async_engine,
             autocommit=False,
             autoflush=False,
             expire_on_commit=False,
             class_=AsyncSession,
-        )
-
-        self.SyncSessionFactory = sessionmaker(
-            bind=self.sync_engine,
-            autocommit=False,
-            autoflush=False,
-            expire_on_commit=False,
         )
 
     @staticmethod
@@ -83,15 +71,6 @@ class DatabaseManager:
                 await session.commit()
             except Exception:
                 await session.rollback()
-                raise
-
-    def get_sync_session(self) -> Generator[Session, None, None]:
-        with self.SyncSessionFactory() as session:
-            try:
-                yield session
-                session.commit()
-            except Exception:
-                session.rollback()
                 raise
 
     async def drop_all_tables(self):
