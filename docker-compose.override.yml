@@ -1,10 +1,17 @@
 services:
+
   backend:
+    restart: "no"
+
+    ports:
+      - "8000:8000"
+
     develop:
       watch:
         - action: sync
           path: ./backend/
           target: /app/
+
           ignore:
             - .venv
             - ./backend/.venv

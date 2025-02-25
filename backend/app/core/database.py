@@ -108,13 +108,10 @@ class DatabaseManager:
                 inspector = inspect(conn)
                 return inspector.get_table_names()
 
-            if not (existing_tables := await db.run_sync(check_tables)):
+            if not (_ := await db.run_sync(check_tables)):
                 self.logger.info("🔄 Создание таблиц БД")
                 await db.run_sync(Base.metadata.create_all)
                 self.logger.info("✅ Таблицы успешно созданны")
-
-
-
 
 
 db_manager = DatabaseManager()

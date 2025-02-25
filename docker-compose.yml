@@ -14,36 +14,87 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h db -p $$POSTGRES_PORT || exit 1"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}", "-h", "db", "-p", "${POSTGRES_PORT}"]
       interval: 10s
       retries: 5
+      start_period: 30s
+      timeout: 10s
 
   adminer:
     image: adminer
     restart: always
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     ports:
       - "8080:8080"
     environment:
       - ADMINER_DESIGN=pepa-linha-dark
 
-  backend:
+  prestart:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    platform: linux/amd64
     build:
       context: ./backend
-      dockerfile: Dockerfile
-    platform: linux/amd64
-    restart: no
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_SERVER=db
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"
+    command: bash app/scripts/prestart.sh
+    env_file:
+      - .env
+    environment:
+      # 🔹 Общие настройки приложения
+      - DOMAIN=${DOMAIN}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - SECRET_KEY=${SECRET_KEY?Variable not set}
+
+      # 🔹 Настройки БД
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+
+      # 🔹 Мониторинг и логирование
+      - SENTRY_DSN=${SENTRY_DSN}
+
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    platform: linux/amd64
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      prestart:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      # 🔹 Общие настройки приложения
+      - DOMAIN=${DOMAIN}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - SECRET_KEY=${SECRET_KEY?Variable not set}
+
+      # 🔹 Настройки БД
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+
+      # 🔹 Мониторинг и логирование
+      - SENTRY_DSN=${SENTRY_DSN}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
 
 volumes:
   pg-data:
