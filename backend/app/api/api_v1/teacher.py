@@ -12,7 +12,7 @@ from app.entities.teacher.schemas import (
 )
 
 
-router = APIRouter(prefix="/teachers")
+router = APIRouter(prefix="/teachers", tags=["Учителя"])
 
 
 @router.post("/", response_model=TeacherCreateResponse)

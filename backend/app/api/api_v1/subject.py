@@ -13,7 +13,7 @@ from app.entities.subject.schemas import (
 )
 
 
-router = APIRouter(prefix="/subjects")
+router = APIRouter(prefix="/subjects", tags=["Учебные дисциплины"])
 
 
 @router.post("/", response_model=SubjectCreateResponse)

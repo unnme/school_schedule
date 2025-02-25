@@ -15,8 +15,8 @@ class Base(DeclarativeBase):
 
 
 class DatabaseManager:
-    MAX_TRIES = 60 * 5  # 5 минут
-    WAIT_SECONDS = 10  # Время ожидания между попытками
+    MAX_TRIES = 60 * 5
+    WAIT_SECONDS = 10
 
     def __init__(self):
         self.logger = logger
@@ -106,7 +106,10 @@ class DatabaseManager:
 
             def check_tables(conn):
                 inspector = inspect(conn)
-                return inspector.get_table_names()
+                tables = inspector.get_table_names()
+                system_tables = {"alembic_version"}
+
+                return [t for t in tables if t not in system_tables]
 
             if not (_ := await db.run_sync(check_tables)):
                 self.logger.info("🔄 Создание таблиц БД")

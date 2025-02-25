@@ -13,7 +13,7 @@ from app.entities.student_group.schemas import (
 )
 
 
-router = APIRouter(prefix="/student_groups")
+router = APIRouter(prefix="/student_groups", tags=["Ученические группы"])
 
 
 @router.post("/", response_model=StudentGroupCreateResponse)

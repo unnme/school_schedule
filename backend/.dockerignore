@@ -1,48 +1,54 @@
 # 💻 Системные файлы macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
+**/.DS_Store
+**/.AppleDouble
+**/.LSOverride
+**/._*
 
 # 🔥 Python файлы и кеши
-__pycache__/
-.cache/
-*.pyc
-*.pyo
-*.pyd
-*.swp
-*.swo
+**/__pycache__/
+**/.cache/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.swp
+**/*.swo
 
 # 🐍 Виртуальное окружение
-.venv/
-env/
-pip-log.txt
-pip-cache/
+**/.venv/
+**/env/
+**/pip-log.txt
+**/pip-cache/
 
 # 📂 Git файлы
-.git/
-.gitignore
-.gitattributes
+**/.git/
+**/.gitignore
+**/.gitattributes
 
 # 🔧 Логи и временные файлы
-logs/
-*.log
-*.tmp
-*.bak
+**/logs/
+**/*.log
+**/*.tmp
+**/*.bak
+**/*.pid
+**/*.swp
 
 # 🛠️ Файлы редакторов
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
+**/.vscode/
+**/.idea/
+**/*.sublime-workspace
+**/*.sublime-project
+**/*~
+**/.#*
 
 # 📦 Docker файлы (если `Dockerfile` в подпапке)
-docker-compose.yml
-docker/
+**/Dockerfile*
+**/docker-compose.override.yml
+**/.docker/
+**/docker/
 
 # 🚀 Java файлы (скомпилированный байт-код)
 **/*.class
 
 # 🔥 Игнорировать ВСЕ markdown-файлы, кроме README-secret.md
-*.md
-!README-secret.md
+**/*.md
+!**/README-secret.md
