@@ -14,7 +14,6 @@ class BaseManager:
     model = None
     logger = logger
 
-
     @classmethod
     def _get_model(cls) -> Type[Any]:
         if cls.model is None:
@@ -85,5 +84,3 @@ class BaseManager:
         result = await db.execute(stmt)
         entities = result.scalars().unique().all()
         return entities
-
-

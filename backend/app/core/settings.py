@@ -8,7 +8,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def is_running_in_docker() -> bool:
-    return os.path.exists("/.dockerenv") or "docker" in Path("/proc/1/cgroup").read_text()
+    return (
+        os.path.exists("/.dockerenv") or "docker" in Path("/proc/1/cgroup").read_text()
+    )
+
 
 if not is_running_in_docker():
     _PROJECT_ROOT_DIR: Path = Path.cwd().parents[2]
@@ -19,7 +22,6 @@ else:
 
 
 class BaseConfig(BaseSettings):
-
     BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
     API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
     ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
@@ -42,7 +44,6 @@ class SecurityConfig(BaseSettings):
 
 # ======= Настройки базы данных =======
 class DatabaseConfig(BaseSettings):
-
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
     POSTGRES_USER: str
@@ -74,9 +75,9 @@ class AppSettings(BaseSettings):
 @lru_cache()
 def get_settings():
     return AppSettings(
-        base=BaseConfig(), # pyright: ignore
-        security=SecurityConfig(), # pyright: ignore
-        database=DatabaseConfig(), # pyright: ignore
+        base=BaseConfig(),  # pyright: ignore
+        security=SecurityConfig(),  # pyright: ignore
+        database=DatabaseConfig(),  # pyright: ignore
     )
 
 

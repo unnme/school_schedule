@@ -19,7 +19,6 @@ from app.entities.teacher.models import Teacher
 
 class TeacherValidator:
     def __init__(self, session, request_data, teacher_id: Optional[int] = None):
-
         self._session = session
         self._request_data = request_data
         self._teacher_id = teacher_id

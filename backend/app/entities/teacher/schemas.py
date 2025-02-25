@@ -70,7 +70,6 @@ class TeacherUpdateRequest(TeacherRequest):
 
 
 class TeacherCreateRequest(TeacherRequest):
-
     model_config = {
         "json_schema_extra": {
             "example": {

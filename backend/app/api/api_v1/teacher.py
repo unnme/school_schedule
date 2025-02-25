@@ -14,6 +14,7 @@ from app.entities.teacher.schemas import (
 
 router = APIRouter(prefix="/teachers")
 
+
 @router.post("/", response_model=TeacherCreateResponse)
 async def create_teacher(
     session: AsyncSessionDep, request_data: TeacherCreateRequest
@@ -21,9 +22,11 @@ async def create_teacher(
     created_teacher = await TeacherManager.create_teacher(session, request_data)
     return TeacherCreateResponse(message="Учитель успешно создан", data=created_teacher)
 
+
 @router.get("/", response_model=list[TeacherResponse])
 async def get_teachers(session: AsyncSessionDep, params: PaginationParams):
     return await TeacherManager.list_all(session, params, load_stategy="selectin")
+
 
 @router.put("/{teacher_id}", response_model=TeacherUpdateResponse)
 async def update_teacher(
@@ -32,9 +35,16 @@ async def update_teacher(
     updated_teacher = await TeacherManager.update_teacher(
         session, request_data, teacher_id
     )
-    return TeacherUpdateResponse(message="Учитель успешно обновлён", data=updated_teacher)
+    return TeacherUpdateResponse(
+        message="Учитель успешно обновлён", data=updated_teacher
+    )
+
 
 @router.delete("/{teacher_id}", response_model=TeacherDeleteResponse)
-async def delete_teacher(session: AsyncSessionDep, teacher_id: int) -> TeacherDeleteResponse:
+async def delete_teacher(
+    session: AsyncSessionDep, teacher_id: int
+) -> TeacherDeleteResponse:
     deleted_teacher = await TeacherManager.delete_teacher(session, teacher_id)
-    return TeacherDeleteResponse(message="Учитель успешыно удален", data=deleted_teacher)
+    return TeacherDeleteResponse(
+        message="Учитель успешыно удален", data=deleted_teacher
+    )

@@ -23,5 +23,4 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = [
-    "ruff>=0.6.2",
 ]

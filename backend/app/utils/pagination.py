@@ -14,5 +14,3 @@ def pagination_params(
     return PaginationParamsModel(
         offset=offset, limit=limit, order_by=order_by, desc=desc
     )
-
-

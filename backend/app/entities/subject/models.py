@@ -6,7 +6,6 @@ from sqlalchemy import String
 from app.core.database import Base
 
 
-
 if TYPE_CHECKING:
     from app.entities.relations.models import TeacherSubject
     from app.entities.relations.models import StudentGroupSubject

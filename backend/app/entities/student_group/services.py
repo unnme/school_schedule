@@ -10,9 +10,8 @@ from app.entities.student_group.schemas import (
     StudentGroupUpdateRequest,
     _StudentGroupCreateResponse,
     _StudentGroupUpdateResponse,
-    _StudentGroupDeleteResponse
+    _StudentGroupDeleteResponse,
 )
-
 
 
 # ============ МЕНЕДЖЕР УЧЕНИЧЕСКИХ ГРУПП =============
@@ -29,10 +28,11 @@ class StudentGroupManager(BaseManager):
             db.add(student_group)
             await db.flush()
             await cls._update_student_group_subjects(db, request_data, student_group)
-        student_group = await cls.get_by_id(db, student_group.id, load_strategy="selectin")
+        student_group = await cls.get_by_id(
+            db, student_group.id, load_strategy="selectin"
+        )
 
         return _StudentGroupCreateResponse.model_validate(student_group)
-
 
     @classmethod
     @validate_student_group_request
@@ -43,11 +43,11 @@ class StudentGroupManager(BaseManager):
         student_group_id: int,
     ) -> _StudentGroupUpdateResponse:
         async with db.begin():
-            student_group = await cls.get_by_id(db, student_group_id, load_strategy="selectin")
-
-            update_data = request_data.model_dump(
-                include={"name"}
+            student_group = await cls.get_by_id(
+                db, student_group_id, load_strategy="selectin"
             )
+
+            update_data = request_data.model_dump(include={"name"})
             for field, value in update_data.items():
                 setattr(student_group, field, value)
 
@@ -56,15 +56,19 @@ class StudentGroupManager(BaseManager):
 
         return _StudentGroupUpdateResponse.model_validate(student_group)
 
-
     @classmethod
-    async def delete_sutdent_group(cls, db: AsyncSession, student_group_id: int) -> _StudentGroupDeleteResponse:
+    async def delete_sutdent_group(
+        cls, db: AsyncSession, student_group_id: int
+    ) -> _StudentGroupDeleteResponse:
         student_group = cls.get_by_id(db, student_group_id)
-        deleted_data = {key:value for key, value in student_group.__dict__.items() if not key.startswith("_")}
+        deleted_data = {
+            key: value
+            for key, value in student_group.__dict__.items()
+            if not key.startswith("_")
+        }
         await db.delete(student_group)
         await db.commit()
         return _StudentGroupDeleteResponse.model_validate(deleted_data)
-
 
     @classmethod
     async def _update_student_group_subjects(
@@ -73,7 +77,6 @@ class StudentGroupManager(BaseManager):
         request_data: StudentGroupCreateRequest | StudentGroupUpdateRequest,
         student_group: StudentGroup,
     ) -> None:
-
         if isinstance(request_data, StudentGroupCreateRequest):
             student_group_subjects = [
                 StudentGroupSubject(
@@ -88,7 +91,6 @@ class StudentGroupManager(BaseManager):
             await db.flush()
 
         elif isinstance(request_data, StudentGroupUpdateRequest):
-
             request_subj_and_hours = {
                 subj.id: subj.study_hours for subj in request_data.subjects
             }
@@ -150,7 +152,3 @@ class StudentGroupManager(BaseManager):
                 await db.execute(insert(StudentGroupSubject).values(new_associations))
 
             await db.flush()
-
-
-
-

@@ -1,6 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.subject.schemas import SubjectCreateRequest, SubjectUpdateRequest, _SubjectCreateResponse, _SubjectUpdateResponse, _SubjectDeleteResponse
+from app.entities.subject.schemas import (
+    SubjectCreateRequest,
+    SubjectUpdateRequest,
+    _SubjectCreateResponse,
+    _SubjectUpdateResponse,
+    _SubjectDeleteResponse,
+)
 from app.entities.subject.models import Subject
 from app.entities.subject.validators import validate_subject_request
 from app.services.base_managers import BaseManager
@@ -35,7 +41,9 @@ class SubjectManager(BaseManager):
         return _SubjectUpdateResponse.model_validate(subject)
 
     @classmethod
-    async def delete_subject(cls, db: AsyncSession, subject_id: int) -> _SubjectDeleteResponse:
+    async def delete_subject(
+        cls, db: AsyncSession, subject_id: int
+    ) -> _SubjectDeleteResponse:
         subject = await cls.get_by_id(db, subject_id)
         deleted_data = {
             key: value
@@ -45,6 +53,3 @@ class SubjectManager(BaseManager):
         await db.delete(subject)
         await db.commit()
         return _SubjectDeleteResponse.model_validate(deleted_data)
-
-
-

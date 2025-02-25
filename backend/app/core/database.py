@@ -11,12 +11,10 @@ from app.core.logging_config import logger
 
 
 class Base(DeclarativeBase):
-    __abstract__= True
-
+    __abstract__ = True
 
 
 class DatabaseManager:
-
     MAX_TRIES = 60 * 5  # 5 минут
     WAIT_SECONDS = 10  # Время ожидания между попытками
 
@@ -48,7 +46,6 @@ class DatabaseManager:
             expire_on_commit=False,
         )
 
-
     @staticmethod
     def _before_retry(retry_state):
         attempt = retry_state.attempt_number
@@ -58,7 +55,9 @@ class DatabaseManager:
     def _after_retry(retry_state):
         attempt = retry_state.attempt_number
         if retry_state.outcome.failed:
-            logger.warning(f"❌ Попытка {attempt}: Ошибка подключения к БД, повторяем...")
+            logger.warning(
+                f"❌ Попытка {attempt}: Ошибка подключения к БД, повторяем..."
+            )
         else:
             logger.info(f"✅ Попытка {attempt}: Подключение успешно.")
 
@@ -104,6 +103,7 @@ class DatabaseManager:
 
     async def create_tables_if_not_exist(self):
         async with self.async_engine.begin() as db:
+
             def check_tables(conn):
                 inspector = inspect(conn)
                 return inspector.get_table_names()

@@ -1,11 +1,18 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, delete, update, case
 
-from app.entities.teacher.schemas import _TeacherDeleteResponse, TeacherCreateRequest, _TeacherCreateResponse, TeacherUpdateRequest, _TeacherUpdateResponse
+from app.entities.teacher.schemas import (
+    _TeacherDeleteResponse,
+    TeacherCreateRequest,
+    _TeacherCreateResponse,
+    TeacherUpdateRequest,
+    _TeacherUpdateResponse,
+)
 from app.entities.teacher.validators import validate_teacher_request
 from app.entities.teacher.models import Teacher
 from app.entities.relations.models import TeacherSubject
 from app.services.base_managers import BaseManager
+
 
 # ============ МЕНЕДЖЕР ПРЕПОДАВАТЕЛЕЙ =============
 class TeacherManager(BaseManager):
@@ -54,10 +61,14 @@ class TeacherManager(BaseManager):
         return _TeacherUpdateResponse.model_validate(teacher)
 
     @classmethod
-    async def delete_teacher(cls, db: AsyncSession, teacher_id: int) -> _TeacherDeleteResponse:
+    async def delete_teacher(
+        cls, db: AsyncSession, teacher_id: int
+    ) -> _TeacherDeleteResponse:
         teacher = await cls.get_by_id(db, teacher_id)
         deleted_data = {
-            key: value for key, value in teacher.__dict__.items()if not key.startswith("_")
+            key: value
+            for key, value in teacher.__dict__.items()
+            if not key.startswith("_")
         }
         await db.delete(teacher)
         await db.commit()
@@ -70,7 +81,6 @@ class TeacherManager(BaseManager):
         request_data: TeacherUpdateRequest | TeacherCreateRequest,
         teacher: Teacher,
     ) -> None:
-
         if isinstance(request_data, TeacherCreateRequest):
             teacher_subjects = [
                 TeacherSubject(
@@ -85,7 +95,6 @@ class TeacherManager(BaseManager):
             await db.flush()
 
         elif isinstance(request_data, TeacherUpdateRequest):
-
             request_subj_and_hours = {
                 subj.id: subj.teaching_hours for subj in request_data.subjects
             }
@@ -147,4 +156,3 @@ class TeacherManager(BaseManager):
                 await db.execute(insert(TeacherSubject).values(new_associations))
 
             await db.flush()
-

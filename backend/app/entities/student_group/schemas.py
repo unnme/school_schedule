@@ -17,7 +17,6 @@ StudentGroupName = Annotated[
 
 
 class StudentGroupBaseSchema(CustomBaseModel):
-
     name: StudentGroupName
 
     @field_validator("name")
@@ -47,7 +46,6 @@ class StudentGroupRequest(StudentGroupBaseSchema):
 
 
 class StudentGroupUpdateRequest(StudentGroupRequest):
-
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -60,7 +58,6 @@ class StudentGroupUpdateRequest(StudentGroupRequest):
 
 
 class StudentGroupCreateRequest(StudentGroupRequest):
-
     model_config = {
         "json_schema_extra": {
             "example": {

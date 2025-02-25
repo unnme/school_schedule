@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, Index, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -26,4 +26,4 @@ class Teacher(Base):
 
     @property
     def name(self) -> str:
-        return f"{self.last_name} {self.first_name} {self.patronymic}".strip()
+        return f"{self.last_name} {self.first_name} {self.patronymic}"
