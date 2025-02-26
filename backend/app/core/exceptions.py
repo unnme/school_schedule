@@ -6,7 +6,15 @@ class BaseAPIException(HTTPException):
         super().__init__(status_code=status_code, detail=detail)
 
 
-class SubjectNameExistsException(BaseAPIException):
+class DatabaseConnectionError(BaseAPIException):
+    def __init__(self):
+        super().__init__(
+            status_code=500,
+            detail=f"Соездинение с бд отсутствует",
+        )
+
+
+class DuplicateSubjectNameException(BaseAPIException):
     def __init__(self, subject_name: str):
         super().__init__(
             status_code=409,
@@ -22,7 +30,7 @@ class NotFoundException(BaseAPIException):
         )
 
 
-class DuplicateSubjectException(BaseAPIException):
+class DuplicateSubjectIDSException(BaseAPIException):
     def __init__(self, duplicated_ids: list[int]):
         super().__init__(
             status_code=400,

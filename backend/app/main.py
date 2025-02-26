@@ -4,14 +4,14 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.database import db_manager
 from app.core.settings import settings
 from app.utils.router_manager import import_routers
+from app.utils.db_utils import create_tables_if_not_exist
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await db_manager.create_tables_if_not_exist()
+    await create_tables_if_not_exist()
     yield
 
 

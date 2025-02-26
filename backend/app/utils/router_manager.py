@@ -1,10 +1,12 @@
 from importlib import import_module
+import logging
 import pkgutil
 
 from fastapi import FastAPI
 
 from app.core.settings import settings
-from app.core.logging_config import logger
+
+logger = logging.getLogger(__name__)
 
 
 def import_routers(app: FastAPI):

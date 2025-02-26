@@ -4,13 +4,13 @@ from typing import Optional
 
 from sqlalchemy import select
 
-from app.core.database import db_manager
+from app.core.database import session_manager
 from app.utils.inspection import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.student_group.models import StudentGroup
 from app.core.exceptions import (
     DuplicateStudentGroupException,
-    DuplicateSubjectException,
+    DuplicateSubjectIDSException,
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
@@ -39,7 +39,7 @@ class StudentGroupValidator:
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
-            raise DuplicateSubjectException(*duplicates)
+            raise DuplicateSubjectIDSException(*duplicates)
 
         stmt = select(Subject.id).where(Subject.id.in_(user_ids))
         db_subject_ids = await self._session.scalars(stmt)
@@ -64,7 +64,7 @@ def validate_student_group_request(func):
 
         student_group_id: Optional[int] = bound_args.arguments.get("student_group_id")
 
-        async with db_manager.AsyncSessionFactory() as session:
+        async with session_manager.AsyncSessionFactory() as session:
             validator = StudentGroupValidator(session, request_data, student_group_id)
             await validator.validate()
 

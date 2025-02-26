@@ -2,9 +2,9 @@ from functools import wraps
 from typing import Optional
 from sqlalchemy import select
 
-from app.core.database import db_manager
+from app.core.database import session_manager
 from app.core.exceptions import (
-    SubjectNameExistsException,
+    DuplicateSubjectNameException,
     RequestDataMissingException,
 )
 from app.utils.inspection import func_inspect
@@ -25,7 +25,7 @@ class SubjectValidator:
             stmt = stmt.where(Subject.id != self._subject_id)
 
         if existing_subject := await self._session.scalar(stmt):
-            raise SubjectNameExistsException(existing_subject.name)
+            raise DuplicateSubjectNameException(existing_subject.name)
 
     async def validate(self):
         await self.check_duplicate_subject()
@@ -42,7 +42,7 @@ def validate_subject_request(func):
 
         subject_id: Optional[int] = bound_args.arguments.get("subject_id")
 
-        async with db_manager.AsyncSessionFactory() as session:
+        async with session_manager.AsyncSessionFactory() as session:
             validator = SubjectValidator(session, request_data, subject_id)
             await validator.validate()
 

@@ -83,10 +83,10 @@ class AppSettings(BaseSettings):
 @lru_cache()
 def get_settings():
     return AppSettings(
-        base=BaseConfig(),         # pyright: ignore
-        security=SecurityConfig(), # pyright: ignore
-        database=DatabaseConfig(), # pyright: ignore
-        tenacity=TenacityConfig(), # pyright: ignore
+        base=BaseConfig(),  # pyright: ignore
+        security=SecurityConfig(),  # pyright: ignore
+        database=DatabaseConfig(),  # pyright: ignore
+        tenacity=TenacityConfig(),  # pyright: ignore
     )
 
 

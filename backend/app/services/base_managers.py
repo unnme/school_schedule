@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Optional, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,18 +7,17 @@ from sqlalchemy import inspect, select
 
 from app.core.dependencies import PaginationParamsModel
 from app.core.exceptions import NotFoundException
-from app.core.logging_config import logger
+
+logger = logging.getLogger(__name__)
 
 
 # =========== БАЗОВЫЙ МЕНЕДЖЕР =============
 class BaseManager:
     model = None
-    logger = logger
 
     @classmethod
     def _get_model(cls) -> Type[Any]:
         if cls.model is None:
-            cls.logger.error(f"{cls.__name__}: model is not defined")
             raise ValueError(f"{cls.__name__}: model is not defined")
         return cls.model
 
@@ -37,7 +37,7 @@ class BaseManager:
         }
 
         if load_strategy not in load_methods:
-            logger.warning(
+            logger.error(
                 f"Неверный формат загрузки моделей: {load_strategy}. Допустимые значения: {list(load_methods.keys())}"
             )
             return stmt

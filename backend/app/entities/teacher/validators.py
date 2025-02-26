@@ -5,9 +5,9 @@ from typing import Optional
 
 from sqlalchemy import select
 
-from app.core.database import db_manager
+from app.core.database import session_manager
 from app.core.exceptions import (
-    DuplicateSubjectException,
+    DuplicateSubjectIDSException,
     DuplicateTeacherException,
     InvalidSubjectIDException,
     RequestDataMissingException,
@@ -40,7 +40,7 @@ class TeacherValidator:
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
-            raise DuplicateSubjectException(*duplicates)
+            raise DuplicateSubjectIDSException(*duplicates)
 
         stmt = select(Subject.id).where(Subject.id.in_(user_ids))
         db_subject_ids = await self._session.scalars(stmt)
@@ -64,7 +64,7 @@ def validate_teacher_request(func):
 
         teacher_id = bound_args.arguments.get("teacher_id")
 
-        async with db_manager.AsyncSessionFactory() as session:
+        async with session_manager.AsyncSessionFactory() as session:
             validator = TeacherValidator(session, request_data, teacher_id)
             await validator.validate()
 
