@@ -42,6 +42,13 @@ class SecurityConfig(BaseSettings):
     model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
 
+class TenacityConfig(BaseSettings):
+    MAX_TRIES: int
+    WAIT_SECONDS: int
+
+    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
+
+
 # ======= Настройки базы данных =======
 class DatabaseConfig(BaseSettings):
     POSTGRES_SERVER: str
@@ -68,6 +75,7 @@ class AppSettings(BaseSettings):
     base: BaseConfig
     security: SecurityConfig
     database: DatabaseConfig
+    tenacity: TenacityConfig
 
     model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
@@ -75,9 +83,10 @@ class AppSettings(BaseSettings):
 @lru_cache()
 def get_settings():
     return AppSettings(
-        base=BaseConfig(),  # pyright: ignore
-        security=SecurityConfig(),  # pyright: ignore
-        database=DatabaseConfig(),  # pyright: ignore
+        base=BaseConfig(),         # pyright: ignore
+        security=SecurityConfig(), # pyright: ignore
+        database=DatabaseConfig(), # pyright: ignore
+        tenacity=TenacityConfig(), # pyright: ignore
     )
 
 

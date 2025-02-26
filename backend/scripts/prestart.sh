@@ -3,7 +3,7 @@
 set -ex
 
 # Check the DB start
-python app/app/utils/check_db_conn.py
+python app/app/utils/db_utils.py
 
 cd "$(dirname "$0")/.." 
 

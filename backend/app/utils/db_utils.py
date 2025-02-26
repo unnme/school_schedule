@@ -3,7 +3,9 @@ import asyncio
 
 
 async def main() -> None:
+
     await db_manager.check_db_connection()
+
 
 
 if __name__ == "__main__":

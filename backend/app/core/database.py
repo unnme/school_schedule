@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+import asyncio
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -14,8 +15,6 @@ class Base(DeclarativeBase):
 
 
 class DatabaseManager:
-    MAX_TRIES = 60 * 5
-    WAIT_SECONDS = 10
 
     def __init__(self):
         self.logger = logger
@@ -44,8 +43,8 @@ class DatabaseManager:
             logger.info(f"✅ Попытка {attempt}: Подключение успешно.")
 
     @retry(
-        stop=stop_after_attempt(MAX_TRIES),
-        wait=wait_fixed(WAIT_SECONDS),
+        stop=stop_after_attempt(settings.tenacity.MAX_TRIES),
+        wait=wait_fixed(settings.tenacity.WAIT_SECONDS),
         after=_after_retry,
     )
     async def check_db_connection(self) -> None:
@@ -71,6 +70,8 @@ class DatabaseManager:
             await db.execute(text("CREATE SCHEMA public"))
             await db.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
             await db.execute(text("GRANT ALL ON SCHEMA public TO public"))
+            self.logger.warning("❌ Таблицы удалены")
+
 
     async def create_tables_if_not_exist(self):
         async with self.async_engine.begin() as db:
