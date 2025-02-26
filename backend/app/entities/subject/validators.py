@@ -7,7 +7,7 @@ from app.core.exceptions import (
     SubjectNameExistsException,
     RequestDataMissingException,
 )
-from app.utils.inspect import func_inspect
+from app.utils.inspection import func_inspect
 from app.entities.subject.models import Subject
 
 

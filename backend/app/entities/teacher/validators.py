@@ -12,7 +12,7 @@ from app.core.exceptions import (
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
-from app.utils.inspect import func_inspect
+from app.utils.inspection import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.teacher.models import Teacher
 

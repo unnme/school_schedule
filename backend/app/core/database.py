@@ -1,9 +1,8 @@
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy import create_engine, inspect, text
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.settings import settings
@@ -33,12 +32,7 @@ class DatabaseManager:
             expire_on_commit=False,
             class_=AsyncSession,
         )
-
-    @staticmethod
-    def _before_retry(retry_state):
-        attempt = retry_state.attempt_number
-        logger.info(f"🔄 Попытка {attempt}: Проверяем подключение к базе данных...")
-
+   
     @staticmethod
     def _after_retry(retry_state):
         attempt = retry_state.attempt_number
@@ -52,14 +46,12 @@ class DatabaseManager:
     @retry(
         stop=stop_after_attempt(MAX_TRIES),
         wait=wait_fixed(WAIT_SECONDS),
-        before=_before_retry,
         after=_after_retry,
     )
     async def check_db_connection(self) -> None:
         try:
             async with self.AsyncSessionFactory() as db:
                 await db.execute(text("SELECT 1"))
-                self.logger.info("✅ Подключение успешно.")
         except Exception as e:
             self.logger.error(f"Ошибка подключения к базе данных: {e}")
             raise
