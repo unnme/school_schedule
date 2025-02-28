@@ -1,7 +1,7 @@
 from typing import Sequence
 from fastapi import APIRouter
 
-from app.core.dependencies import AsyncSessionDep, PaginationParams
+from app.core.depends import AsyncSessionDep, PaginationParamsDep
 from app.entities.student_group.services import StudentGroupManager
 from app.entities.student_group.schemas import (
     StudentGroupCreateRequest,
@@ -30,7 +30,7 @@ async def create_sudent_group(
 
 @router.get("/", response_model=list[StudentGroupResponse])
 async def get_sudent_groups(
-    session: AsyncSessionDep, params: PaginationParams
+    session: AsyncSessionDep, params: PaginationParamsDep
 ) -> Sequence[StudentGroupResponse]:
     return await StudentGroupManager.list_all(session, params, load_stategy="selectin")
 

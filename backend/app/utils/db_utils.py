@@ -3,7 +3,8 @@ import asyncio
 
 from sqlalchemy import text, inspect
 
-from app.core.database import session_manager, Base
+from app.core.database import session_manager
+from app.entities.base import Base
 
 
 logger = logging.getLogger(__name__)

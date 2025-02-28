@@ -4,15 +4,22 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.settings import settings
+from app.core.config import settings
 from app.utils.router_manager import import_routers
-from app.utils.db_utils import create_tables_if_not_exist
+from app.utils.db_utils import create_tables_if_not_exist, drop_all_tables
+from app.utils.create_superuser import create_superuser
+from app.core.database import session_manager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await drop_all_tables()
     await create_tables_if_not_exist()
+    await create_superuser()
+
     yield
+
+    await session_manager.dispose()
 
 
 app = FastAPI(

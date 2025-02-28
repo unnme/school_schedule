@@ -11,7 +11,7 @@ from app.entities.teacher.schemas import (
 from app.entities.teacher.validators import validate_teacher_request
 from app.entities.teacher.models import Teacher
 from app.entities.relations.models import TeacherSubject
-from app.services.base_managers import BaseManager
+from app.services.base_manager import BaseManager
 
 
 # ============ МЕНЕДЖЕР ПРЕПОДАВАТЕЛЕЙ =============

@@ -9,7 +9,7 @@ from app.entities.subject.schemas import (
 )
 from app.entities.subject.models import Subject
 from app.entities.subject.validators import validate_subject_request
-from app.services.base_managers import BaseManager
+from app.services.base_manager import BaseManager
 
 
 # ============= МЕНЕДЖЕР ПРЕДМЕТОВ ==============

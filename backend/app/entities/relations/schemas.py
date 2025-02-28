@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from app.core.base import CustomBaseModel
+from app.entities.base import CustomBaseModel
 
 
 class SubjectWithHoursRequest(CustomBaseModel):

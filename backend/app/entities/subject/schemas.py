@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import ConfigDict, Field, field_validator
 
-from app.core.base import CustomBaseModel
+from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
     StudentGroupWithHoursResponse,
     TeacherWithHoursResponse,

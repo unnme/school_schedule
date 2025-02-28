@@ -2,16 +2,11 @@ import logging
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
 
-from app.core.settings import settings
+from app.core.config import settings
+
 
 logger = logging.getLogger(__name__)
-
-
-class Base(DeclarativeBase):
-    __abstract__ = True
-
 
 class SessionManager:
     def __init__(self):
@@ -36,6 +31,9 @@ class SessionManager:
             except Exception:
                 await session.rollback()
                 raise
+
+    async def dispose(self) -> None:
+        await self.async_engine.dispose()
 
 
 session_manager = SessionManager()

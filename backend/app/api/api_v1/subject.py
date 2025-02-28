@@ -1,7 +1,7 @@
 from typing import Sequence
 from fastapi import APIRouter
 
-from app.core.dependencies import AsyncSessionDep, PaginationParams
+from app.core.depends import AsyncSessionDep, PaginationParamsDep
 from app.entities.subject.services import SubjectManager
 from app.entities.subject.schemas import (
     SubjectCreateRequest,
@@ -26,7 +26,7 @@ async def create_subject(
 
 @router.get("/", response_model=list[SubjectResponse])
 async def get_subjects(
-    params: PaginationParams, session: AsyncSessionDep
+    params: PaginationParamsDep, session: AsyncSessionDep
 ) -> Sequence[SubjectResponse]:
     return await SubjectManager.list_all(session, params, load_stategy="selectin")
 

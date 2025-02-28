@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.relations.models import StudentGroupSubject
 from app.entities.student_group.validators import validate_student_group_request
-from app.services.base_managers import BaseManager
+from app.services.base_manager import BaseManager
 from app.entities.student_group.models import StudentGroup
 from app.entities.student_group.schemas import (
     StudentGroupCreateRequest,

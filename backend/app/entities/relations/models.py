@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base
+from app.entities.base import Base
 
 
 if TYPE_CHECKING:
@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class TeacherSubject(Base):
-    __tablename__ = "teacher_subjects"
 
     teacher_id: Mapped[int] = mapped_column(
         ForeignKey("teachers.id", ondelete="CASCADE"), primary_key=True
@@ -28,7 +27,6 @@ class TeacherSubject(Base):
 
 
 class StudentGroupSubject(Base):
-    __tablename__ = "student_group_subjects"
 
     student_group_id: Mapped[int] = mapped_column(
         ForeignKey("student_groups.id", ondelete="CASCADE"), primary_key=True

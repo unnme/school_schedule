@@ -1,10 +1,12 @@
+import logging
 from fastapi import APIRouter
 
 from app.core.exceptions import DatabaseConnectionError
 from app.utils.db_utils import check_db_connection
 
-
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/utils", tags=["utils"])
+
 
 
 @router.get("/health-check/")

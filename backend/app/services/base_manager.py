@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, lazyload, selectinload, subqueryload
 from sqlalchemy import inspect, select
 
-from app.core.dependencies import PaginationParamsModel
+from app.core.depends import PaginationParamsModel
 from app.core.exceptions import NotFoundException
 
 logger = logging.getLogger(__name__)

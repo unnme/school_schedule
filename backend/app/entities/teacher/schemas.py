@@ -2,7 +2,7 @@ import re
 from typing import List, Annotated
 from pydantic import Field, field_validator
 
-from app.core.base import CustomBaseModel
+from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
     SubjectWithHoursRequest,
     SubjectWithHoursResponse,

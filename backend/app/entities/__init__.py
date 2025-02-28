@@ -1,6 +1,6 @@
 from importlib import import_module
 
-from app.core.settings import settings
+from app.core.config import settings
 
 
 for app_dir in settings.base.ENTITIES_DIR.iterdir():
