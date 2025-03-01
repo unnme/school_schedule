@@ -30,7 +30,7 @@ class SessionManager:
             try:
                 yield session
                 await session.commit()
-            except SQLAlchemyError as e:
+            except Exception as e:
                 logger.exception(f"Database error: {e}")
                 await session.rollback()
                 raise
