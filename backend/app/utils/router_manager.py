@@ -20,7 +20,7 @@ def import_routers(app: FastAPI):
                 module = import_module(full_module_name)
 
                 if hasattr(module, "router"):
-                    app.include_router(module.router, prefix=settings.base.API_V1_STR)
+                    app.include_router(module.router, prefix=settings.api_prefix.v1_prefix)
 
                 if is_pkg:
                     sub_path = [str(pathlib.Path(base_path[0]) / module_name)]

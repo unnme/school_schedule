@@ -21,13 +21,41 @@ else:
     _ENV_FILE = None
 
 
+class ApiV1Prefix(BaseSettings):
+    prefix: str = "/v1"
+    auth: str = "/auth"
+    users: str = "/users"
+    messages: str = "/messages"
+    service: str = "/service"
+    jwt: str = "/jwt"
+
+
+class ApiPrefix(BaseSettings):
+    prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
+
+    @property
+    def v1_prefix(self) -> str:
+        # /api/v1
+        parts = (self.prefix, self.v1.prefix)
+        path = "".join(parts)
+        return path
+
+    @property
+    def bearer_token_url(self) -> str:
+        # api/v1/auth/login
+        parts = (self.prefix, self.v1.prefix, self.v1.auth, self.v1.jwt, "/login")
+        path = "".join(parts)
+        return path.removeprefix("/")
+
+
 class BaseConfig(BaseSettings):
+
     BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
     API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
     ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
 
     ENVIRONMENT: Literal["local", "staging", "production"]
-    API_V1_STR: str
     PROJECT_NAME: str
     PROJECT_VERSION: str
 
@@ -81,6 +109,7 @@ class DatabaseConfig(BaseSettings):
 
 # ======= Глобальные настройки =======
 class AppSettings(BaseSettings):
+    api_prefix: ApiPrefix
     base: BaseConfig
     security: SecurityConfig
     database: DatabaseConfig
@@ -96,6 +125,7 @@ def get_settings():
         security=SecurityConfig(),  # pyright: ignore
         database=DatabaseConfig(),  # pyright: ignore
         tenacity=TenacityConfig(),  # pyright: ignore
+        api_prefix=ApiPrefix()
     )
 
 

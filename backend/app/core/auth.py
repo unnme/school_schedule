@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi_users import FastAPIUsers, models
+from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 
 from app.core.config import settings
@@ -8,7 +8,7 @@ from app.core.depends import get_user_manager
 from app.entities.users.models import User
 
 
-bearer_transport = BearerTransport(tokenUrl="api/v1/auth/jwt/login")
+bearer_transport = BearerTransport(tokenUrl=settings.api_prefix.bearer_token_url)
 
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(
