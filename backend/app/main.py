@@ -13,9 +13,9 @@ from app.core.database import session_manager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await drop_all_tables()
-    await create_tables_if_not_exist()
-    await create_superuser()
+    # await drop_all_tables()
+    # await create_tables_if_not_exist()
+    # await create_superuser()
 
     yield
 

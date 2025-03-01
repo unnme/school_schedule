@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import select
 
 from app.core.database import session_manager
-from app.utils.inspection import func_inspect
+from app.utils.common import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.student_group.models import StudentGroup
 from app.core.exceptions import (
@@ -35,7 +35,7 @@ class StudentGroupValidator:
             raise DuplicateStudentGroupException(existing_student_group)
 
     async def _check_student_group_subjects_validity(self):
-        """Проверка на корректность предметов"""
+        """Валидация переданных ID"""
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
@@ -48,7 +48,6 @@ class StudentGroupValidator:
             raise InvalidSubjectIDException(*wrong_subject_ids)
 
     async def validate(self):
-        """Основной метод для запуска всех проверок"""
         await self._check_student_group_subjects_validity()
         await self._check_duplicate_student_group()
 
@@ -61,6 +60,7 @@ def validate_student_group_request(func):
         request_data = bound_args.arguments.get("request_data")
         if request_data is None:
             raise RequestDataMissingException()
+        print(request_data)
 
         student_group_id: Optional[int] = bound_args.arguments.get("student_group_id")
 

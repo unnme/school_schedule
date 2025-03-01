@@ -12,7 +12,7 @@ from app.core.exceptions import (
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
-from app.utils.inspection import func_inspect
+from app.utils.common import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.teacher.models import Teacher
 
@@ -24,6 +24,7 @@ class TeacherValidator:
         self._teacher_id = teacher_id
 
     async def check_duplicate_teacher(self):
+        """Проверка уникальностиы имени преподавателя"""
         stmt = select(Teacher).where(
             Teacher.last_name == self._request_data.last_name,
             Teacher.first_name == self._request_data.first_name,
@@ -37,6 +38,7 @@ class TeacherValidator:
             raise DuplicateTeacherException(existing_teacher.name)
 
     async def check_teacher_subjects_validity(self):
+        """Валидация переданных ID"""
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
@@ -62,9 +64,11 @@ def validate_teacher_request(func):
         if request_data is None:
             raise RequestDataMissingException()
 
+        print(request_data)
+
         teacher_id = bound_args.arguments.get("teacher_id")
 
-        async with session_manager.AsyncSessionFactory() as session:
+        async for session in session_manager.get_async_session():
             validator = TeacherValidator(session, request_data, teacher_id)
             await validator.validate()
 

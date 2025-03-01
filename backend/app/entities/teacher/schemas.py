@@ -4,8 +4,8 @@ from pydantic import Field, field_validator
 
 from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
-    SubjectWithHoursRequest,
-    SubjectWithHoursResponse,
+    SubjectWithTHoursRequest,
+    SubjectWithTHoursResponse,
 )
 
 LastName = Annotated[
@@ -34,15 +34,15 @@ class TeacherBaseSchema(CustomBaseModel):
 
 
 class TeacherRequest(TeacherBaseSchema):
-    subjects: List[SubjectWithHoursRequest] = Field(
+    subjects: List[SubjectWithTHoursRequest] = Field(
         default_factory=list,
         description="Преподаватель должен быть связан хотя бы с одним предметом.",
     )
 
     @field_validator("subjects", mode="before")
     def validate_subjects_length(
-        cls, value: List[SubjectWithHoursRequest]
-    ) -> List[SubjectWithHoursRequest]:
+        cls, value: List[SubjectWithTHoursRequest]
+    ) -> List[SubjectWithTHoursRequest]:
         if not value:
             raise ValueError(
                 "Преподаватель должен быть связан хотя бы с одним предметом."
@@ -88,7 +88,7 @@ class TeacherCreateRequest(TeacherRequest):
 class TeacherResponse(TeacherBaseSchema):
     id: int
     is_active: bool = True
-    subjects: List[SubjectWithHoursResponse]
+    subjects: List[SubjectWithTHoursResponse]
 
 
 class _TeacherUpdateResponse(TeacherResponse):

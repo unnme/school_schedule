@@ -7,7 +7,7 @@ from app.core.exceptions import (
     DuplicateSubjectNameException,
     RequestDataMissingException,
 )
-from app.utils.inspection import func_inspect
+from app.utils.common import func_inspect
 from app.entities.subject.models import Subject
 
 
@@ -42,7 +42,7 @@ def validate_subject_request(func):
 
         subject_id: Optional[int] = bound_args.arguments.get("subject_id")
 
-        async with session_manager.AsyncSessionFactory() as session:
+        async for session in session_manager.get_async_session():
             validator = SubjectValidator(session, request_data, subject_id)
             await validator.validate()
 

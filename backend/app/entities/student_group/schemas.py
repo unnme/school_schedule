@@ -1,12 +1,12 @@
 import re
-from typing import Any, List, Annotated
+from typing import List, Annotated
 
 from pydantic import Field, field_validator
 
 from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
-    SubjectWithHoursRequest,
-    SubjectWithHoursResponse,
+    SubjectWithSHoursRequest,
+    SubjectWithSHoursResponse,
 )
 
 
@@ -29,15 +29,15 @@ class StudentGroupBaseSchema(CustomBaseModel):
 
 
 class StudentGroupRequest(StudentGroupBaseSchema):
-    subjects: List[Any] = Field(
+    subjects: List[SubjectWithSHoursRequest] = Field(
         default_factory=list,
         description="Ученическая группа должна быть связанна хотя бы с одним предметом",
     )
 
     @field_validator("subjects", mode="before")
     def validate_subjects_length(
-        cls, value: List[SubjectWithHoursRequest]
-    ) -> List[SubjectWithHoursRequest]:
+        cls, value: List[SubjectWithSHoursRequest]
+    ) -> List[SubjectWithSHoursRequest]:
         if not value:
             raise ValueError(
                 "Ученическая группа должна быть связанна хотя бы с одним предметом"
@@ -73,7 +73,7 @@ class StudentGroupCreateRequest(StudentGroupRequest):
 
 class StudentGroupResponse(StudentGroupBaseSchema):
     id: int
-    subjects: List[SubjectWithHoursResponse]
+    subjects: List[SubjectWithSHoursResponse]
 
 
 class _StudentGroupUpdateResponse(StudentGroupResponse):

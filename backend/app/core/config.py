@@ -1,17 +1,19 @@
-from functools import lru_cache
 import os
+from typing import Annotated, Literal
 from pathlib import Path
-from typing import Literal
 from urllib.parse import quote
+from functools import lru_cache
 
+from pydantic import AnyUrl, BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from app.utils.common import parse_cors
 
 
 def is_running_in_docker() -> bool:
     return (
         os.path.exists("/.dockerenv") or "docker" in Path("/proc/1/cgroup").read_text()
     )
-
 
 if not is_running_in_docker():
     _PROJECT_ROOT_DIR: Path = Path.cwd().parents[2]
@@ -58,6 +60,9 @@ class BaseConfig(BaseSettings):
     ENVIRONMENT: Literal["local", "staging", "production"]
     PROJECT_NAME: str
     PROJECT_VERSION: str
+
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
+
 
     model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
