@@ -7,7 +7,7 @@ router = APIRouter()
 router.include_router(
     fastapi_users.get_auth_router(auth_backend, requires_verification=True),
     prefix="/auth/jwt",
-    tags=["auth"]
+    tags=["auth"],
 )
 router.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),

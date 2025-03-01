@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class TeacherSubject(Base):
-
     teacher_id: Mapped[int] = mapped_column(
         ForeignKey("teachers.id", ondelete="CASCADE"), primary_key=True
     )
@@ -27,7 +26,6 @@ class TeacherSubject(Base):
 
 
 class StudentGroupSubject(Base):
-
     student_group_id: Mapped[int] = mapped_column(
         ForeignKey("student_groups.id", ondelete="CASCADE"), primary_key=True
     )

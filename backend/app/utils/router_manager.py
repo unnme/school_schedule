@@ -1,16 +1,16 @@
 from importlib import import_module
-import logging
 import pkgutil
 import pathlib
 
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-def import_routers(app: FastAPI): 
+def import_routers(app: FastAPI):
     from app.api.api_v1 import __path__ as api_path
 
     def recursive_import(base_path, package_prefix):
@@ -20,7 +20,9 @@ def import_routers(app: FastAPI):
                 module = import_module(full_module_name)
 
                 if hasattr(module, "router"):
-                    app.include_router(module.router, prefix=settings.api_prefix.v1_prefix)
+                    app.include_router(
+                        module.router, prefix=settings.api_prefix.get_api_prefix
+                    )
 
                 if is_pkg:
                     sub_path = [str(pathlib.Path(base_path[0]) / module_name)]

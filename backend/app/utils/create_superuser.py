@@ -12,7 +12,6 @@ from app.entities.users.models import (
 )
 
 
-
 get_users_db_context = contextlib.asynccontextmanager(get_user_db)
 get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 

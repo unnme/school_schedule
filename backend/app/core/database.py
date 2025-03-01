@@ -1,12 +1,14 @@
-import logging
 from typing import AsyncGenerator
 
+from sqlalchemy import SQLAlchemyError
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
+
 
 class SessionManager:
     def __init__(self):
@@ -28,7 +30,8 @@ class SessionManager:
             try:
                 yield session
                 await session.commit()
-            except Exception:
+            except SQLAlchemyError as e:
+                logger.exception(f"Database error: {e}")
                 await session.rollback()
                 raise
 

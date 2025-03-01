@@ -1,13 +1,13 @@
-import logging
 import asyncio
 
 from sqlalchemy import text, inspect
 
 from app.core.database import session_manager
+from app.core.logging_config import get_logger
 from app.entities.base import Base
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 async def drop_all_tables():

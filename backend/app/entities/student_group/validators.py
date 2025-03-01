@@ -60,11 +60,10 @@ def validate_student_group_request(func):
         request_data = bound_args.arguments.get("request_data")
         if request_data is None:
             raise RequestDataMissingException()
-        print(request_data)
 
         student_group_id: Optional[int] = bound_args.arguments.get("student_group_id")
 
-        async with session_manager.AsyncSessionFactory() as session:
+        async for session in session_manager.get_async_session():
             validator = StudentGroupValidator(session, request_data, student_group_id)
             await validator.validate()
 

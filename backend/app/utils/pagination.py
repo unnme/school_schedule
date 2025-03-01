@@ -9,6 +9,7 @@ class PaginationParamsModel(CustomBaseModel):
     order_by: str | None
     desc: bool
 
+
 def pagination_params(
     offset: int = Query(0, ge=0, description="Смещение для пагинации"),
     limit: int = Query(

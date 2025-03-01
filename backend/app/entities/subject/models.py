@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class Subject(Base):
-
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
 

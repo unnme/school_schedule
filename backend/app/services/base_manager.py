@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Optional, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,8 +6,10 @@ from sqlalchemy import inspect, select
 
 from app.core.depends import PaginationParamsModel
 from app.core.exceptions import NotFoundException
+from app.core.logging_config import get_logger
 
-logger = logging.getLogger(__name__)
+
+logger = get_logger(__name__)
 
 
 # =========== БАЗОВЫЙ МЕНЕДЖЕР =============
