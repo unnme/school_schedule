@@ -6,6 +6,13 @@ class BaseAPIException(HTTPException):
         super().__init__(status_code=status_code, detail=detail)
 
 
+class InvalidLoadStrategyException(BaseAPIException):
+    def __init__(self, load_strategy, allowed_methods):
+        super().__init__(
+            status_code=400,
+            detail=f"Invalid load strategy: {load_strategy}. Allowed methods: {allowed_methods}",
+        )
+
 class DatabaseConnectionError(BaseAPIException):
     def __init__(self):
         super().__init__(

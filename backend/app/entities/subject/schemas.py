@@ -3,14 +3,14 @@ from typing import List
 
 from pydantic import ConfigDict, Field, field_validator
 
-from app.entities.base import CustomBaseModel
+from app.entities.base import BaseSchema
 from app.entities.relations.schemas import (
     StudentGroupWithHoursResponse,
     TeacherWithHoursResponse,
 )
 
 
-class SubjectBaseSchema(CustomBaseModel):
+class SubjectBaseSchema(BaseSchema):
     name: str = Field(
         ...,
         description="Название начинается с заглавной буквы, может содержать кириллицу и дефис.",
@@ -67,7 +67,7 @@ class _SubjectCreateResponse(SubjectBaseSchema):
     id: int
 
 
-class SubjectCreateResponse(CustomBaseModel):
+class SubjectCreateResponse(BaseSchema):
     message: str
     data: _SubjectCreateResponse
 
@@ -79,7 +79,7 @@ class _SubjectUpdateResponse(SubjectResponse):
     pass
 
 
-class SubjectUpdateResponse(CustomBaseModel):
+class SubjectUpdateResponse(BaseSchema):
     message: str
     data: _SubjectUpdateResponse
 
@@ -91,6 +91,6 @@ class _SubjectDeleteResponse(SubjectBaseSchema):
     id: int
 
 
-class SubjectDeleteResponse(CustomBaseModel):
+class SubjectDeleteResponse(BaseSchema):
     message: str
     data: _SubjectDeleteResponse

@@ -1,23 +1,17 @@
-from fastapi import Query
+from typing import Optional, Annotated
+from dataclasses import dataclass
 
-from app.entities.base import CustomBaseModel
-
-
-class PaginationParamsModel(CustomBaseModel):
-    offset: int
-    limit: int
-    order_by: str | None
-    desc: bool
+from fastapi import Query, Depends
 
 
-def pagination_params(
-    offset: int = Query(0, ge=0, description="Смещение для пагинации"),
-    limit: int = Query(
-        10, ge=1, le=100, description="Количество элементов на странице"
-    ),
-    order_by: str | None = Query(None, description="Поле для сортировки"),
-    desc: bool = Query(False, description="Сортировка по убыванию"),
-) -> PaginationParamsModel:
-    return PaginationParamsModel(
-        offset=offset, limit=limit, order_by=order_by, desc=desc
-    )
+@dataclass
+class PaginationParams:
+    offset: int = Query(0, ge=0, description="Смещение для пагинации")
+    limit: int = Query(10, ge=1, le=100, description="Количество элементов на странице")
+    order_by: Optional[str] = Query(None, description="Поле для сортировки")
+    desc: bool = Query(False, description="Сортировка по убыванию")
+
+def pagination_params(params: PaginationParams):
+    return params
+
+PaginationParamsDep = Annotated[PaginationParams, Depends(pagination_params)]

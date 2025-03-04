@@ -7,7 +7,7 @@ from typing import Annotated, Literal
 from pydantic import AnyUrl, BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.utils.common import parse_cors
+from app.utils.common_utils import parse_cors
 
 
 def is_running_in_docker() -> bool:
@@ -115,7 +115,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> AppSettings:
     return AppSettings(
         base=BaseConfig(),  # pyright: ignore

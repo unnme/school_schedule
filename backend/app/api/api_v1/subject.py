@@ -1,7 +1,8 @@
 from typing import Sequence
 from fastapi import APIRouter
 
-from app.core.depends import AsyncSessionDep, PaginationParamsDep
+from app.utils.pagination import PaginationParamsDep
+from app.core.depends import AsyncSessionDep
 from app.entities.subject.services import SubjectManager
 from app.entities.subject.schemas import (
     SubjectCreateRequest,
@@ -25,26 +26,25 @@ async def create_subject(
 
 
 @router.get("/", response_model=list[SubjectResponse])
-async def get_subjects(
-    params: PaginationParamsDep, session: AsyncSessionDep
+async def list_subjects(
+    pagination: PaginationParamsDep, session: AsyncSessionDep
 ) -> Sequence[SubjectResponse]:
-    return await SubjectManager.list_all(session, params, load_stategy="selectin")
+    subjects = await SubjectManager.list_subjects(session, pagination)
+    return subjects
 
 
 @router.put("/{subject_id}", response_model=SubjectUpdateResponse)
 async def update_subject(
     session: AsyncSessionDep, subject_id: int, request_data: SubjectUpdateRequest
 ) -> SubjectUpdateResponse:
-    updated_subject = await SubjectManager.update_subject(
-        session, subject_id, request_data
-    )
+    updated_subject = await SubjectManager.update_subject(session, subject_id, request_data)
     return SubjectUpdateResponse(
         message="Предмет успешно изменен", data=updated_subject
     )
 
 
 @router.delete("/{subject_id}", response_model=SubjectDeleteResponse)
-async def delite_subject(
+async def delete_subject(
     session: AsyncSessionDep, subject_id: int
 ) -> SubjectDeleteResponse:
     deleted_subject = await SubjectManager.delete_subject(session, subject_id)

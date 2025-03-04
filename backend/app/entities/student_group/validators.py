@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import select
 
 from app.core.database import session_manager
-from app.utils.common import func_inspect
+from app.utils.common_utils import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.student_group.models import StudentGroup
 from app.core.exceptions import (

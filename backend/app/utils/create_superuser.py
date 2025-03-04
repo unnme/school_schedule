@@ -5,11 +5,9 @@ from os import getenv
 from app.core.depends import get_user_db
 from app.core.depends import get_user_manager
 from app.core.database import session_manager
-from app.entities.users.schemas import UserCreate
-from app.entities.users.services import UserManager
-from app.entities.users.models import (
-    User,
-)
+from app.entities.user.schemas import UserCreate
+from app.entities.user.services import UserManager
+from app.entities.user.models import User
 
 
 get_users_db_context = contextlib.asynccontextmanager(get_user_db)

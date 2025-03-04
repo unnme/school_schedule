@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.core.auth import auth_backend, fastapi_users
-from app.entities.users.schemas import UserRead, UserCreate
+from app.entities.user.schemas import UserRead, UserCreate
 
 router = APIRouter()
 

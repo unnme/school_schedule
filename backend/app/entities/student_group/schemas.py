@@ -3,7 +3,7 @@ from typing import List, Annotated
 
 from pydantic import Field, field_validator
 
-from app.entities.base import CustomBaseModel
+from app.entities.base import BaseSchema
 from app.entities.relations.schemas import (
     SubjectWithSHoursRequest,
     SubjectWithSHoursResponse,
@@ -16,7 +16,7 @@ StudentGroupName = Annotated[
 ]
 
 
-class StudentGroupBaseSchema(CustomBaseModel):
+class StudentGroupBaseSchema(BaseSchema):
     name: StudentGroupName
 
     @field_validator("name")
@@ -84,12 +84,12 @@ class _StudentGroupCreateResponse(StudentGroupResponse):
     pass
 
 
-class StudentGroupUpdateResponse(CustomBaseModel):
+class StudentGroupUpdateResponse(BaseSchema):
     message: str
     data: _StudentGroupUpdateResponse
 
 
-class StudentGroupCreateResponse(CustomBaseModel):
+class StudentGroupCreateResponse(BaseSchema):
     message: str
     data: _StudentGroupCreateResponse
 
@@ -98,6 +98,6 @@ class _StudentGroupDeleteResponse(StudentGroupBaseSchema):
     id: int
 
 
-class StudentGroupDeleteResponse(CustomBaseModel):
+class StudentGroupDeleteResponse(BaseSchema):
     message: str
     data: _StudentGroupDeleteResponse

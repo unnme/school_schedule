@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
 from app.entities.teacher.services import TeacherManager
-from app.core.depends import AsyncSessionDep, PaginationParamsDep
+from app.core.depends import AsyncSessionDep
+from app.utils.pagination import PaginationParamsDep
 from app.entities.teacher.schemas import (
     TeacherCreateRequest,
     TeacherCreateResponse,
@@ -24,9 +25,9 @@ async def create_teacher(
 
 
 @router.get("/", response_model=list[TeacherResponse])
-async def get_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
-    return await TeacherManager.list_all(session, params, load_stategy="selectin")
-
+async def list_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
+    teachers = await TeacherManager.list_teachers(session, params)
+    return teachers
 
 @router.put("/{teacher_id}", response_model=TeacherUpdateResponse)
 async def update_teacher(

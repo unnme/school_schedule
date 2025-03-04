@@ -2,7 +2,7 @@ import re
 from typing import List, Annotated
 from pydantic import Field, field_validator
 
-from app.entities.base import CustomBaseModel
+from app.entities.base import BaseSchema
 from app.entities.relations.schemas import (
     SubjectWithTHoursRequest,
     SubjectWithTHoursResponse,
@@ -19,7 +19,7 @@ Patronymic = Annotated[
 ]
 
 
-class TeacherBaseSchema(CustomBaseModel):
+class TeacherBaseSchema(BaseSchema):
     last_name: LastName
     first_name: FirstName
     patronymic: Patronymic
@@ -99,12 +99,12 @@ class _TeacherCreateResponse(TeacherResponse):
     pass
 
 
-class TeacherUpdateResponse(CustomBaseModel):
+class TeacherUpdateResponse(BaseSchema):
     message: str
     data: _TeacherUpdateResponse
 
 
-class TeacherCreateResponse(CustomBaseModel):
+class TeacherCreateResponse(BaseSchema):
     message: str
     data: _TeacherCreateResponse
 
@@ -113,6 +113,6 @@ class _TeacherDeleteResponse(TeacherBaseSchema):
     id: int
 
 
-class TeacherDeleteResponse(CustomBaseModel):
+class TeacherDeleteResponse(BaseSchema):
     message: str
     data: _TeacherDeleteResponse

@@ -1,5 +1,6 @@
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.core.config import settings
@@ -28,7 +29,6 @@ class SessionManager:
         async with self.AsyncSessionFactory() as session:
             try:
                 yield session
-                await session.commit()
             except Exception as e:
                 logger.exception(f"Database error: {e}")
                 await session.rollback()
@@ -39,3 +39,6 @@ class SessionManager:
 
 
 session_manager = SessionManager()
+
+AsyncSessionDep = Annotated[AsyncSession, Depends(session_manager.get_async_session)]
+

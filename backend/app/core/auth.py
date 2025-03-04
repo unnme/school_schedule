@@ -9,7 +9,7 @@ from fastapi_users.authentication import (
 
 from app.core.config import settings
 from app.core.depends import get_user_manager
-from app.entities.users.models import User
+from app.entities.user.models import User
 
 
 bearer_transport = BearerTransport(tokenUrl=settings.api_prefix.bearer_token_url)
@@ -28,5 +28,5 @@ auth_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])  # pyright: ignore
+fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend]) 
 current_active_user = fastapi_users.current_user(active=True)

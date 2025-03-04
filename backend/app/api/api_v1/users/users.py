@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
-from app.entities.users.models import User
-from app.entities.users.schemas import UserRead, UserUpdate
+
+from app.entities.user.models import User
+from app.entities.user.schemas import UserRead, UserUpdate
 from app.core.auth import fastapi_users, current_active_user
+
 
 router = APIRouter()
 
@@ -10,7 +12,6 @@ router.include_router(
     prefix="/users",
     tags=["users"],
 )
-
 
 @router.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
