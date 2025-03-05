@@ -22,7 +22,9 @@ async def create_subject(
     session: AsyncSessionDep, request_data: SubjectCreateRequest
 ) -> SubjectCreateResponse:
     created_subject = await SubjectManager.create_subject(session, request_data)
-    return SubjectCreateResponse(message="Предмет успешно создан", data=created_subject)
+    return SubjectCreateResponse(
+        message="The subject was successfully created.", data=created_subject
+    )
 
 
 @router.get("/", response_model=list[SubjectResponse])
@@ -37,9 +39,11 @@ async def list_subjects(
 async def update_subject(
     session: AsyncSessionDep, subject_id: int, request_data: SubjectUpdateRequest
 ) -> SubjectUpdateResponse:
-    updated_subject = await SubjectManager.update_subject(session, subject_id, request_data)
+    updated_subject = await SubjectManager.update_subject(
+        session, subject_id, request_data
+    )
     return SubjectUpdateResponse(
-        message="Предмет успешно изменен", data=updated_subject
+        message="The subject was successfully updated.", data=updated_subject
     )
 
 
@@ -48,4 +52,6 @@ async def delete_subject(
     session: AsyncSessionDep, subject_id: int
 ) -> SubjectDeleteResponse:
     deleted_subject = await SubjectManager.delete_subject(session, subject_id)
-    return SubjectDeleteResponse(message="Предмет успешно удален", data=deleted_subject)
+    return SubjectDeleteResponse(
+        message="The subject was successfully deleted", data=deleted_subject
+    )

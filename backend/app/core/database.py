@@ -41,4 +41,3 @@ class SessionManager:
 session_manager = SessionManager()
 
 AsyncSessionDep = Annotated[AsyncSession, Depends(session_manager.get_async_session)]
-

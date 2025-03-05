@@ -15,13 +15,12 @@ from .repository import teacher_repository
 
 
 class TeacherManager:
-
     @classmethod
     @validate_teacher_request
     async def create_teacher(
         cls, session: AsyncSession, request_data: TeacherCreateRequest
     ) -> _TeacherCreateResponse:
-        teacher = await teacher_repository.create_teacher(session, request_data) 
+        teacher = await teacher_repository.create_teacher(session, request_data)
         return _TeacherCreateResponse.model_validate(teacher)
 
     @classmethod
@@ -35,7 +34,9 @@ class TeacherManager:
     async def update_teacher(
         cls, session: AsyncSession, request_data: TeacherUpdateRequest, teacher_id: int
     ) -> _TeacherUpdateResponse:
-        teacher = await teacher_repository.update_teacher(session, request_data, teacher_id)
+        teacher = await teacher_repository.update_teacher(
+            session, request_data, teacher_id
+        )
         return _TeacherUpdateResponse.model_validate(teacher)
 
     @classmethod
@@ -44,4 +45,3 @@ class TeacherManager:
     ) -> _TeacherDeleteResponse:
         teacher = teacher_repository.delete_teacher(session, teacher_id)
         return _TeacherDeleteResponse.model_validate(teacher)
-

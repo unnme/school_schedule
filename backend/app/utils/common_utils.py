@@ -1,6 +1,7 @@
 from typing import Any
 from inspect import BoundArguments, signature
 
+from fastapi import HTTPException
 from pydantic import AnyUrl
 
 
@@ -16,4 +17,4 @@ def parse_cors(v: Any) -> list[AnyUrl] | str:
         return [AnyUrl(i.strip()) for i in v.split(",")]
     elif isinstance(v, (list, str)):
         return v
-    raise ValueError(f"Invalid CORS value: {v}")
+    raise HTTPException(status_code=400, detail=f"Invalid CORS value: {v}")

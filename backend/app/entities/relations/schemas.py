@@ -1,41 +1,41 @@
 from pydantic import Field
 
-from app.entities.base import BaseSchema
+from app.entities.base import CustomBaseModel
 
 
-class SubjectWithTHoursRequest(BaseSchema):
-    id: int = Field(..., description="ID предмета")
+class SubjectWithTHoursRequest(CustomBaseModel):
+    id: int = Field(..., description="Subject ID")
     teaching_hours: int = Field(
-        ..., ge=0, description="Количество часов преподавания для предмета"
+        ..., ge=0, description="Amount of teaching hours for the subject"
     )
 
 
-class SubjectWithSHoursRequest(BaseSchema):
-    id: int = Field(..., description="ID предмета")
+class SubjectWithSHoursRequest(CustomBaseModel):
+    id: int = Field(..., description="Subject ID")
     study_hours: int = Field(
-        ..., ge=0, description="Количество часов преподавания для предмета"
+        ..., ge=0, description="Amount of study hours for the subject"
     )
 
 
-class SubjectWithTHoursResponse(BaseSchema):
-    subject_id: int = Field(..., description="ID предмета")
+class SubjectWithTHoursResponse(CustomBaseModel):
+    subject_id: int = Field(..., description="Subject ID")
     teaching_hours: int = Field(
-        ..., ge=0, description="Количество часов преподавания для предмета"
+        ..., ge=0, description="Amount of teaching hours for the subject"
     )
 
 
-class SubjectWithSHoursResponse(BaseSchema):
-    subject_id: int = Field(..., description="ID предмета")
+class SubjectWithSHoursResponse(CustomBaseModel):
+    subject_id: int = Field(..., description="Subject ID")
     study_hours: int = Field(
-        ..., ge=0, description="Количество часов преподавания для предмета"
+        ..., ge=0, description="Amount of study hours for the subject"
     )
 
 
-class TeacherWithHoursResponse(BaseSchema):
-    teacher_id: int = Field(..., description="ID преподавателя")
-    teaching_hours: int = Field(..., ge=0, description="Количество часов преподавания")
+class TeacherWithHoursResponse(CustomBaseModel):
+    teacher_id: int = Field(..., description="Teacher ID")
+    teaching_hours: int = Field(..., ge=0, description="Amount of teaching hours")
 
 
-class StudentGroupWithHoursResponse(BaseSchema):
-    student_group_id: int = Field(..., description="ID ученического класса")
-    study_hours: int = Field(..., ge=0, description="Количество часов обучения")
+class StudentGroupWithHoursResponse(CustomBaseModel):
+    student_group_id: int = Field(..., description="Student group ID")
+    study_hours: int = Field(..., ge=0, description="Amount of study hours")

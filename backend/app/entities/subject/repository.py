@@ -1,16 +1,15 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.entities.subject.models import Subject
+from app.entities.base import BaseRepository
 from app.utils.pagination import PaginationParamsDep
 from app.entities.subject.schemas import (
     SubjectCreateRequest,
     SubjectUpdateRequest,
 )
-from app.entities.subject.models import Subject
-from app.entities.base import BaseRepository
 
 
 class SubjectRepository(BaseRepository):
-
     def __init__(self) -> None:
         super().__init__(Subject)
 
@@ -23,10 +22,12 @@ class SubjectRepository(BaseRepository):
         await session.refresh(subject)
         return subject
 
-    async def list_subjects(self, session: AsyncSession, pagination: PaginationParamsDep):
+    async def list_subjects(
+        self, session: AsyncSession, pagination: PaginationParamsDep
+    ):
         subjects = await self.list_all(session, pagination, load_strategy="selectin")
         return subjects
-    
+
     async def update_subject(
         self, session: AsyncSession, subject_id: int, request_data: SubjectUpdateRequest
     ) -> Subject:
@@ -38,9 +39,7 @@ class SubjectRepository(BaseRepository):
             await session.refresh(subject)
         return subject
 
-    async def delete_subject(
-        self, session: AsyncSession, subject_id: int
-    ) -> Subject:
+    async def delete_subject(self, session: AsyncSession, subject_id: int) -> Subject:
         subject = await self.get_by_id(session, subject_id)
         deleted_data = {
             key: value
@@ -53,4 +52,3 @@ class SubjectRepository(BaseRepository):
 
 
 subject_repository = SubjectRepository()
-

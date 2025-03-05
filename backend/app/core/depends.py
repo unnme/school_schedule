@@ -6,7 +6,6 @@ from app.entities.user.models import User
 from app.entities.user.services import UserManager
 
 
-
 async def get_user_db(session: AsyncSessionDep):
     yield SQLAlchemyUserDatabase(session, User)
 

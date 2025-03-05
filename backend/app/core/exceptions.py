@@ -13,6 +13,7 @@ class InvalidLoadStrategyException(BaseAPIException):
             detail=f"Invalid load strategy: {load_strategy}. Allowed methods: {allowed_methods}",
         )
 
+
 class DatabaseConnectionError(BaseAPIException):
     def __init__(self):
         super().__init__(

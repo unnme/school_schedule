@@ -18,35 +18,37 @@ router = APIRouter(prefix="/student_groups", tags=["Ученические гр�
 
 
 @router.post("/", response_model=StudentGroupCreateResponse)
-async def create_sudent_group(
+async def create_student_group(
     session: AsyncSessionDep, request_data: StudentGroupCreateRequest
 ) -> StudentGroupCreateResponse:
     created_student_group = await StudentGroupManager.create_student_group(
         session, request_data
     )
     return StudentGroupCreateResponse(
-        message="Группа учеников успешно создана", data=created_student_group
+        message="The student group was successfully created", data=created_student_group
     )
 
 
 @router.get("/", response_model=list[StudentGroupResponse])
-async def get_sudent_groups(
+async def list_student_groups(
     session: AsyncSessionDep, params: PaginationParamsDep
 ) -> Sequence[StudentGroupResponse]:
-    return await StudentGroupManager.list_student_groups(session, params, load_strategy="selectin")
+    return await StudentGroupManager.list_student_groups(
+        session, params
+    )
 
 
 @router.put("/{student_group_id}", response_model=StudentGroupUpdateResponse)
-async def update_sutdent_group(
+async def update_student_group(
     session: AsyncSessionDep,
     request_data: StudentGroupUpdateRequest,
     student_group_id: int,
 ) -> StudentGroupUpdateResponse:
-    udated_student_group = await StudentGroupManager.update_sutdent_group(
+    updated_student_group = await StudentGroupManager.update_student_group(
         session, request_data, student_group_id
     )
     return StudentGroupUpdateResponse(
-        message="Группа учеников успешно обновлёна", data=udated_student_group
+        message="The student group was successfully updated", data=updated_student_group
     )
 
 
@@ -54,9 +56,9 @@ async def update_sutdent_group(
 async def delete_student_group(
     db: AsyncSessionDep, student_group_id: int
 ) -> StudentGroupDeleteResponse:
-    deleted_student_group = await StudentGroupManager.delete_sutdent_group(
+    deleted_student_group = await StudentGroupManager.delete_student_group(
         db, student_group_id
     )
     return StudentGroupDeleteResponse(
-        message="Группа учеников успешно удалена", data=deleted_student_group
+        message="The student group was successfully deleted", data=deleted_student_group
     )

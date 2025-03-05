@@ -2,7 +2,14 @@ from typing import Any, Optional, Sequence, Type
 
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeBase, declared_attr, joinedload, lazyload, selectinload, subqueryload
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    declared_attr,
+    joinedload,
+    lazyload,
+    selectinload,
+    subqueryload,
+)
 from sqlalchemy import MetaData, Select, inspect, select
 
 from app.utils.pagination import PaginationParamsDep
@@ -10,7 +17,6 @@ from app.core.exceptions import InvalidLoadStrategyException, NotFoundException
 from app.core.logging_config import get_logger
 from app.core.config import settings
 from app.utils.case_converter import camel_case_to_snake_case
-
 
 
 logger = get_logger(__name__)
@@ -30,22 +36,18 @@ class Base(DeclarativeBase):
 
 
 # pydantic
-class BaseSchema(BaseModel):
+class CustomBaseModel(BaseModel):
     class Config:
         from_attributes = True
 
 
 class BaseRepository:
-
     def __init__(self, sql_model: Type[Any]) -> None:
-        self.sql_model = sql_model 
-
+        self.sql_model = sql_model
 
     def _apply_load_strategy(
-        self,
-        stmt: Select,
-        load_strategy: Optional[str] = None
-    ):
+        self, stmt: Select, load_strategy: Optional[str] = None
+    ) -> Select:
         model_relations = inspect(self.sql_model).relationships.keys()
         if not model_relations or load_strategy is None:
             return stmt
@@ -58,9 +60,7 @@ class BaseRepository:
         }
 
         if load_strategy not in load_methods:
-            logger.error(
-                f"Invalid load strategy: {load_strategy}."
-            )            
+            logger.error(f"Invalid load strategy: {load_strategy}.")
             raise InvalidLoadStrategyException(load_strategy, load_methods.keys())
 
         load_method = load_methods[load_strategy]
@@ -71,7 +71,9 @@ class BaseRepository:
 
         return stmt.options(*options)
 
-    def _apply_pagination(self, stmt: Select, pagination: PaginationParamsDep) -> Select:
+    def _apply_pagination(
+        self, stmt: Select, pagination: PaginationParamsDep
+    ) -> Select:
         if pagination.order_by and hasattr(self.sql_model, pagination.order_by):
             order_clause = getattr(self.sql_model, pagination.order_by)
             stmt = stmt.order_by(
@@ -80,8 +82,13 @@ class BaseRepository:
 
         return stmt.offset(pagination.offset).limit(pagination.limit)
 
-    async def get_by_id(self, session: AsyncSession, id: int, load_strategy="selectin"):
-        stmt = self._apply_load_strategy(select(self.sql_model), load_strategy).where(self.sql_model.id == id)
+    async def get_by_id(
+        self, session: AsyncSession, id: int, load_strategy: Optional[str] = None
+    ):
+        stmt = select(self.sql_model).where(self.sql_model.id == id)
+
+        if load_strategy is not None:
+            stmt = self._apply_load_strategy(stmt, load_strategy)
         result = await session.execute(stmt)
         entity = result.scalars().first()
 
@@ -96,13 +103,14 @@ class BaseRepository:
         session: AsyncSession,
         pagination: PaginationParamsDep,
         load_strategy: Optional[str] = None,
-
     ) -> Sequence[Any]:
         stmt = select(self.sql_model)
         stmt = self._apply_load_strategy(stmt, load_strategy)
         stmt = self._apply_pagination(stmt, pagination)
 
         result = await session.execute(stmt)
-        entities = result.scalars().unique().all()
+        entities = result.scalars().unique().fetchall()
+        print(entities)
+        print("")
+        print(result.scalars().unique().all())
         return entities
-

@@ -33,8 +33,9 @@ class TeacherRepository(BaseRepository):
 
         return teacher
 
-    
-    async def list_teachers(self, session: AsyncSession, pagination: PaginationParamsDep):
+    async def list_teachers(
+        self, session: AsyncSession, pagination: PaginationParamsDep
+    ):
         teachers = await self.list_all(session, pagination, load_strategy="selectin")
         return teachers
 
@@ -42,7 +43,9 @@ class TeacherRepository(BaseRepository):
         self, session: AsyncSession, request_data: TeacherUpdateRequest, teacher_id: int
     ) -> Teacher:
         async with session.begin():
-            teacher = await self.get_by_id(session, teacher_id, load_strategy="selectin")
+            teacher = await self.get_by_id(
+                session, teacher_id, load_strategy="selectin"
+            )
 
             teacher.is_active = request_data.is_active
 
@@ -57,9 +60,7 @@ class TeacherRepository(BaseRepository):
 
         return teacher
 
-    async def delete_teacher(
-        self, session: AsyncSession, teacher_id: int
-    ) -> Teacher:
+    async def delete_teacher(self, session: AsyncSession, teacher_id: int) -> Teacher:
         teacher = await self.get_by_id(session, teacher_id)
         deleted_data = {
             key: value

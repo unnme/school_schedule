@@ -14,9 +14,7 @@ from app.entities.subject.schemas import (
 from .repository import subject_repository
 
 
-
 class SubjectManager:
-
     @classmethod
     @validate_subject_request
     async def create_subject(

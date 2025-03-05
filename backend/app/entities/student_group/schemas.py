@@ -1,67 +1,47 @@
 import re
-from typing import List, Annotated
+from typing import List
 
+from fastapi import HTTPException
 from pydantic import Field, field_validator
 
-from app.entities.base import BaseSchema
+from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
     SubjectWithSHoursRequest,
     SubjectWithSHoursResponse,
 )
 
 
-StudentGroupName = Annotated[
-    str,
-    Field(..., min_length=2, max_length=5, description="Название ученической группы"),
-]
+#INFO: BASE
 
 
-class StudentGroupBaseSchema(BaseSchema):
-    name: StudentGroupName
+class StudentGroupBaseSchema(CustomBaseModel):
+    name: str = Field(
+        ..., min_length=2, max_length=5, description="The name of the student group"
+    )
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
         if not re.match(r"^(?:[1-9]|1[0-1])[А-Я]$", value):
-            raise ValueError(
-                "Название группы должно быть числом от 1 до 11, за которым следует одна заглавная буква."
+            raise HTTPException(
+                status_code=400,
+                detail="The group name must consist of a number from 1 to 11, followed by an uppercase letter.",
             )
         return value
+
+
+#INFO: REQUEST
 
 
 class StudentGroupRequest(StudentGroupBaseSchema):
     subjects: List[SubjectWithSHoursRequest] = Field(
         default_factory=list,
-        description="Ученическая группа должна быть связанна хотя бы с одним предметом",
+        description="The student group must be linked to at least one subject",
     )
 
-    @field_validator("subjects", mode="before")
-    def validate_subjects_length(
-        cls, value: List[SubjectWithSHoursRequest]
-    ) -> List[SubjectWithSHoursRequest]:
-        if not value:
-            raise ValueError(
-                "Ученическая группа должна быть связанна хотя бы с одним предметом"
-            )
-        return value
-
-
-class StudentGroupUpdateRequest(StudentGroupRequest):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": 1,
-                "name": "11Б",
-                "subjects": [{"id": 1, "study_hours": 22}],
-            }
-        }
-    }
-
-
-class StudentGroupCreateRequest(StudentGroupRequest):
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "name": "11Б",
+                "name": "11B",
                 "subjects": [
                     {"id": 1, "study_hours": 22},
                     {"id": 4, "study_hours": 13},
@@ -70,34 +50,71 @@ class StudentGroupCreateRequest(StudentGroupRequest):
         }
     }
 
+    @field_validator("subjects", mode="before")
+    def validate_subjects_length(
+        cls, value: List[SubjectWithSHoursRequest]
+    ) -> List[SubjectWithSHoursRequest]:
+        if not value:
+            raise HTTPException(
+                status_code=400,
+                detail="The student group must be linked to at least one subject",
+            )
+        return value
+
+
+#INFO: UPDATErequest
+
+
+class StudentGroupUpdateRequest(StudentGroupRequest):
+    pass
+
+
+#INFO: CREATErequest
+
+
+class StudentGroupCreateRequest(StudentGroupRequest):
+    pass
+
+
+#INFO: RESPONSE
+
 
 class StudentGroupResponse(StudentGroupBaseSchema):
     id: int
     subjects: List[SubjectWithSHoursResponse]
 
 
+#INFO: UPDATEresponse
+
+
 class _StudentGroupUpdateResponse(StudentGroupResponse):
     pass
+
+
+class StudentGroupUpdateResponse(CustomBaseModel):
+    message: str
+    data: _StudentGroupUpdateResponse
+
+
+#INFO: CREATEresponse
 
 
 class _StudentGroupCreateResponse(StudentGroupResponse):
     pass
 
 
-class StudentGroupUpdateResponse(BaseSchema):
-    message: str
-    data: _StudentGroupUpdateResponse
-
-
-class StudentGroupCreateResponse(BaseSchema):
+class StudentGroupCreateResponse(CustomBaseModel):
     message: str
     data: _StudentGroupCreateResponse
+
+
+#INFO: DELETEresponse
 
 
 class _StudentGroupDeleteResponse(StudentGroupBaseSchema):
     id: int
 
 
-class StudentGroupDeleteResponse(BaseSchema):
+class StudentGroupDeleteResponse(CustomBaseModel):
     message: str
     data: _StudentGroupDeleteResponse

@@ -1,22 +1,25 @@
 import re
 from typing import List
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import Field, field_validator
 
-from app.entities.base import BaseSchema
+from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import (
     StudentGroupWithHoursResponse,
     TeacherWithHoursResponse,
 )
 
 
-class SubjectBaseSchema(BaseSchema):
+#INFO: BASE
+
+
+class SubjectBaseSchema(CustomBaseModel):
     name: str = Field(
         ...,
-        description="Название начинается с заглавной буквы, может содержать кириллицу и дефис.",
+        min_length=2,
+        max_length=30,
+        description="The name starts with a capital letter, may contain Cyrillic letters and a hyphen.",
     )
-
-    model_config = ConfigDict(json_schema_extra={"example": {"name": "Биология"}})
 
     @field_validator("name")
     @classmethod
@@ -25,33 +28,38 @@ class SubjectBaseSchema(BaseSchema):
             r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value
         ):
             raise ValueError(
-                f"Название предмета '{value}' содержит недопустимые символы или имеет неверный формат."
+                f"The subject name '{value}' contains invalid characters or has an incorrect format."
             )
         return value
 
 
-# REQUEST
+#INFO: REQUEST
 
 
 class SubjectRequest(SubjectBaseSchema):
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "Biology"
+            }
+        }
+    }
 
-
-# createREQUEST
+#INFO: CREATErequest
 
 
 class SubjectCreateRequest(SubjectRequest):
     pass
 
 
-# updateREQUEST
+#INFO: UPDATErequest
 
 
 class SubjectUpdateRequest(SubjectRequest):
     pass
 
 
-# RESPONSE
+#INFO: RESPONSE
 
 
 class SubjectResponse(SubjectBaseSchema):
@@ -60,37 +68,37 @@ class SubjectResponse(SubjectBaseSchema):
     student_groups: List[StudentGroupWithHoursResponse]
 
 
-# createRESPONSE
+#INFO: CREATEresponse
 
 
 class _SubjectCreateResponse(SubjectBaseSchema):
     id: int
 
 
-class SubjectCreateResponse(BaseSchema):
+class SubjectCreateResponse(CustomBaseModel):
     message: str
     data: _SubjectCreateResponse
 
 
-# updateRESPONSE
+#INFO: UPDATEresponse
 
 
 class _SubjectUpdateResponse(SubjectResponse):
     pass
 
 
-class SubjectUpdateResponse(BaseSchema):
+class SubjectUpdateResponse(CustomBaseModel):
     message: str
     data: _SubjectUpdateResponse
 
 
-# deleteRESPONSE
+#INFO: DELETEresponse
 
 
 class _SubjectDeleteResponse(SubjectBaseSchema):
     id: int
 
 
-class SubjectDeleteResponse(BaseSchema):
+class SubjectDeleteResponse(CustomBaseModel):
     message: str
     data: _SubjectDeleteResponse

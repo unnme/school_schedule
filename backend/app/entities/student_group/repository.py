@@ -22,15 +22,21 @@ class StudentGroupRepository(BaseRepository):
             student_group = StudentGroup(**request_data.model_dump(include={"name"}))
             session.add(student_group)
             await session.flush()
-            await self._update_student_group_subjects(session, request_data, student_group)
+            await self._update_student_group_subjects(
+                session, request_data, student_group
+            )
         student_group = await self.get_by_id(
             session, student_group.id, load_strategy="selectin"
         )
 
         return student_group
 
-    async def list_student_groups(self, session: AsyncSession, pagination: PaginationParamsDep): # TODO typing
-        student_groups = await self.list_all(session, pagination, load_strategy = "selectin")
+    async def list_student_groups(
+        self, session: AsyncSession, pagination: PaginationParamsDep
+    ):
+        student_groups = await self.list_all(
+            session, pagination, load_strategy="selectin"
+        )
         return student_groups
 
     async def update_sutdent_group(
@@ -48,12 +54,14 @@ class StudentGroupRepository(BaseRepository):
             for field, value in update_data.items():
                 setattr(student_group, field, value)
 
-            await self._update_student_group_subjects(session, request_data, student_group)
+            await self._update_student_group_subjects(
+                session, request_data, student_group
+            )
             await session.refresh(student_group)
 
         return student_group
 
-    async def delete_sutdent_group(
+    async def delete_student_group(
         self, session: AsyncSession, student_group_id: int
     ) -> StudentGroup:
         student_group = self.get_by_id(session, student_group_id)
@@ -144,7 +152,9 @@ class StudentGroupRepository(BaseRepository):
                     }
                     for subject_id in subjects_to_add
                 ]
-                await session.execute(insert(StudentGroupSubject).values(new_associations))
+                await session.execute(
+                    insert(StudentGroupSubject).values(new_associations)
+                )
 
             await session.flush()
 
