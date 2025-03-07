@@ -29,6 +29,6 @@ def import_routers(app: FastAPI):
                     recursive_import(sub_path, full_module_name)
 
             except ImportError as e:
-                logger.error(f"Ошибка импорта {full_module_name}: {e}")
+                logger.error(f"Import error {full_module_name}: {e}")
 
     recursive_import(api_path, "app.api.api_v1")

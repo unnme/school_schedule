@@ -32,10 +32,10 @@ class TeacherManager:
     @classmethod
     @validate_teacher_request
     async def update_teacher(
-        cls, session: AsyncSession, request_data: TeacherUpdateRequest, teacher_id: int
+        cls, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
     ) -> _TeacherUpdateResponse:
         teacher = await teacher_repository.update_teacher(
-            session, request_data, teacher_id
+            session, teacher_id, request_data
         )
         return _TeacherUpdateResponse.model_validate(teacher)
 

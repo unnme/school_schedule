@@ -16,7 +16,7 @@ async def drop_all_tables():
         await db.execute(text("CREATE SCHEMA public"))
         await db.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
         await db.execute(text("GRANT ALL ON SCHEMA public TO public"))
-        logger.warning("❌ Таблицы удалены")
+        logger.warning("❌ Tables have been dropped")
 
 
 async def create_tables_if_not_exist():
@@ -30,9 +30,9 @@ async def create_tables_if_not_exist():
             return [t for t in tables if t not in system_tables]
 
         if not (_ := await db.run_sync(check_tables)):
-            logger.info("🔄 Создание таблиц БД")
+            logger.info("🔄 Creating database tables")
             await db.run_sync(Base.metadata.create_all)
-            logger.info("✅ Таблицы успешно созданны")
+            logger.info("✅ Tables successfully created")
 
 
 async def check_db_connection():
@@ -40,7 +40,7 @@ async def check_db_connection():
         async with session_manager.AsyncSessionFactory() as db:
             await db.execute(text("SELECT 1"))
     except Exception as e:
-        logger.error(f"❌ База данных недоступна {e}")
+        logger.error(f"❌ Database is unavailable {e}")
         raise
 
 

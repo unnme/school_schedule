@@ -13,12 +13,12 @@ class PaginationParams:
 
 
 def get_pagination(
-    offset: int = Query(0, ge=0, description="Pagination offset"),
+    offset: int = Query(0, ge=0, description="Смещение для пагинации"),
     limit: int = Query(
-        10, ge=1, le=100, description="Number of items per page"
+        10, ge=1, le=100, description="Количество элементов на странице"
     ),
-    order_by: Optional[str] = Query(None, description="Field for sorting"),
-    desc: bool = Query(False, description="Sort in descending order"),
+    order_by: Optional[str] = Query(None, description="Поле для сортировки"),
+    desc: bool = Query(False, description="Сортировка по убыванию"),
 ) -> PaginationParams:
     return PaginationParams(offset=offset, limit=limit, order_by=order_by, desc=desc)
 

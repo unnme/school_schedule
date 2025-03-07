@@ -36,12 +36,12 @@ class StudentGroupManager:
     async def update_student_group(
         cls,
         session: AsyncSession,
-        request_data: StudentGroupUpdateRequest,
         student_group_id: int,
+        request_data: StudentGroupUpdateRequest,
     ) -> _StudentGroupUpdateResponse:
         async with session.begin():
             student_group = await student_group_repository.update_sutdent_group(
-                session, request_data, student_group_id
+                session, student_group_id, request_data
             )
             return _StudentGroupUpdateResponse.model_validate(student_group)
 

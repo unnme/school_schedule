@@ -22,7 +22,7 @@ from app.utils.case_converter import camel_case_to_snake_case
 logger = get_logger(__name__)
 
 
-# sqlalchemy
+#INFO: sqlalchemy
 class Base(DeclarativeBase):
     __abstract__ = True
 
@@ -35,7 +35,7 @@ class Base(DeclarativeBase):
         return f"{camel_case_to_snake_case(cls.__name__)}s"
 
 
-# pydantic
+#INFO: pydantic
 class CustomBaseModel(BaseModel):
     class Config:
         from_attributes = True
@@ -109,8 +109,5 @@ class BaseRepository:
         stmt = self._apply_pagination(stmt, pagination)
 
         result = await session.execute(stmt)
-        entities = result.scalars().unique().fetchall()
-        print(entities)
-        print("")
-        print(result.scalars().unique().all())
+        entities = result.scalars().unique().all()
         return entities

@@ -1,4 +1,3 @@
-from functools import lru_cache
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, delete, update, case
 
@@ -40,7 +39,7 @@ class TeacherRepository(BaseRepository):
         return teachers
 
     async def update_teacher(
-        self, session: AsyncSession, request_data: TeacherUpdateRequest, teacher_id: int
+        self, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
         async with session.begin():
             teacher = await self.get_by_id(

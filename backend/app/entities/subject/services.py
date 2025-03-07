@@ -18,29 +18,29 @@ class SubjectManager:
     @classmethod
     @validate_subject_request
     async def create_subject(
-        cls, db: AsyncSession, request_data: SubjectCreateRequest
+        cls, session: AsyncSession, request_data: SubjectCreateRequest
     ) -> _SubjectCreateResponse:
-        subject = await subject_repository.create_subject(db, request_data)
+        subject = await subject_repository.create_subject(session, request_data)
         return _SubjectCreateResponse.model_validate(subject)
 
     @classmethod
     async def list_subjects(
-        cls, db: AsyncSession, pagination: PaginationParamsDep
+        cls, session: AsyncSession, pagination: PaginationParamsDep
     ) -> Sequence[SubjectResponse]:
-        subjects = await subject_repository.list_subjects(db, pagination)
+        subjects = await subject_repository.list_subjects(session, pagination)
         return subjects
 
     @classmethod
     @validate_subject_request
     async def update_subject(
-        cls, db: AsyncSession, subject_id: int, request_data: SubjectUpdateRequest
+        cls, session: AsyncSession, subject_id: int, request_data: SubjectUpdateRequest
     ) -> _SubjectUpdateResponse:
-        subject = await subject_repository.update_subject(db, subject_id, request_data)
+        subject = await subject_repository.update_subject(session, subject_id, request_data)
         return _SubjectUpdateResponse.model_validate(subject)
 
     @classmethod
     async def delete_subject(
-        cls, db: AsyncSession, subject_id: int
+        cls, session: AsyncSession, subject_id: int
     ) -> _SubjectDeleteResponse:
-        subject = await subject_repository.delete_subject(db, subject_id)
+        subject = await subject_repository.delete_subject(session, subject_id)
         return _SubjectDeleteResponse.model_validate(subject)

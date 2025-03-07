@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Optional
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -16,15 +16,16 @@ from app.entities.relations.schemas import (
 
 class StudentGroupBaseSchema(CustomBaseModel):
     name: str = Field(
-        ..., min_length=2, max_length=5, description="The name of the student group"
+        ..., min_length=2, max_length=5, description="Название группы студентов"
     )
+    capacity: Optional[int] = Field(default=None, gt=0, le=50, description="Максимальное количество студентов в группе")
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
         if not re.match(r"^(?:[1-9]|1[0-1])[А-Я]$", value):
             raise HTTPException(
                 status_code=400,
-                detail="The group name must consist of a number from 1 to 11, followed by an uppercase letter.",
+                detail="Название группы должно содержать число, за которым следует заглавная буква.",
             )
         return value
 
@@ -35,7 +36,7 @@ class StudentGroupBaseSchema(CustomBaseModel):
 class StudentGroupRequest(StudentGroupBaseSchema):
     subjects: List[SubjectWithSHoursRequest] = Field(
         default_factory=list,
-        description="The student group must be linked to at least one subject",
+        description="Группа студентов должна быть связана хотя бы с одним предметом.",
     )
 
     model_config = {
@@ -57,7 +58,7 @@ class StudentGroupRequest(StudentGroupBaseSchema):
         if not value:
             raise HTTPException(
                 status_code=400,
-                detail="The student group must be linked to at least one subject",
+                detail="Группа студентов должна быть связана хотя бы с одним предметом",
             )
         return value
 

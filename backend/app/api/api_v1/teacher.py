@@ -21,7 +21,9 @@ async def create_teacher(
     session: AsyncSessionDep, request_data: TeacherCreateRequest
 ) -> TeacherCreateResponse:
     created_teacher = await TeacherManager.create_teacher(session, request_data)
-    return TeacherCreateResponse(message="Teacher successfully created.", data=created_teacher)
+    return TeacherCreateResponse(
+        message="Учитель успешно создан.", data=created_teacher
+    )
 
 
 @router.get("/", response_model=list[TeacherResponse])
@@ -32,13 +34,13 @@ async def list_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
 
 @router.put("/{teacher_id}", response_model=TeacherUpdateResponse)
 async def update_teacher(
-    session: AsyncSessionDep, request_data: TeacherUpdateRequest, teacher_id: int
+    session: AsyncSessionDep, teacher_id: int, request_data: TeacherUpdateRequest
 ) -> TeacherUpdateResponse:
     updated_teacher = await TeacherManager.update_teacher(
-        session, request_data, teacher_id
+        session, teacher_id, request_data
     )
     return TeacherUpdateResponse(
-        message="Teacher successfully updated", data=updated_teacher
+        message="Учитель успешно обновлен", data=updated_teacher
     )
 
 
@@ -48,5 +50,5 @@ async def delete_teacher(
 ) -> TeacherDeleteResponse:
     deleted_teacher = await TeacherManager.delete_teacher(session, teacher_id)
     return TeacherDeleteResponse(
-        message="Teacher successfully deleted", data=deleted_teacher
+        message="Учитель успешно удален", data=deleted_teacher
     )

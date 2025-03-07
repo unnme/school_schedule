@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.entities.teacher.models import Teacher
     from app.entities.subject.models import Subject
     from app.entities.student_group.models import StudentGroup
+    from app.entities.classroom.models import Classroom
 
 
 class TeacherSubject(Base):
@@ -39,4 +40,20 @@ class StudentGroupSubject(Base):
     )
     subject: Mapped["Subject"] = relationship(
         "Subject", back_populates="student_groups"
+    )
+
+
+class ClassroomSubject(Base):
+    classroom_id: Mapped[int] = mapped_column(
+        ForeignKey("classrooms.id", ondelete="CASCADE"), primary_key=True
+    )
+    subject_id: Mapped[int] = mapped_column(
+        ForeignKey("subjects.id", ondelete="CASCADE"), primary_key=True
+    )
+
+    classroom: Mapped["Classroom"] = relationship(
+        "Classroom", back_populates="subjects"
+    )
+    subject: Mapped["Subject"] = relationship(
+        "Subject", back_populates="classrooms"
     )

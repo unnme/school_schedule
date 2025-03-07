@@ -25,7 +25,7 @@ async def create_student_group(
         session, request_data
     )
     return StudentGroupCreateResponse(
-        message="The student group was successfully created", data=created_student_group
+        message="Ученическая группа успешно создана", data=created_student_group
     )
 
 
@@ -45,10 +45,10 @@ async def update_student_group(
     student_group_id: int,
 ) -> StudentGroupUpdateResponse:
     updated_student_group = await StudentGroupManager.update_student_group(
-        session, request_data, student_group_id
+        session, student_group_id, request_data
     )
     return StudentGroupUpdateResponse(
-        message="The student group was successfully updated", data=updated_student_group
+        message="Ученическая группа успешно обновлена", data=updated_student_group
     )
 
 
@@ -60,5 +60,5 @@ async def delete_student_group(
         db, student_group_id
     )
     return StudentGroupDeleteResponse(
-        message="The student group was successfully deleted", data=deleted_student_group
+        message="Ученическая группа успешно удалена", data=deleted_student_group
     )

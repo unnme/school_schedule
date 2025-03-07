@@ -12,13 +12,12 @@ from app.entities.subject.models import Subject
 
 
 class SubjectValidator:
-    def __init__(self, session, request_data, subject_id: Optional[int]):
+    def __init__(self, session, **kwargs):
         self._session = session
-        self._request_data = request_data
-        self._subject_id = subject_id
+        self._request_data = kwargs.get("request_data")
+        self._subject_id = kwargs.get("subject_id")
 
     async def check_duplicate_subject(self):
-        """Проверяет имя предмета на уникальность"""
         stmt = select(Subject).where(Subject.name == self._request_data.name)
 
         if self._subject_id is not None:
@@ -36,14 +35,13 @@ def validate_subject_request(func):
     async def wrapper(*args, **kwargs):
         bound_args = func_inspect(func, *args, **kwargs)
 
-        request_data = bound_args.arguments.get("request_data")
-        if request_data is None:
+        if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()
 
         subject_id: Optional[int] = bound_args.arguments.get("subject_id")
 
         async for session in session_manager.get_async_session():
-            validator = SubjectValidator(session, request_data, subject_id)
+            validator = SubjectValidator(session, request_data=request_data, subject_id=subject_id)
             await validator.validate()
 
         return await func(*args, **kwargs)

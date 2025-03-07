@@ -21,7 +21,7 @@ services:
       timeout: 10s
 
   prestart:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
     platform: linux/amd64
     restart: on-failure
     build:
@@ -51,7 +51,7 @@ services:
       - SENTRY_DSN=${SENTRY_DSN}
 
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
     platform: linux/amd64
     restart: always
     depends_on:

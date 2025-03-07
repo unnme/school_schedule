@@ -9,6 +9,8 @@ from app.entities.base import Base
 if TYPE_CHECKING:
     from app.entities.relations.models import TeacherSubject
     from app.entities.relations.models import StudentGroupSubject
+    from app.entities.relations.models import ClassroomSubject
+
 
 
 class Subject(Base):
@@ -21,5 +23,9 @@ class Subject(Base):
     )
 
     student_groups: Mapped[list["StudentGroupSubject"]] = relationship(
-        back_populates="subject", cascade="all, delete-orphan", lazy="selectin"
+        back_populates="subject", cascade="all, delete-orphan",
+    )
+
+    classrooms: Mapped[list["ClassroomSubject"]] = relationship(
+        back_populates="subject", cascade="all, delete-orphan",
     )

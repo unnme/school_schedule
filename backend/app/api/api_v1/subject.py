@@ -23,7 +23,7 @@ async def create_subject(
 ) -> SubjectCreateResponse:
     created_subject = await SubjectManager.create_subject(session, request_data)
     return SubjectCreateResponse(
-        message="The subject was successfully created.", data=created_subject
+        message="Предмет успешно создан.", data=created_subject
     )
 
 
@@ -43,7 +43,7 @@ async def update_subject(
         session, subject_id, request_data
     )
     return SubjectUpdateResponse(
-        message="The subject was successfully updated.", data=updated_subject
+        message="Предмет успешно обновлен.", data=updated_subject
     )
 
 
@@ -53,5 +53,5 @@ async def delete_subject(
 ) -> SubjectDeleteResponse:
     deleted_subject = await SubjectManager.delete_subject(session, subject_id)
     return SubjectDeleteResponse(
-        message="The subject was successfully deleted", data=deleted_subject
+        message="Предмет успешно удален.", data=deleted_subject
     )

@@ -17,13 +17,14 @@ from app.core.exceptions import (
 
 
 class StudentGroupValidator:
-    def __init__(self, session, request_data, student_group_id: Optional[int] = None):
+    def __init__(self, session, **kwargs): 
         self._session = session
-        self._request_data = request_data
-        self._student_group_id = student_group_id
+        self._request_data = kwargs.get("request_data")
+        self._student_group_id: Optional[int] = kwargs.get("_student_group_id")
+
+
 
     async def _check_duplicate_student_group(self):
-        """Проверка на дублирование имени группы"""
         stmt = select(StudentGroup).where(
             StudentGroup.name == self._request_data.name,
         )
@@ -35,7 +36,6 @@ class StudentGroupValidator:
             raise DuplicateStudentGroupException(existing_student_group)
 
     async def _check_student_group_subjects_validity(self):
-        """Валидация переданных ID"""
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
@@ -57,14 +57,17 @@ def validate_student_group_request(func):
     async def inner(*args, **kwargs):
         bound_args = func_inspect(func, *args, **kwargs)
 
-        request_data = bound_args.arguments.get("request_data")
-        if request_data is None:
+        if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()
 
         student_group_id: Optional[int] = bound_args.arguments.get("student_group_id")
 
         async for session in session_manager.get_async_session():
-            validator = StudentGroupValidator(session, request_data, student_group_id)
+            validator = StudentGroupValidator(
+                session,
+                student_group_id=student_group_id,
+                request_data=request_data
+            )
             await validator.validate()
 
         return await func(*args, **kwargs)

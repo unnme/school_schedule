@@ -1,9 +1,11 @@
 import re
 from typing import List
 
+from fastapi import HTTPException
 from pydantic import Field, field_validator
 
 from app.entities.base import CustomBaseModel
+from app.entities.classroom.schemas import ClassroomIDResponse
 from app.entities.relations.schemas import (
     StudentGroupWithHoursResponse,
     TeacherWithHoursResponse,
@@ -18,7 +20,7 @@ class SubjectBaseSchema(CustomBaseModel):
         ...,
         min_length=2,
         max_length=30,
-        description="The name starts with a capital letter, may contain Cyrillic letters and a hyphen.",
+        description="Название начинается с заглавной буквы, может содержать кириллические буквы и дефис.",
     )
 
     @field_validator("name")
@@ -27,8 +29,9 @@ class SubjectBaseSchema(CustomBaseModel):
         if not re.fullmatch(
             r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value
         ):
-            raise ValueError(
-                f"The subject name '{value}' contains invalid characters or has an incorrect format."
+            raise HTTPException(
+                status_code=400,
+                detail=f"Название предмета '{value}' содержит недопустимые символы или имеет неправильный формат."
             )
         return value
 
@@ -40,7 +43,7 @@ class SubjectRequest(SubjectBaseSchema):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "name": "Biology"
+                "name": "Биология"
             }
         }
     }
@@ -66,6 +69,7 @@ class SubjectResponse(SubjectBaseSchema):
     id: int
     teachers: List[TeacherWithHoursResponse]
     student_groups: List[StudentGroupWithHoursResponse]
+    classrooms: List[ClassroomIDResponse]
 
 
 #INFO: CREATEresponse

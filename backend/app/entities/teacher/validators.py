@@ -18,13 +18,12 @@ from app.entities.teacher.models import Teacher
 
 
 class TeacherValidator:
-    def __init__(self, session, request_data, teacher_id: Optional[int] = None):
+    def __init__(self, session, **kwargs):
         self._session = session
-        self._request_data = request_data
-        self._teacher_id = teacher_id
+        self._request_data = kwargs.get("request_data")
+        self._teacher_id = kwargs.get("teacher_id")
 
     async def check_duplicate_teacher(self):
-        """Проверка уникальностиы имени преподавателя"""
         stmt = select(Teacher).where(
             Teacher.last_name == self._request_data.last_name,
             Teacher.first_name == self._request_data.first_name,
@@ -38,7 +37,6 @@ class TeacherValidator:
             raise DuplicateTeacherException(existing_teacher.name)
 
     async def check_teacher_subjects_validity(self):
-        """Валидация переданных ID"""
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
@@ -60,16 +58,13 @@ def validate_teacher_request(func):
     async def inner(*args, **kwargs):
         bound_args: BoundArguments = func_inspect(func, *args, **kwargs)
 
-        request_data = bound_args.arguments.get("request_data")
-        if request_data is None:
+        if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()
-
-        print(request_data)
 
         teacher_id = bound_args.arguments.get("teacher_id")
 
         async for session in session_manager.get_async_session():
-            validator = TeacherValidator(session, request_data, teacher_id)
+            validator = TeacherValidator(session, request_data=request_data, teacher_id=teacher_id)
             await validator.validate()
 
         return await func(*args, **kwargs)

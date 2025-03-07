@@ -1,5 +1,5 @@
 import re
-from typing import List, Annotated
+from typing import List
 from fastapi import HTTPException
 from pydantic import Field, field_validator
 
@@ -15,13 +15,13 @@ from app.entities.relations.schemas import (
 
 class TeacherBaseSchema(CustomBaseModel):
     last_name: str = Field(
-        ..., min_length=2, max_length=30, description="Teacher's last name"
+        ..., min_length=2, max_length=30, description="Фамилия учителя"
     )
     first_name: str = Field(
-        ..., min_length=2, max_length=30, description="Teacher's first name"
+        ..., min_length=2, max_length=30, description="Имя учителя"
     )
     patronymic: str = Field(
-        ..., min_length=2, max_length=30, description="Teacher's patronymic"
+        ..., min_length=2, max_length=30, description="Отчество учителя"
     )
 
     @field_validator("last_name", "first_name", "patronymic")
@@ -29,7 +29,7 @@ class TeacherBaseSchema(CustomBaseModel):
         if not re.match(r"^[А-ЯЁ][а-яё]+(-[А-ЯЁ][а-яё]+)?$", value):
             raise HTTPException(
                 status_code=400,
-                detail="The field must start with a capital letter and may contain a hyphen between words",
+                detail="Поле должно начинаться с заглавной буквы и может содержать дефис между словами",
             )
         return value
 
@@ -40,7 +40,7 @@ class TeacherBaseSchema(CustomBaseModel):
 class TeacherRequest(TeacherBaseSchema):
     subjects: List[SubjectWithTHoursRequest] = Field(
         default_factory=list,
-        description="The teacher must be linked to at least one subject.",
+        description="Учитель должен быть связан хотя бы с одним предметом.",
     )
 
     @field_validator("subjects", mode="before")
@@ -48,7 +48,10 @@ class TeacherRequest(TeacherBaseSchema):
         cls, value: List[SubjectWithTHoursRequest]
     ) -> List[SubjectWithTHoursRequest]:
         if not value:
-            raise ValueError("The teacher must be linked to at least one subject.")
+            raise HTTPException(
+                status_code=400,
+                detail="Учитель должен быть связан хотя бы с одним предметом."
+            )
         return value
 
 
@@ -64,7 +67,7 @@ class TeacherUpdateRequest(TeacherRequest):
                 "first_name": "Дмитрий",
                 "last_name": "Мамин-Сибиряк",
                 "patronymic": "Наркисович",
-                "is_active": True, #NFO: is important
+                "is_active": True,  # Важно
                 "subjects": [
                     {"id": 1, "teaching_hours": 22},
                     {"id": 4, "teaching_hours": 13},

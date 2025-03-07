@@ -118,10 +118,10 @@ class AppSettings(BaseSettings):
 @lru_cache
 def get_settings() -> AppSettings:
     return AppSettings(
-        base=BaseConfig(),  # pyright: ignore
-        security=SecurityConfig(),  # pyright: ignore
-        database=DatabaseConfig(),  # pyright: ignore
-        api_prefix=ApiPrefix(),  # pyright: ignore
+        base=BaseConfig(), # pyright: ignore
+        security=SecurityConfig(), # pyright: ignore
+        database=DatabaseConfig(), # pyright: ignore
+        api_prefix=ApiPrefix(),
         logging_config=LoggingConfig(),
     )
 
