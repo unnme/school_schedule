@@ -1,21 +1,18 @@
 services:
   backend:
     restart: no
-
     ports:
       - "8000:8000"
-
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-
+    volumes:
+      - ./backend/app/alembic/versions:/app/app/alembic/versions
     develop:
       watch:
         - action: sync
           path: ./backend/
           target: /app/
-
           ignore:
             - .venv
             - ./backend/.venv
-
         - action: rebuild
           path: ./backend/pyproject.toml

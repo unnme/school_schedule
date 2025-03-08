@@ -2,6 +2,7 @@ from typing import Any, Optional, Sequence, Type
 
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import MetaData, Select, inspect, select
 from sqlalchemy.orm import (
     DeclarativeBase,
     declared_attr,
@@ -10,7 +11,6 @@ from sqlalchemy.orm import (
     selectinload,
     subqueryload,
 )
-from sqlalchemy import MetaData, Select, inspect, select
 
 from app.utils.pagination import PaginationParamsDep
 from app.core.exceptions import InvalidLoadStrategyException, NotFoundException

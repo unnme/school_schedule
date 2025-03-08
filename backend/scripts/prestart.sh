@@ -4,4 +4,4 @@ set -ex
 
 cd "$(dirname "$0")/.." 
 
-alembic upgrade head || exit 1
+# alembic upgrade head || exit 1
