@@ -10,18 +10,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.utils.common_utils import parse_cors
 
 
+
 def is_running_in_docker() -> bool:
     return (
         os.path.exists("/.dockerenv") or "docker" in Path("/proc/1/cgroup").read_text()
     )
 
 
-if not is_running_in_docker():
+if is_running_in_docker():
+    _PROJECT_ROOT_DIR = Path("/app")
+    _ENV_FILE = _PROJECT_ROOT_DIR / ".env.docker"
+else:
     _PROJECT_ROOT_DIR: Path = Path.cwd().parents[2]
     _ENV_FILE = _PROJECT_ROOT_DIR / ".env"
-else:
-    _PROJECT_ROOT_DIR = Path("/app")
-    _ENV_FILE = None
 
 
 class LoggingConfig(BaseSettings):
@@ -56,9 +57,14 @@ class ApiPrefix(BaseSettings):
 
 
 class BaseConfig(BaseSettings):
+
+    #INFO: variable from .env.docker
+    FIRST_RUN_VARIABLE: bool = False
+
     BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
     API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
     ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
+    ENV_FILE: Path = _ENV_FILE
 
     ENVIRONMENT: Literal["local", "staging", "production"]
     PROJECT_NAME: str
@@ -91,11 +97,6 @@ class DatabaseConfig(BaseSettings):
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
     }
-
-    @property
-    def sync_db_url(self) -> str:
-        password = quote(self.POSTGRES_PASSWORD)
-        return f"postgresql://{self.POSTGRES_USER}:{password}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     @property
     def async_db_url(self) -> str:

@@ -1,81 +1,97 @@
 import asyncio
 
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
+from dotenv import set_key, load_dotenv
+from sqlalchemy import inspect, text
 
 from app.utils.create_superuser import create_superuser
 from app.core.database import session_manager
 from app.core.logging_config import get_logger
 from app.entities.base import Base
+from app.core.config import settings
 
 
 logger = get_logger(__name__)
 
 
-async def drop_all_tables():
-    try:
-        async for conn in session_manager.get_async_session():
+class DatabaseManager():
 
-            await conn.execute(text("DROP SCHEMA public CASCADE"))
-            await conn.execute(text("CREATE SCHEMA public"))
-            await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
-            await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
-        logger.warning("❌ Tables have been dropped")
-    except Exception as e:
-        logger.error(f"Error during drop_all_tables: {e}")
+    @staticmethod
+    async def drop_all_tables() -> None:
+        try:
+            async with session_manager.async_engine.begin() as conn:
+                await conn.execute(text("DROP SCHEMA public CASCADE"))
+                await conn.execute(text("CREATE SCHEMA public"))
+                await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
+                await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
+            logger.warning("❌ Tables have been dropped")
+        except Exception as e:
+            logger.error(f"Error during drop_all_tables: {e}")
+
+    @staticmethod
+    async def create_db_tables() -> None:
+        try:
+            async with session_manager.async_engine.begin() as conn:
+                logger.info("🔄 Creating database tables")
+                await conn.run_sync(Base.metadata.create_all)
+                logger.info("✅ Tables successfully created")
+
+        except Exception as e:
+            logger.error(f"❌ Error occurred: {e}")
+            raise
 
 
-async def create_tables_if_not_exist():
+    #NOTE: temporary unused
+    @staticmethod
+    async def _check_db_tables() -> bool:
+        async with session_manager.async_engine.connect() as conn:
 
-    async with session_manager.async_engine.begin() as conn: 
+            def _get_existing_tables(conn):
+                table_names = inspect(conn).get_table_names()
+                system_tables = {"alembic_version"}
 
-        logger.info("🔄 Creating database tables")
+                if existing_tables := next((name for name in table_names if name not in system_tables), None):
+                    return existing_tables
 
-        await conn.execute(
-            text("""
-                CREATE TABLE service_table (
-                    id SERIAL PRIMARY KEY,
-                    create_date TEXT DEFAULT CURRENT_TIMESTAMP,
-                    status TEXT NOT NULL UNIQUE
-                );
-            """)
+            if await conn.run_sync(_get_existing_tables):
+                return True
+        return False
+
+
+    @staticmethod
+    async def check_db_connection() -> None:
+        async for session in session_manager.get_async_session():
+            await session.execute(text("SELECT 1"))
+
+
+
+async def first_run() -> None:
+    async def _switch_first_run_variable() -> None:
+        set_key(
+            quote_mode="never",
+            dotenv_path = settings.base.ENV_FILE,
+            key_to_set = "FIRST_RUN_VARIABLE",
+            value_to_set = "True"
         )
 
-        logger.info("✅ Service table created")
+    if settings.base.FIRST_RUN_VARIABLE == False:
+        logger.info("🌟 Starting first run setup...")
 
-        await conn.execute(
-            text("""
-                INSERT INTO service_table (status)
-                VALUES (:status)
-            """), {"status": "active"}
-        )
+        await DatabaseManager.create_db_tables()
+        await create_superuser() #TODO: move here
 
-        await conn.run_sync(Base.metadata.create_all)
+        await _switch_first_run_variable()
 
-        logger.info("✅ Tables successfully created")
+        logger.info("✅ First run setup completed.")
 
-
-async def check_db_entry():
-    async for conn in session_manager.get_async_session():
-
-        stmt = await conn.execute(
-            text("SELECT table_name FROM information_schema.tables WHERE table_name = 'service_table';")
-        )
-        if stmt.fetchone():
-            return True
-
-
-async def check_db_connection():
-    async for session in session_manager.get_async_session():
-        await session.execute(text("SELECT 1"))
-
-
-async def run_once():
-    if not await check_db_entry():
-        await create_tables_if_not_exist()
-        await create_superuser()
 
 
 
 if __name__ == "__main__":
-    asyncio.run(check_db_connection())
+    asyncio.run(DatabaseManager.check_db_connection())
+
+
+
+
+
+
+
