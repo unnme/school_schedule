@@ -1,6 +1,5 @@
-from typing import Annotated, AsyncGenerator
+from typing import AsyncGenerator
 
-from fastapi import Depends
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.core.config import settings
@@ -39,5 +38,3 @@ class SessionManager:
 
 
 session_manager = SessionManager()
-
-AsyncSessionDep = Annotated[AsyncSession, Depends(session_manager.get_async_session)]

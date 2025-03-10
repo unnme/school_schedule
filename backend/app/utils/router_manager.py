@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.utils.common_utils import convert_api_path
 
 logger = get_logger(__name__)
 
@@ -21,7 +22,7 @@ def import_routers(app: FastAPI):
 
                 if hasattr(module, "router"):
                     app.include_router(
-                        module.router, prefix=settings.api_prefix.get_api_prefix
+                        module.router, prefix=settings.api_config.api_prefix
                     )
 
                 if is_pkg:
@@ -31,4 +32,4 @@ def import_routers(app: FastAPI):
             except ImportError as e:
                 logger.error(f"Import error {full_module_name}: {e}")
 
-    recursive_import(api_path, "app.api.api_v1")
+    recursive_import(api_path, convert_api_path(settings.api_config.api_path))

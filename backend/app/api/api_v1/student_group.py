@@ -1,8 +1,8 @@
 from typing import Sequence
 from fastapi import APIRouter
 
+from app.core.depends import AsyncSessionDep
 from app.utils.pagination import PaginationParamsDep
-from app.core.database import AsyncSessionDep
 from app.entities.student_group.services import StudentGroupManager
 from app.entities.student_group.schemas import (
     StudentGroupCreateRequest,

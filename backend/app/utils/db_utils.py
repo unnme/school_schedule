@@ -20,7 +20,7 @@ class DatabaseManager:
                 await conn.execute(text("CREATE SCHEMA public"))
                 await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
                 await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
-            logger.warning("❌ Tables have been dropped")
+            logger.warning("⚠️  Tables have been dropped")
         except Exception as e:
             logger.error(f"Error during drop_all_tables: {e}")
 
@@ -40,7 +40,7 @@ class DatabaseManager:
     async def check_db_tables() -> bool:
         async with session_manager.async_engine.connect() as conn:
 
-            def _get_existing_tables(conn): #INFO: NOT ASYNC
+            def _get_existing_tables(conn):  # INFO: NOT ASYNC
                 table_names = inspect(conn).get_table_names()
                 system_tables = {"alembic_version"}
 
@@ -60,7 +60,7 @@ class DatabaseManager:
 
 
 async def first_run() -> None:
-    await DatabaseManager._drop_all_tables() #WARN: REMOVE THIS!
+    await DatabaseManager._drop_all_tables()  # WARN: REMOVE THIS!
 
     if not await DatabaseManager.check_db_tables():
         logger.info("🌟 Starting first run setup...")

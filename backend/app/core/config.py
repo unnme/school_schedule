@@ -1,36 +1,82 @@
-import os
+from functools import cached_property
 from pathlib import Path
 from urllib.parse import quote
-from functools import lru_cache
 from typing import Annotated, Literal
 
 from pydantic import AnyUrl, BeforeValidator, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.utils.common_utils import parse_cors
+from app.utils.common_utils import is_running_in_docker, parse_cors
 
 
-def is_running_in_docker() -> bool:
-    return (
-        os.path.exists("/.dockerenv") or "docker" in Path("/proc/1/cgroup").read_text()
-    )
+class BasePathes:
+    def __init__(self):
+        if is_running_in_docker():
+            self._project_root_dir = Path("/app")
+            self._env_file = self._project_root_dir / ".env.docker"
+        else:
+            self._project_root_dir: Path = Path.cwd().parents[2]
+            self._env_file = self._project_root_dir / ".env"
+
+        self._app_root_dir = self._project_root_dir / "app"
+        self._entities_dir = self._app_root_dir / "entities"
+        self._api_root_dir = self._app_root_dir / "api"
+
+    @cached_property
+    def workdir(self) -> Path:
+        return self._app_root_dir
+
+    @cached_property
+    def env_file(self) -> Path:
+        return self._env_file
+
+    @cached_property
+    def entities_dir(self) -> Path:
+        return self._entities_dir
+
+    @cached_property
+    def api_root_dir(self) -> Path:
+        return self._api_root_dir
 
 
-if is_running_in_docker():
-    _PROJECT_ROOT_DIR = Path("/app")
-    _ENV_FILE = _PROJECT_ROOT_DIR / ".env.docker"
-else:
-    _PROJECT_ROOT_DIR: Path = Path.cwd().parents[2]
-    _ENV_FILE = _PROJECT_ROOT_DIR / ".env"
+base_pathes = BasePathes()
+
+
+class Pathes(BasePathes):
+    pass
 
 
 class LoggingConfig(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
 
-class ApiPrefix(BaseSettings):
-    API_PREFIX: str = "/api"
-    API_VERSION_PERFIX: str = "v1"
+class BaseConfig(BaseSettings):
+    PROJECT_NAME: str
+    PROJECT_VERSION: str
+
+    SUPERUSER_MAIL: EmailStr
+    SUPERUSER_PASS: str
+
+    ENVIRONMENT: Literal["local", "staging", "production"]
+
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
+
+    model_config = SettingsConfigDict(
+        env_file=str(base_pathes.env_file), extra="ignore"
+    )
+
+
+class SecurityConfig(BaseSettings):
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+
+    model_config = SettingsConfigDict(
+        env_file=str(base_pathes.env_file), extra="ignore"
+    )
+
+
+class ApiConfig(BaseSettings):
+    API_VERSION: str
 
     auth: str = "/auth"
     users: str = "/users"
@@ -39,47 +85,27 @@ class ApiPrefix(BaseSettings):
     login: str = "/login"
     jwt: str = "/jwt"
 
-    def __init__(self, **data):
-        super().__init__(**data)
-        if not self.API_VERSION_PERFIX.startswith("/"):
-            self.API_VERSION_PERFIX = f"/{self.API_VERSION_PERFIX}"
+    @property
+    def api_root_dir_name(self) -> str:
+        return base_pathes._api_root_dir.name
 
     @property
-    def get_api_prefix(self) -> str:
+    def api_path(self) -> Path:
+        return Path(base_pathes.workdir.name) / "api" / f"api_{self.API_VERSION}"
+
+    @property
+    def api_prefix(self) -> str:
         """-> /api/v1"""
-        return f"{self.API_PREFIX}{self.API_VERSION_PERFIX}"
+        return f"/{self.api_root_dir_name}/{self.API_VERSION}"
 
     @property
     def bearer_token_url(self) -> str:
         """-> api/v1/auth/login"""
-        return f"{self.API_PREFIX}{self.API_VERSION_PERFIX}{self.login}"
+        return f"{self.api_root_dir_name}/{self.API_VERSION}{self.login}"  # BUG: {self.auth}?
 
-
-class BaseConfig(BaseSettings):
-    BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
-    API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
-    ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
-    ENV_FILE: Path = _ENV_FILE
-
-    SUPERUSER_MAIL: EmailStr
-    SUPERUSER_PASS: str
-
-    ENVIRONMENT: Literal["local", "staging", "production"]
-    PROJECT_NAME: str
-    PROJECT_VERSION: str
-    BACKEND_CORS_ORIGINS: Annotated[
-        list[AnyUrl] | str, BeforeValidator(parse_cors)
-    ] = []
-
-    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
-
-
-class SecurityConfig(BaseSettings):
-
-    SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
-
-    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(base_pathes.env_file), extra="ignore"
+    )
 
 
 class DatabaseConfig(BaseSettings):
@@ -89,7 +115,7 @@ class DatabaseConfig(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
-    NAMING_CONVENTION: dict[str, str] = {
+    naming_convention: dict[str, str] = {
         "ix": "ix_%(column_0_label)s",
         "uq": "uq_%(table_name)s_%(column_0_N_name)s",
         "ck": "ck_%(table_name)s_%(constraint_name)s",
@@ -102,28 +128,35 @@ class DatabaseConfig(BaseSettings):
         password = quote(self.POSTGRES_PASSWORD)
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{password}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
-    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(base_pathes.env_file), extra="ignore"
+    )
 
 
 class AppSettings(BaseSettings):
-    api_prefix: ApiPrefix
+    pathes: Pathes
+    api_config: ApiConfig
     base: BaseConfig
     security: SecurityConfig
     database: DatabaseConfig
     logging_config: LoggingConfig
 
-    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
-
-@lru_cache
 def get_settings() -> AppSettings:
     return AppSettings(
+        pathes=Pathes(),  # pyright: ignore
         base=BaseConfig(),  # pyright: ignore
         security=SecurityConfig(),  # pyright: ignore
         database=DatabaseConfig(),  # pyright: ignore
-        api_prefix=ApiPrefix(),
+        api_config=ApiConfig(),  # pyright: ignore
         logging_config=LoggingConfig(),
     )
 
 
 settings = get_settings()
+
+
+if __name__ == "__main__":
+    print(settings.api_config.api_path)
+    print(settings.api_config.api_prefix)
+    print(settings.api_config.bearer_token_url)

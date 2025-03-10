@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 
-from app.core.depends import get_user_db
-from app.core.depends import get_user_manager
+from app.api.depends.authentication.user_manager import get_user_manager
+from app.api.depends.authentication.users import get_user_db
 from app.core.database import session_manager
-from app.entities.user.schemas import UserCreate
-from app.entities.user.services import UserManager
-from app.entities.user.models import User
+from app.entities.auth.schemas import UserCreate
+from app.entities.auth.services import UserManager
+from app.entities.auth.models import User
 from app.core.config import settings
 
 
@@ -19,7 +19,7 @@ async def create_user(
 ) -> User:
     user = await user_manager.create(
         user_create=user_create,
-        safe=False, #NOTE: delfault = False! change this for regular user
+        safe=False,  # NOTE: delfault = False! change this for regular user
     )
     return user
 

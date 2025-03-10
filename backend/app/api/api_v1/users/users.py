@@ -1,19 +1,14 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.entities.user.models import User
-from app.entities.user.schemas import UserRead, UserUpdate
-from app.core.auth import fastapi_users, current_active_user
+from app.entities.auth.schemas import UserRead, UserUpdate
+from app.api.depends.authentication.fastapi_users import fastapi_users
+from app.core.config import settings
 
-
-router = APIRouter()
+router = APIRouter(
+    prefix=settings.api_config.users,
+    tags=["Users"],
+)
 
 router.include_router(
     fastapi_users.get_users_router(UserRead, UserUpdate, requires_verification=True),
-    prefix="/users",
-    tags=["users"],
 )
-
-
-@router.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
-    return {"message": f"Hello {user.email}!"}
