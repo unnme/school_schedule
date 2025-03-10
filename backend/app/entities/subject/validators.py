@@ -41,7 +41,9 @@ def validate_subject_request(func):
         subject_id: Optional[int] = bound_args.arguments.get("subject_id")
 
         async for session in session_manager.get_async_session():
-            validator = SubjectValidator(session, request_data=request_data, subject_id=subject_id)
+            validator = SubjectValidator(
+                session, request_data=request_data, subject_id=subject_id
+            )
             await validator.validate()
 
         return await func(*args, **kwargs)

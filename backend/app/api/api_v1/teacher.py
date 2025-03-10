@@ -49,6 +49,4 @@ async def delete_teacher(
     session: AsyncSessionDep, teacher_id: int
 ) -> TeacherDeleteResponse:
     deleted_teacher = await TeacherManager.delete_teacher(session, teacher_id)
-    return TeacherDeleteResponse(
-        message="Учитель успешно удален", data=deleted_teacher
-    )
+    return TeacherDeleteResponse(message="Учитель успешно удален", data=deleted_teacher)

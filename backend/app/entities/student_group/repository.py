@@ -39,7 +39,12 @@ class StudentGroupRepository(BaseRepository):
         )
         return student_groups
 
-    async def update_sutdent_group(self, session: AsyncSession, student_group_id: int, request_data: StudentGroupUpdateRequest) -> StudentGroup:
+    async def update_sutdent_group(
+        self,
+        session: AsyncSession,
+        student_group_id: int,
+        request_data: StudentGroupUpdateRequest,
+    ) -> StudentGroup:
         async with session.begin():
             student_group = await self.get_by_id(
                 session, student_group_id, load_strategy="selectin"

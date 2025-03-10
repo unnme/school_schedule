@@ -10,16 +10,14 @@ from app.entities.relations.schemas import (
 )
 
 
-#INFO: BASE
+# INFO: BASE
 
 
 class TeacherBaseSchema(CustomBaseModel):
     last_name: str = Field(
         ..., min_length=2, max_length=30, description="Фамилия учителя"
     )
-    first_name: str = Field(
-        ..., min_length=2, max_length=30, description="Имя учителя"
-    )
+    first_name: str = Field(..., min_length=2, max_length=30, description="Имя учителя")
     patronymic: str = Field(
         ..., min_length=2, max_length=30, description="Отчество учителя"
     )
@@ -34,7 +32,7 @@ class TeacherBaseSchema(CustomBaseModel):
         return value
 
 
-#INFO: REQUEST
+# INFO: REQUEST
 
 
 class TeacherRequest(TeacherBaseSchema):
@@ -50,12 +48,12 @@ class TeacherRequest(TeacherBaseSchema):
         if not value:
             raise HTTPException(
                 status_code=400,
-                detail="Учитель должен быть связан хотя бы с одним предметом."
+                detail="Учитель должен быть связан хотя бы с одним предметом.",
             )
         return value
 
 
-#INFO: UPDATErequest
+# INFO: UPDATErequest
 
 
 class TeacherUpdateRequest(TeacherRequest):
@@ -77,7 +75,7 @@ class TeacherUpdateRequest(TeacherRequest):
     }
 
 
-#INFO: CREATErequest
+# INFO: CREATErequest
 
 
 class TeacherCreateRequest(TeacherRequest):
@@ -96,7 +94,7 @@ class TeacherCreateRequest(TeacherRequest):
     }
 
 
-#INFO: RESPONSE
+# INFO: RESPONSE
 
 
 class TeacherResponse(TeacherBaseSchema):
@@ -105,7 +103,7 @@ class TeacherResponse(TeacherBaseSchema):
     subjects: List[SubjectWithTHoursResponse]
 
 
-#INFO: UPDATEresponse
+# INFO: UPDATEresponse
 
 
 class _TeacherUpdateResponse(TeacherResponse):
@@ -117,7 +115,7 @@ class TeacherUpdateResponse(CustomBaseModel):
     data: _TeacherUpdateResponse
 
 
-#INFO: CREATEresponse
+# INFO: CREATEresponse
 class _TeacherCreateResponse(TeacherResponse):
     pass
 
@@ -127,7 +125,7 @@ class TeacherCreateResponse(CustomBaseModel):
     data: _TeacherCreateResponse
 
 
-#INFO: DELETEresponse
+# INFO: DELETEresponse
 
 
 class _TeacherDeleteResponse(TeacherBaseSchema):

@@ -4,11 +4,10 @@ from urllib.parse import quote
 from functools import lru_cache
 from typing import Annotated, Literal
 
-from pydantic import AnyUrl, BeforeValidator
+from pydantic import AnyUrl, BeforeValidator, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.utils.common_utils import parse_cors
-
 
 
 def is_running_in_docker() -> bool:
@@ -57,14 +56,13 @@ class ApiPrefix(BaseSettings):
 
 
 class BaseConfig(BaseSettings):
-
-    #INFO: variable from .env.docker
-    FIRST_RUN_VARIABLE: bool = False
-
     BACKEND_APPS_DIR: Path = _PROJECT_ROOT_DIR / "app"
     API_V1_DIR: Path = BACKEND_APPS_DIR / "api" / "api_v1"
     ENTITIES_DIR: Path = BACKEND_APPS_DIR / "entities"
     ENV_FILE: Path = _ENV_FILE
+
+    SUPERUSER_MAIL: EmailStr
+    SUPERUSER_PASS: str
 
     ENVIRONMENT: Literal["local", "staging", "production"]
     PROJECT_NAME: str
@@ -77,6 +75,7 @@ class BaseConfig(BaseSettings):
 
 
 class SecurityConfig(BaseSettings):
+
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
@@ -119,9 +118,9 @@ class AppSettings(BaseSettings):
 @lru_cache
 def get_settings() -> AppSettings:
     return AppSettings(
-        base=BaseConfig(), # pyright: ignore
-        security=SecurityConfig(), # pyright: ignore
-        database=DatabaseConfig(), # pyright: ignore
+        base=BaseConfig(),  # pyright: ignore
+        security=SecurityConfig(),  # pyright: ignore
+        database=DatabaseConfig(),  # pyright: ignore
         api_prefix=ApiPrefix(),
         logging_config=LoggingConfig(),
     )

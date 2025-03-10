@@ -17,12 +17,10 @@ from app.core.exceptions import (
 
 
 class StudentGroupValidator:
-    def __init__(self, session, **kwargs): 
+    def __init__(self, session, **kwargs):
         self._session = session
         self._request_data = kwargs.get("request_data")
         self._student_group_id: Optional[int] = kwargs.get("_student_group_id")
-
-
 
     async def _check_duplicate_student_group(self):
         stmt = select(StudentGroup).where(
@@ -64,9 +62,7 @@ def validate_student_group_request(func):
 
         async for session in session_manager.get_async_session():
             validator = StudentGroupValidator(
-                session,
-                student_group_id=student_group_id,
-                request_data=request_data
+                session, student_group_id=student_group_id, request_data=request_data
             )
             await validator.validate()
 

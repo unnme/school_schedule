@@ -5,21 +5,19 @@ from fastapi import HTTPException
 from pydantic import Field, field_validator
 
 from app.entities.base import CustomBaseModel
-from app.entities.relations.schemas import (
-    SubjectIDRequest,
-    SubjectIDResponse
-)
+from app.entities.relations.schemas import SubjectIDRequest, SubjectIDResponse
 
 
-#INFO: BASE
+# INFO: BASE
 
 
 class ClassroomBaseSchema(CustomBaseModel):
     name: str = Field(
         ..., min_length=1, max_length=5, description="Название классной комнаты."
     )
-    capacity: Optional[int] = Field(default=None, gt=0, le=50, description="Вместительность классной комнаты.")
-
+    capacity: Optional[int] = Field(
+        default=None, gt=0, le=50, description="Вместительность классной комнаты."
+    )
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
@@ -31,7 +29,7 @@ class ClassroomBaseSchema(CustomBaseModel):
         return value
 
 
-#INFO: REQUEST
+# INFO: REQUEST
 
 
 class ClassroomRequest(ClassroomBaseSchema):
@@ -42,30 +40,26 @@ class ClassroomRequest(ClassroomBaseSchema):
 
     model_config = {
         "json_schema_extra": {
-            "example": {
-                "name": "111",
-                "capacity": None,
-                "subjects": []
-
-            }
+            "example": {"name": "111", "capacity": None, "subjects": []}
         }
     }
 
 
-#INFO: UPDATErequest
+# INFO: UPDATErequest
 
 
 class ClassroomUpdateRequest(ClassroomRequest):
     pass
 
-#INFO: CREATErequest
+
+# INFO: CREATErequest
 
 
 class ClassroomCreateRequest(ClassroomRequest):
     pass
 
 
-#INFO: RESPONSE
+# INFO: RESPONSE
 
 
 class ClassroomResponse(ClassroomBaseSchema):
@@ -77,7 +71,7 @@ class ClassroomIDResponse(CustomBaseModel):
     id: int
 
 
-#INFO: UPDATEresponse
+# INFO: UPDATEresponse
 
 
 class _ClassroomUpdateResponse(ClassroomResponse):
@@ -89,7 +83,7 @@ class ClassroomUpdateResponse(CustomBaseModel):
     data: _ClassroomUpdateResponse
 
 
-#INFO: CREATEresponse
+# INFO: CREATEresponse
 
 
 class _ClassroomCreateResponse(ClassroomResponse):
@@ -101,7 +95,7 @@ class ClassroomCreateResponse(CustomBaseModel):
     data: _ClassroomCreateResponse
 
 
-#INFO: DELETEresponse
+# INFO: DELETEresponse
 
 
 class _ClassroomDeleteResponse(ClassroomBaseSchema):
@@ -111,4 +105,3 @@ class _ClassroomDeleteResponse(ClassroomBaseSchema):
 class ClassroomDeleteResponse(CustomBaseModel):
     message: str
     data: _ClassroomDeleteResponse
-

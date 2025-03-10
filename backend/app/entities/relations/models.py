@@ -54,6 +54,4 @@ class ClassroomSubject(Base):
     classroom: Mapped["Classroom"] = relationship(
         "Classroom", back_populates="subjects"
     )
-    subject: Mapped["Subject"] = relationship(
-        "Subject", back_populates="classrooms"
-    )
+    subject: Mapped["Subject"] = relationship("Subject", back_populates="classrooms")

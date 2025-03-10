@@ -64,7 +64,9 @@ def validate_teacher_request(func):
         teacher_id = bound_args.arguments.get("teacher_id")
 
         async for session in session_manager.get_async_session():
-            validator = TeacherValidator(session, request_data=request_data, teacher_id=teacher_id)
+            validator = TeacherValidator(
+                session, request_data=request_data, teacher_id=teacher_id
+            )
             await validator.validate()
 
         return await func(*args, **kwargs)

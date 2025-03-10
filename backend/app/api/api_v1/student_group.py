@@ -33,9 +33,7 @@ async def create_student_group(
 async def list_student_groups(
     session: AsyncSessionDep, params: PaginationParamsDep
 ) -> Sequence[StudentGroupResponse]:
-    return await StudentGroupManager.list_student_groups(
-        session, params
-    )
+    return await StudentGroupManager.list_student_groups(session, params)
 
 
 @router.put("/{student_group_id}", response_model=StudentGroupUpdateResponse)

@@ -1,4 +1,3 @@
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.classroom.models import Classroom
@@ -8,7 +7,6 @@ from app.entities.classroom.schemas import (
     ClassroomCreateRequest,
     ClassroomUpdateRequest,
 )
-
 
 
 class ClassroomRepository(BaseRepository):
@@ -22,7 +20,7 @@ class ClassroomRepository(BaseRepository):
         session.add(classroom)
         await session.commit()
         await session.refresh(classroom)
-        return classroom 
+        return classroom
 
     async def list_classrooms(
         self, session: AsyncSession, pagination: PaginationParamsDep
@@ -31,10 +29,15 @@ class ClassroomRepository(BaseRepository):
         return classrooms
 
     async def update_classroom(
-        self, session: AsyncSession, classroom_id: int, request_data: ClassroomUpdateRequest
+        self,
+        session: AsyncSession,
+        classroom_id: int,
+        request_data: ClassroomUpdateRequest,
     ) -> Classroom:
-        #TODO: обновлять все остальное!
-        classroom = await self.get_by_id(session, classroom_id, load_strategy="selectin")
+        # TODO: обновлять все остальное!
+        classroom = await self.get_by_id(
+            session, classroom_id, load_strategy="selectin"
+        )
 
         if request_data.name != classroom.name:
             classroom.name = request_data.name
@@ -42,7 +45,9 @@ class ClassroomRepository(BaseRepository):
             await session.refresh(classroom)
         return classroom
 
-    async def delete_classroom(self, session: AsyncSession, classroom_id: int) -> Classroom:
+    async def delete_classroom(
+        self, session: AsyncSession, classroom_id: int
+    ) -> Classroom:
         classroom = await self.get_by_id(session, classroom_id)
         deleted_data = {
             key: value

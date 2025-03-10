@@ -10,8 +10,6 @@ from app.entities.classroom.schemas import (
     ClassroomCreateResponse,
     ClassroomUpdateResponse,
     ClassroomDeleteResponse,
-
-        
 )
 
 
@@ -31,7 +29,7 @@ async def create_classroom(
 @router.get("/", response_model=list[ClassroomResponse])
 async def list_classrooms(session: AsyncSessionDep, params: PaginationParamsDep):
     classrooms = await ClassroomManager.list_classrooms(session, params)
-    return classrooms 
+    return classrooms
 
 
 @router.put("/{classroom_id}", response_model=ClassroomUpdateResponse)
@@ -54,4 +52,3 @@ async def delete_classroom(
     return ClassroomDeleteResponse(
         message="Учитель успешно удален", data=deleted_classroom
     )
-

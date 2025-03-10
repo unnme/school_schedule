@@ -11,14 +11,19 @@ from app.entities.relations.schemas import (
 )
 
 
-#INFO: BASE
+# INFO: BASE
 
 
 class StudentGroupBaseSchema(CustomBaseModel):
     name: str = Field(
         ..., min_length=2, max_length=5, description="Название группы студентов"
     )
-    capacity: Optional[int] = Field(default=None, gt=0, le=50, description="Максимальное количество студентов в группе")
+    capacity: Optional[int] = Field(
+        default=None,
+        gt=0,
+        le=50,
+        description="Максимальное количество студентов в группе",
+    )
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
@@ -30,7 +35,7 @@ class StudentGroupBaseSchema(CustomBaseModel):
         return value
 
 
-#INFO: REQUEST
+# INFO: REQUEST
 
 
 class StudentGroupRequest(StudentGroupBaseSchema):
@@ -63,21 +68,21 @@ class StudentGroupRequest(StudentGroupBaseSchema):
         return value
 
 
-#INFO: UPDATErequest
+# INFO: UPDATErequest
 
 
 class StudentGroupUpdateRequest(StudentGroupRequest):
     pass
 
 
-#INFO: CREATErequest
+# INFO: CREATErequest
 
 
 class StudentGroupCreateRequest(StudentGroupRequest):
     pass
 
 
-#INFO: RESPONSE
+# INFO: RESPONSE
 
 
 class StudentGroupResponse(StudentGroupBaseSchema):
@@ -85,7 +90,7 @@ class StudentGroupResponse(StudentGroupBaseSchema):
     subjects: List[SubjectWithSHoursResponse]
 
 
-#INFO: UPDATEresponse
+# INFO: UPDATEresponse
 
 
 class _StudentGroupUpdateResponse(StudentGroupResponse):
@@ -97,7 +102,7 @@ class StudentGroupUpdateResponse(CustomBaseModel):
     data: _StudentGroupUpdateResponse
 
 
-#INFO: CREATEresponse
+# INFO: CREATEresponse
 
 
 class _StudentGroupCreateResponse(StudentGroupResponse):
@@ -109,7 +114,7 @@ class StudentGroupCreateResponse(CustomBaseModel):
     data: _StudentGroupCreateResponse
 
 
-#INFO: DELETEresponse
+# INFO: DELETEresponse
 
 
 class _StudentGroupDeleteResponse(StudentGroupBaseSchema):

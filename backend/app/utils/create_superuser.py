@@ -1,6 +1,4 @@
-import asyncio
-import contextlib
-from os import getenv
+from contextlib import asynccontextmanager
 
 from app.core.depends import get_user_db
 from app.core.depends import get_user_manager
@@ -8,17 +6,11 @@ from app.core.database import session_manager
 from app.entities.user.schemas import UserCreate
 from app.entities.user.services import UserManager
 from app.entities.user.models import User
+from app.core.config import settings
 
 
-get_users_db_context = contextlib.asynccontextmanager(get_user_db)
-get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
-
-
-default_email = getenv("DEFAULT_EMAIL", "whereisxur@icloud.com")
-default_password = getenv("DEFAULT_PASSWORD", "acorpz")
-default_is_active = True
-default_is_superuser = True
-default_is_verified = True
+get_users_db_context = asynccontextmanager(get_user_db)
+get_user_manager_context = asynccontextmanager(get_user_manager)
 
 
 async def create_user(
@@ -27,24 +19,18 @@ async def create_user(
 ) -> User:
     user = await user_manager.create(
         user_create=user_create,
-        safe=False,
+        safe=False, #NOTE: delfault = False! change this for regular user
     )
     return user
 
 
-async def create_superuser(
-    email: str = default_email,
-    password: str = default_password,
-    is_active: bool = default_is_active,
-    is_superuser: bool = default_is_superuser,
-    is_verified: bool = default_is_verified,
-):
+async def create_superuser():
     user_create = UserCreate(
-        email=email,
-        password=password,
-        is_active=is_active,
-        is_superuser=is_superuser,
-        is_verified=is_verified,
+        email=settings.base.SUPERUSER_MAIL,
+        password=settings.base.SUPERUSER_PASS,
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
     )
     async for session in session_manager.get_async_session():
         async with get_users_db_context(session) as users_db:
@@ -53,7 +39,3 @@ async def create_superuser(
                     user_manager=user_manager,
                     user_create=user_create,
                 )
-
-
-if __name__ == "__main__":
-    asyncio.run(create_superuser())

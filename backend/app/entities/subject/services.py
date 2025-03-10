@@ -35,7 +35,9 @@ class SubjectManager:
     async def update_subject(
         cls, session: AsyncSession, subject_id: int, request_data: SubjectUpdateRequest
     ) -> _SubjectUpdateResponse:
-        subject = await subject_repository.update_subject(session, subject_id, request_data)
+        subject = await subject_repository.update_subject(
+            session, subject_id, request_data
+        )
         return _SubjectUpdateResponse.model_validate(subject)
 
     @classmethod

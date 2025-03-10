@@ -12,7 +12,7 @@ from app.entities.relations.schemas import (
 )
 
 
-#INFO: BASE
+# INFO: BASE
 
 
 class SubjectBaseSchema(CustomBaseModel):
@@ -31,38 +31,33 @@ class SubjectBaseSchema(CustomBaseModel):
         ):
             raise HTTPException(
                 status_code=400,
-                detail=f"Название предмета '{value}' содержит недопустимые символы или имеет неправильный формат."
+                detail=f"Название предмета '{value}' содержит недопустимые символы или имеет неправильный формат.",
             )
         return value
 
 
-#INFO: REQUEST
+# INFO: REQUEST
 
 
 class SubjectRequest(SubjectBaseSchema):
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "name": "Биология"
-            }
-        }
-    }
+    model_config = {"json_schema_extra": {"example": {"name": "Биология"}}}
 
-#INFO: CREATErequest
+
+# INFO: CREATErequest
 
 
 class SubjectCreateRequest(SubjectRequest):
     pass
 
 
-#INFO: UPDATErequest
+# INFO: UPDATErequest
 
 
 class SubjectUpdateRequest(SubjectRequest):
     pass
 
 
-#INFO: RESPONSE
+# INFO: RESPONSE
 
 
 class SubjectResponse(SubjectBaseSchema):
@@ -72,7 +67,7 @@ class SubjectResponse(SubjectBaseSchema):
     classrooms: List[ClassroomIDResponse]
 
 
-#INFO: CREATEresponse
+# INFO: CREATEresponse
 
 
 class _SubjectCreateResponse(SubjectBaseSchema):
@@ -84,7 +79,7 @@ class SubjectCreateResponse(CustomBaseModel):
     data: _SubjectCreateResponse
 
 
-#INFO: UPDATEresponse
+# INFO: UPDATEresponse
 
 
 class _SubjectUpdateResponse(SubjectResponse):
@@ -96,7 +91,7 @@ class SubjectUpdateResponse(CustomBaseModel):
     data: _SubjectUpdateResponse
 
 
-#INFO: DELETEresponse
+# INFO: DELETEresponse
 
 
 class _SubjectDeleteResponse(SubjectBaseSchema):

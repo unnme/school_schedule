@@ -10,11 +10,11 @@ from app.entities.classroom.schemas import (
     ClassroomUpdateRequest,
     ClassroomResponse,
 )
-from .repository import classroom_repository 
+from .repository import classroom_repository
 
 
 class ClassroomManager:
-    @classmethod #TODO: @validate_classroom_request
+    @classmethod  # TODO: @validate_classroom_request
     async def create_classroom(
         cls, session: AsyncSession, request_data: ClassroomCreateRequest
     ) -> _ClassroomCreateResponse:
@@ -28,12 +28,16 @@ class ClassroomManager:
         subjects = await classroom_repository.list_classrooms(session, pagination)
         return subjects
 
-
-    @classmethod #TODO: @validate_classroom_request
+    @classmethod  # TODO: @validate_classroom_request
     async def update_classroom(
-        cls, session: AsyncSession, classroom_id: int, request_data: ClassroomUpdateRequest
+        cls,
+        session: AsyncSession,
+        classroom_id: int,
+        request_data: ClassroomUpdateRequest,
     ) -> _ClassroomUpdateResponse:
-        subject = await classroom_repository.update_classroom(session, classroom_id, request_data)
+        subject = await classroom_repository.update_classroom(
+            session, classroom_id, request_data
+        )
         return _ClassroomUpdateResponse.model_validate(subject)
 
     @classmethod
@@ -42,4 +46,3 @@ class ClassroomManager:
     ) -> _ClassroomDeleteResponse:
         subject = await classroom_repository.delete_classroom(session, classroom_id)
         return _ClassroomDeleteResponse.model_validate(subject)
-
