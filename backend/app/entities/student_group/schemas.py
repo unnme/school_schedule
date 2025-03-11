@@ -47,7 +47,7 @@ class StudentGroupRequest(StudentGroupBaseSchema):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "name": "11B",
+                "name": "11Г",
                 "subjects": [
                     {"id": 1, "study_hours": 22},
                     {"id": 4, "study_hours": 13},

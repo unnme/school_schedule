@@ -21,10 +21,10 @@ class ClassroomBaseSchema(CustomBaseModel):
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
-        if not re.match(r"^(?:[1-9][0-9]{0,2}|1000)(?:-[А-Я])?$", value):
+        if not re.match(r"^(?:[1-9][0-9]{0,2}|1000)(?:-[а-я])?$", value):
             raise HTTPException(
                 status_code=400,
-                detail="Название классной комнаты должно состоять из цифры (1-1000) или из цифры и заглавной буквы через тире.",
+                detail="Название классной комнаты должно состоять из цифры (1-1000) или из цифры и строчной буквы через тире.",
             )
         return value
 
@@ -40,7 +40,7 @@ class ClassroomRequest(ClassroomBaseSchema):
 
     model_config = {
         "json_schema_extra": {
-            "example": {"name": "111", "capacity": None, "subjects": []}
+            "example": {"name": "111-а", "capacity": None, "subjects": []}
         }
     }
 

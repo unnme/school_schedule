@@ -31,7 +31,7 @@ class StudentGroupValidator:
             stmt = stmt.where(StudentGroup.id != self._student_group_id)
 
         if existing_student_group := await self._session.scalar(stmt):
-            raise DuplicateStudentGroupException(existing_student_group)
+            raise DuplicateStudentGroupException(existing_student_group.name)
 
     async def _check_student_group_subjects_validity(self):
         user_ids = [subj.id for subj in self._request_data.subjects]
