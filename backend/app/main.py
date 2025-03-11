@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from rich.console import Console
 
 from app.core.config import settings
 from app.utils.router_manager import import_routers
@@ -25,6 +26,17 @@ app = FastAPI(
     lifespan=lifespan,
     default_response_class=ORJSONResponse,
 )
+
+console = Console()
+
+@app.exception_handler(Exception)
+async def exception_handler(request: Request, exc: Exception):
+    console.print_exception(show_locals=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Что-то пошло не так!", "error": str(exc)},
+    )
+
 
 app.add_middleware(
     CORSMiddleware,

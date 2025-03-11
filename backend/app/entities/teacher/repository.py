@@ -41,21 +41,20 @@ class TeacherRepository(BaseRepository):
     async def update_teacher(
         self, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
-        async with session.begin():
-            teacher = await self.get_by_id(
-                session, teacher_id, load_strategy="selectin"
-            )
+        teacher = await self.get_by_id(
+            session, teacher_id, load_strategy="selectin"
+        )
 
-            teacher.is_active = request_data.is_active
+        teacher.is_active = request_data.is_active
 
-            update_data = request_data.model_dump(
-                include={"first_name", "last_name", "patronymic"}
-            )
-            for field, value in update_data.items():
-                setattr(teacher, field, value)
+        update_data = request_data.model_dump(
+            include={"first_name", "last_name", "patronymic"}
+        )
+        for field, value in update_data.items():
+            setattr(teacher, field, value)
 
-            await self._update_teacher_subjects(session, request_data, teacher)
-            await session.refresh(teacher)
+        await self._update_teacher_subjects(session, request_data, teacher)
+        await session.refresh(teacher)
 
         return teacher
 
@@ -73,7 +72,7 @@ class TeacherRepository(BaseRepository):
     async def _update_teacher_subjects(
         self,
         session: AsyncSession,
-        request_data: TeacherUpdateRequest | TeacherCreateRequest,
+        request_data: TeacherCreateRequest | TeacherUpdateRequest,
         teacher: Teacher,
     ) -> None:
         if isinstance(request_data, TeacherCreateRequest):

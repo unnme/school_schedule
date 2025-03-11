@@ -39,32 +39,31 @@ class StudentGroupRepository(BaseRepository):
         )
         return student_groups
 
-    async def update_sutdent_group(
+    async def update_student_group(
         self,
         session: AsyncSession,
         student_group_id: int,
         request_data: StudentGroupUpdateRequest,
     ) -> StudentGroup:
-        async with session.begin():
-            student_group = await self.get_by_id(
-                session, student_group_id, load_strategy="selectin"
-            )
+        student_group = await self.get_by_id(
+            session, student_group_id, load_strategy="selectin"
+        )
 
-            update_data = request_data.model_dump(include={"name"})
-            for field, value in update_data.items():
-                setattr(student_group, field, value)
+        update_data = request_data.model_dump(include={"name"})
+        for field, value in update_data.items():
+            setattr(student_group, field, value)
 
-            await self._update_student_group_subjects(
-                session, request_data, student_group
-            )
-            await session.refresh(student_group)
+        await self._update_student_group_subjects(
+            session, request_data, student_group
+        )
+        await session.refresh(student_group)
 
         return student_group
 
     async def delete_student_group(
         self, session: AsyncSession, student_group_id: int
     ) -> StudentGroup:
-        student_group = self.get_by_id(session, student_group_id)
+        student_group = await self.get_by_id(session, student_group_id)
         deleted_data = {
             key: value
             for key, value in student_group.__dict__.items()

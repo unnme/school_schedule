@@ -40,7 +40,7 @@ class StudentGroupManager:
         request_data: StudentGroupUpdateRequest,
     ) -> _StudentGroupUpdateResponse:
         async with session.begin():
-            student_group = await student_group_repository.update_sutdent_group(
+            student_group = await student_group_repository.update_student_group(
                 session, student_group_id, request_data
             )
             return _StudentGroupUpdateResponse.model_validate(student_group)

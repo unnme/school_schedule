@@ -60,7 +60,7 @@ class DatabaseManager:
 
 
 async def first_run() -> None:
-    await DatabaseManager._drop_all_tables()  # WARN: REMOVE THIS!
+    # await DatabaseManager._drop_all_tables()  # WARN: REMOVE THIS!
 
     if not await DatabaseManager.check_db_tables():
         logger.info("🌟 Starting first run setup...")
