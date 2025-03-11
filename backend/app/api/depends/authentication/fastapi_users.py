@@ -2,7 +2,7 @@ import uuid
 
 from fastapi_users import FastAPIUsers
 
-from app.entities.auth.models import User
+from app.entities._auth.models import User
 from app.api.depends.authentication.user_manager import get_user_manager
 from app.api.depends.authentication.backend import auth_backend
 

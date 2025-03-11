@@ -27,7 +27,8 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-console = Console()
+console = Console(force_terminal=True)
+
 
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exc: Exception):

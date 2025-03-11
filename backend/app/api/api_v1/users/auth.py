@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.entities.auth.schemas import UserRead, UserCreate
+from app.entities._auth.schemas import UserRead, UserCreate
 from app.api.depends.authentication.fastapi_users import auth_backend, fastapi_users
 from app.core.config import settings
 

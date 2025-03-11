@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter
 from fastapi import Depends
 
-from app.entities.auth.models import User
-from app.entities.auth.schemas import UserRead
+from app.entities._auth.models import User
+from app.entities._auth.schemas import UserRead
 from app.core.config import settings
 from app.api.depends.authentication.fastapi_users import current_active_superuser
 

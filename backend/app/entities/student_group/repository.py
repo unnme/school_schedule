@@ -53,9 +53,7 @@ class StudentGroupRepository(BaseRepository):
         for field, value in update_data.items():
             setattr(student_group, field, value)
 
-        await self._update_student_group_subjects(
-            session, request_data, student_group
-        )
+        await self._update_student_group_subjects(session, request_data, student_group)
         await session.refresh(student_group)
 
         return student_group

@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 from app.api.depends.authentication.user_manager import get_user_manager
 from app.api.depends.authentication.users import get_user_db
 from app.core.database import session_manager
-from app.entities.auth.schemas import UserCreate
-from app.entities.auth.services import UserManager
-from app.entities.auth.models import User
+from app.entities._auth.schemas import UserCreate
+from app.entities._auth.services import UserManager
+from app.entities._auth.models import User
 from app.core.config import settings
 
 

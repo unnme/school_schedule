@@ -41,9 +41,7 @@ class TeacherRepository(BaseRepository):
     async def update_teacher(
         self, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
-        teacher = await self.get_by_id(
-            session, teacher_id, load_strategy="selectin"
-        )
+        teacher = await self.get_by_id(session, teacher_id, load_strategy="selectin")
 
         teacher.is_active = request_data.is_active
 
