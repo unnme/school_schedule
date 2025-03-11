@@ -43,5 +43,5 @@ class TeacherManager:
     async def delete_teacher(
         cls, session: AsyncSession, teacher_id: int
     ) -> _TeacherDeleteResponse:
-        teacher = teacher_repository.delete_teacher(session, teacher_id)
+        teacher = await teacher_repository.delete_teacher(session, teacher_id)
         return _TeacherDeleteResponse.model_validate(teacher)

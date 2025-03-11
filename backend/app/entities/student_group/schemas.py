@@ -48,6 +48,7 @@ class StudentGroupRequest(StudentGroupBaseSchema):
         "json_schema_extra": {
             "example": {
                 "name": "11Г",
+                "capacity": 33,
                 "subjects": [
                     {"id": 1, "study_hours": 22},
                     {"id": 4, "study_hours": 13},

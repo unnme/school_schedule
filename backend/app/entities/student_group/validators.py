@@ -10,7 +10,7 @@ from app.entities.subject.models import Subject
 from app.entities.student_group.models import StudentGroup
 from app.core.exceptions import (
     DuplicateStudentGroupException,
-    DuplicateSubjectIDSException,
+    DuplicateSubjectIDException,
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
@@ -37,7 +37,7 @@ class StudentGroupValidator:
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
-            raise DuplicateSubjectIDSException(*duplicates)
+            raise DuplicateSubjectIDException(*duplicates)
 
         stmt = select(Subject.id).where(Subject.id.in_(user_ids))
         db_subject_ids = await self._session.scalars(stmt)

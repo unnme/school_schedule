@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from app.core.database import session_manager
 from app.core.exceptions import (
-    DuplicateSubjectIDSException,
+    DuplicateSubjectIDException,
     DuplicateTeacherException,
     InvalidSubjectIDException,
     RequestDataMissingException,
@@ -40,7 +40,7 @@ class TeacherValidator:
         user_ids = [subj.id for subj in self._request_data.subjects]
         duplicates = [item for item, count in Counter(user_ids).items() if count > 1]
         if duplicates:
-            raise DuplicateSubjectIDSException(*duplicates)
+            raise DuplicateSubjectIDException(*duplicates)
 
         stmt = select(Subject.id).where(Subject.id.in_(user_ids))
         db_subject_ids = await self._session.scalars(stmt)

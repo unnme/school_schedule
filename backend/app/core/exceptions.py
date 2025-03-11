@@ -38,11 +38,11 @@ class NotFoundException(BaseAPIException):
         )
 
 
-class DuplicateSubjectIDSException(BaseAPIException):
-    def __init__(self, duplicated_ids: list[int]):
+class DuplicateSubjectIDException(BaseAPIException):
+    def __init__(self, *duplicated_ids):
         super().__init__(
             status_code=400,
-            detail=f"Обнаружены дублирующиеся идентификаторы: {duplicated_ids}",
+            detail=f"Обнаружены дублирующиеся идентификаторы предметов: {duplicated_ids}",
         )
 
 
@@ -54,7 +54,7 @@ class DuplicateTeacherException(BaseAPIException):
 
 
 class InvalidSubjectIDException(BaseAPIException):
-    def __init__(self, missing_ids: list[int]):
+    def __init__(self, *missing_ids):
         super().__init__(
             status_code=400,
             detail=f"Обнаружены неверные идентификаторы предметов: {missing_ids}",
