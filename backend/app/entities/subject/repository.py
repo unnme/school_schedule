@@ -1,12 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.subject.models import Subject
 from app.entities.base import BaseRepository
+from app.entities.subject.models import Subject
+from app.entities.subject.schemas import SubjectCreateRequest, SubjectUpdateRequest
 from app.utils.pagination import PaginationParamsDep
-from app.entities.subject.schemas import (
-    SubjectCreateRequest,
-    SubjectUpdateRequest,
-)
 
 
 class SubjectRepository(BaseRepository):

@@ -1,4 +1,5 @@
 import logging
+
 from rich import pretty
 from rich.logging import RichHandler
 

@@ -1,16 +1,18 @@
 from typing import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.pagination import PaginationParamsDep
-from app.entities.teacher.validators import validate_teacher_request
 from app.entities.teacher.schemas import (
-    _TeacherDeleteResponse,
     TeacherCreateRequest,
-    _TeacherCreateResponse,
     TeacherResponse,
     TeacherUpdateRequest,
+    _TeacherCreateResponse,
+    _TeacherDeleteResponse,
     _TeacherUpdateResponse,
 )
+from app.entities.teacher.validators import validate_teacher_request
+from app.utils.pagination import PaginationParamsDep
+
 from .repository import teacher_repository
 
 

@@ -11,7 +11,6 @@ from app.entities.relations.schemas import (
     TeacherWithHoursResponse,
 )
 
-
 # INFO: BASE
 
 

@@ -1,15 +1,17 @@
 from typing import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.pagination import PaginationParamsDep
 from app.entities.classroom.schemas import (
-    _ClassroomCreateResponse,
-    _ClassroomUpdateResponse,
-    _ClassroomDeleteResponse,
     ClassroomCreateRequest,
-    ClassroomUpdateRequest,
     ClassroomResponse,
+    ClassroomUpdateRequest,
+    _ClassroomCreateResponse,
+    _ClassroomDeleteResponse,
+    _ClassroomUpdateResponse,
 )
+from app.utils.pagination import PaginationParamsDep
+
 from .repository import classroom_repository
 
 

@@ -1,7 +1,7 @@
 from functools import cached_property
 from pathlib import Path
-from urllib.parse import quote
 from typing import Annotated, Literal
+from urllib.parse import quote
 
 from pydantic import AnyUrl, BeforeValidator, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict

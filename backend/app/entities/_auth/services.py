@@ -5,6 +5,7 @@ from fastapi import Request
 from fastapi_users import BaseUserManager, UUIDIDMixin
 
 from app.core.config import settings
+
 from .models import User
 
 SECRET = settings.security.SECRET_KEY

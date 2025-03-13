@@ -1,4 +1,4 @@
-from sqlalchemy import delete, insert, update, case
+from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.base import BaseRepository

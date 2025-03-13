@@ -1,17 +1,16 @@
 from fastapi import APIRouter
 
 from app.core.depends import AsyncSessionDep
-from app.utils.pagination import PaginationParamsDep
-from app.entities.classroom.services import ClassroomManager
 from app.entities.classroom.schemas import (
-    ClassroomUpdateRequest,
     ClassroomCreateRequest,
-    ClassroomResponse,
     ClassroomCreateResponse,
-    ClassroomUpdateResponse,
     ClassroomDeleteResponse,
+    ClassroomResponse,
+    ClassroomUpdateRequest,
+    ClassroomUpdateResponse,
 )
-
+from app.entities.classroom.services import ClassroomManager
+from app.utils.pagination import PaginationParamsDep
 
 router = APIRouter(prefix="/classrooms", tags=["Учебные классы"])
 

@@ -7,7 +7,6 @@ from pydantic import Field, field_validator
 from app.entities.base import CustomBaseModel
 from app.entities.relations.schemas import SubjectIDRequest, SubjectIDResponse
 
-
 # INFO: BASE
 
 

@@ -1,5 +1,6 @@
 from functools import wraps
 from typing import Optional
+
 from sqlalchemy import select
 
 from app.core.database import session_manager
@@ -7,8 +8,8 @@ from app.core.exceptions import (
     DuplicateSubjectNameException,
     RequestDataMissingException,
 )
-from app.utils.common_utils import func_inspect
 from app.entities.subject.models import Subject
+from app.utils.common_utils import func_inspect
 
 
 class SubjectValidator:

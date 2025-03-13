@@ -12,9 +12,9 @@ from app.core.exceptions import (
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
-from app.utils.common_utils import func_inspect
 from app.entities.subject.models import Subject
 from app.entities.teacher.models import Teacher
+from app.utils.common_utils import func_inspect
 
 
 class TeacherValidator:

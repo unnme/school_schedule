@@ -1,9 +1,8 @@
 from typing import Sequence
+
 from fastapi import APIRouter
 
-from app.utils.pagination import PaginationParamsDep
 from app.core.depends import AsyncSessionDep
-from app.entities.subject.services import SubjectManager
 from app.entities.subject.schemas import (
     SubjectCreateRequest,
     SubjectCreateResponse,
@@ -12,7 +11,8 @@ from app.entities.subject.schemas import (
     SubjectUpdateRequest,
     SubjectUpdateResponse,
 )
-
+from app.entities.subject.services import SubjectManager
+from app.utils.pagination import PaginationParamsDep
 
 router = APIRouter(prefix="/subjects", tags=["Учебные дисциплины"])
 

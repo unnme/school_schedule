@@ -1,15 +1,16 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.entities.base import Base
 
-
 if TYPE_CHECKING:
-    from app.entities.relations.models import TeacherSubject
-    from app.entities.relations.models import StudentGroupSubject
-    from app.entities.relations.models import ClassroomSubject
+    from app.entities.relations.models import (
+        ClassroomSubject,
+        StudentGroupSubject,
+        TeacherSubject,
+    )
 
 
 class Subject(Base):

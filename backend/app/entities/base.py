@@ -1,8 +1,8 @@
 from typing import Any, Optional, Sequence, Type
 
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import MetaData, Select, inspect, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     DeclarativeBase,
     declared_attr,
@@ -12,12 +12,11 @@ from sqlalchemy.orm import (
     subqueryload,
 )
 
-from app.utils.pagination import PaginationParamsDep
+from app.core.config import settings
 from app.core.exceptions import InvalidLoadStrategyException, NotFoundException
 from app.core.logging_config import get_logger
-from app.core.config import settings
 from app.utils.case_converter import camel_case_to_snake_case
-
+from app.utils.pagination import PaginationParamsDep
 
 logger = get_logger(__name__)
 

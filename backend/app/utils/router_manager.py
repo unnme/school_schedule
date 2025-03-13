@@ -1,6 +1,6 @@
-from importlib import import_module
-import pkgutil
 import pathlib
+import pkgutil
+from importlib import import_module
 
 from fastapi import FastAPI
 

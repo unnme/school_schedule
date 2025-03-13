@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.entities.classroom.models import Classroom
 from app.entities.base import BaseRepository
-from app.utils.pagination import PaginationParamsDep
+from app.entities.classroom.models import Classroom
 from app.entities.classroom.schemas import (
     ClassroomCreateRequest,
     ClassroomUpdateRequest,
 )
+from app.utils.pagination import PaginationParamsDep
 
 
 class ClassroomRepository(BaseRepository):

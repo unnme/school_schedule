@@ -1,13 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter, Depends
 
+from app.api.depends.authentication.fastapi_users import current_active_superuser
+from app.core.config import settings
 from app.entities._auth.models import User
 from app.entities._auth.schemas import UserRead
-from app.core.config import settings
-from app.api.depends.authentication.fastapi_users import current_active_superuser
-
 
 router = APIRouter(
     prefix=settings.api_config.messages,

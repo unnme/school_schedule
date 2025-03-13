@@ -1,9 +1,8 @@
 from typing import Sequence
+
 from fastapi import APIRouter
 
 from app.core.depends import AsyncSessionDep
-from app.utils.pagination import PaginationParamsDep
-from app.entities.student_group.services import StudentGroupManager
 from app.entities.student_group.schemas import (
     StudentGroupCreateRequest,
     StudentGroupCreateResponse,
@@ -12,7 +11,8 @@ from app.entities.student_group.schemas import (
     StudentGroupUpdateRequest,
     StudentGroupUpdateResponse,
 )
-
+from app.entities.student_group.services import StudentGroupManager
+from app.utils.pagination import PaginationParamsDep
 
 router = APIRouter(prefix="/student_groups", tags=["Ученические группы"])
 

@@ -1,5 +1,4 @@
 from fastapi import Depends
-
 from fastapi_users.authentication.strategy.db import (
     AccessTokenDatabase,
     DatabaseStrategy,

@@ -1,5 +1,6 @@
 import re
 from typing import List
+
 from fastapi import HTTPException
 from pydantic import Field, field_validator
 
@@ -8,7 +9,6 @@ from app.entities.relations.schemas import (
     SubjectWithTHoursRequest,
     SubjectWithTHoursResponse,
 )
-
 
 # INFO: BASE
 

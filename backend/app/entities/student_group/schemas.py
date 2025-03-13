@@ -10,7 +10,6 @@ from app.entities.relations.schemas import (
     SubjectWithSHoursResponse,
 )
 
-
 # INFO: BASE
 
 

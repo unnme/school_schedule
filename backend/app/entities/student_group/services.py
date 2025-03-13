@@ -1,16 +1,18 @@
 from typing import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.pagination import PaginationParamsDep
-from app.entities.student_group.validators import validate_student_group_request
 from app.entities.student_group.schemas import (
     StudentGroupCreateRequest,
     StudentGroupResponse,
     StudentGroupUpdateRequest,
     _StudentGroupCreateResponse,
-    _StudentGroupUpdateResponse,
     _StudentGroupDeleteResponse,
+    _StudentGroupUpdateResponse,
 )
+from app.entities.student_group.validators import validate_student_group_request
+from app.utils.pagination import PaginationParamsDep
+
 from .repository import student_group_repository
 
 

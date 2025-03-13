@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 
-from app.entities.teacher.services import TeacherManager
 from app.core.depends import AsyncSessionDep
-from app.utils.pagination import PaginationParamsDep
 from app.entities.teacher.schemas import (
     TeacherCreateRequest,
     TeacherCreateResponse,
@@ -11,7 +9,8 @@ from app.entities.teacher.schemas import (
     TeacherUpdateRequest,
     TeacherUpdateResponse,
 )
-
+from app.entities.teacher.services import TeacherManager
+from app.utils.pagination import PaginationParamsDep
 
 router = APIRouter(prefix="/teachers", tags=["Учителя"])
 

@@ -1,6 +1,6 @@
-from typing import Optional, Annotated
+from typing import Annotated, Optional
 
-from fastapi import Query, Depends
+from fastapi import Depends, Query
 from pydantic.dataclasses import dataclass
 
 

@@ -1,14 +1,11 @@
+from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, delete, update, case
 
-from app.utils.pagination import PaginationParamsDep
-from app.entities.teacher.schemas import (
-    TeacherCreateRequest,
-    TeacherUpdateRequest,
-)
-from app.entities.teacher.models import Teacher
-from app.entities.relations.models import TeacherSubject
 from app.entities.base import BaseRepository
+from app.entities.relations.models import TeacherSubject
+from app.entities.teacher.models import Teacher
+from app.entities.teacher.schemas import TeacherCreateRequest, TeacherUpdateRequest
+from app.utils.pagination import PaginationParamsDep
 
 
 class TeacherRepository(BaseRepository):

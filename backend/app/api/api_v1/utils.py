@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 
-from app.core.logging_config import get_logger
 from app.core.exceptions import DatabaseConnectionError
+from app.core.logging_config import get_logger
 from app.utils.db_utils import DatabaseManager
-
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/utils", tags=["utils"])

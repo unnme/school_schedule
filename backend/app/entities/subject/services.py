@@ -1,16 +1,18 @@
 from typing import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.pagination import PaginationParamsDep
-from app.entities.subject.validators import validate_subject_request
 from app.entities.subject.schemas import (
     SubjectCreateRequest,
     SubjectResponse,
     SubjectUpdateRequest,
     _SubjectCreateResponse,
-    _SubjectUpdateResponse,
     _SubjectDeleteResponse,
+    _SubjectUpdateResponse,
 )
+from app.entities.subject.validators import validate_subject_request
+from app.utils.pagination import PaginationParamsDep
+
 from .repository import subject_repository
 
 

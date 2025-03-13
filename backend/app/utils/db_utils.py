@@ -2,11 +2,10 @@ import asyncio
 
 from sqlalchemy import inspect, text
 
-from app.utils.create_superuser import create_superuser
 from app.core.database import session_manager
 from app.core.logging_config import get_logger
 from app.entities.base import Base
-
+from app.utils.create_superuser import create_superuser
 
 logger = get_logger(__name__)
 

@@ -1,6 +1,6 @@
+from inspect import BoundArguments, signature
 from pathlib import Path
 from typing import Any
-from inspect import BoundArguments, signature
 
 from fastapi import HTTPException
 from pydantic import AnyUrl

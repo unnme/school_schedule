@@ -1,6 +1,6 @@
 from fastapi import Depends
-from app.api.depends.authentication.users import get_user_db
 
+from app.api.depends.authentication.users import get_user_db
 from app.entities._auth.services import UserManager
 
 
