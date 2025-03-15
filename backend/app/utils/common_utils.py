@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from pydantic import AnyUrl
 
 
-def func_inspect(func, *args, **kwargs) -> BoundArguments:
+def get_bound_arguments(func, *args, **kwargs) -> BoundArguments:
     sig = signature(func)
     bound_args = sig.bind(*args, **kwargs)
     bound_args.apply_defaults()

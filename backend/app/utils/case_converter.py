@@ -29,6 +29,20 @@ def camel_case_to_snake_case(input_str: str) -> str:
     return "".join(chars)
 
 
+def snake_case_to_camel_case(input_str: str) -> str:
+    """
+    >>> snake_case_to_camel_case("some_sdk")
+    'someSdk'
+    >>> snake_case_to_camel_case("r_servo_drive")
+    'rServoDrive'
+    >>> snake_case_to_camel_case("sdk_demo")
+    'sdkDemo'
+    """
+    parts = input_str.split("_")
+    # Первое слово в нижнем регистре, остальные начинаются с заглавной буквы
+    return parts[0] + ''.join(word.capitalize() for word in parts[1:])
+
+
 def method_name_to_snake_case(input_str: str) -> str:
     """
     >>> method_name_to_snake_case("Check_InitSDK")

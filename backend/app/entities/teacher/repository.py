@@ -1,10 +1,11 @@
+from typing import Optional
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.base import BaseRepository
 from app.entities.relations.models import TeacherSubject
 from app.entities.teacher.models import Teacher
-from app.entities.teacher.schemas import TeacherCreateRequest, TeacherUpdateRequest
+from app.entities.teacher.schemas import TeacherCreateRequest, TeacherRequest, TeacherUpdateRequest
 from app.utils.pagination import PaginationParamsDep
 
 
@@ -16,11 +17,7 @@ class TeacherRepository(BaseRepository):
         self, session: AsyncSession, request_data: TeacherCreateRequest
     ) -> Teacher:
         async with session.begin():
-            teacher = Teacher(
-                **request_data.model_dump(
-                    include={"last_name", "first_name", "patronymic"}
-                )
-            )
+            teacher: Teacher = await self._set_name(request_data)
             session.add(teacher)
             await session.flush()
             await self._update_teacher_subjects(session, request_data, teacher)
@@ -38,20 +35,16 @@ class TeacherRepository(BaseRepository):
     async def update_teacher(
         self, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
-        teacher = await self.get_by_id(session, teacher_id, load_strategy="selectin")
+        async with session.begin():
+            teacher = await self.get_by_id(session, teacher_id, load_strategy="selectin")
 
-        teacher.is_active = request_data.is_active
+            await self._set_name(request_data, teacher)
+            await self._set_active_flag(request_data, teacher)
 
-        update_data = request_data.model_dump(
-            include={"first_name", "last_name", "patronymic"}
-        )
-        for field, value in update_data.items():
-            setattr(teacher, field, value)
+            await self._update_teacher_subjects(session, request_data, teacher)
+            await session.refresh(teacher)
 
-        await self._update_teacher_subjects(session, request_data, teacher)
-        await session.refresh(teacher)
-
-        return teacher
+            return teacher
 
     async def delete_teacher(self, session: AsyncSession, teacher_id: int) -> Teacher:
         teacher = await self.get_by_id(session, teacher_id)
@@ -63,6 +56,28 @@ class TeacherRepository(BaseRepository):
         await session.delete(teacher)
         await session.commit()
         return Teacher(**deleted_data)
+
+    async def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher]=None) -> Teacher:
+
+        if teacher is None:
+            teacher = Teacher(
+                **request_data.model_dump(
+                    include={"last_name", "first_name", "patronymic"}
+                )
+            )
+        else:
+            full_name = request_data.model_dump(
+            include={"first_name", "last_name", "patronymic"}
+            )
+            for field, value in full_name.items():
+                setattr(teacher, field, value)
+
+        return teacher
+
+
+    async def _set_active_flag(self, request_data, teacher) -> None:
+        teacher.is_active = request_data.is_active
+
 
     async def _update_teacher_subjects(
         self,
@@ -84,24 +99,23 @@ class TeacherRepository(BaseRepository):
             await session.flush()
 
         elif isinstance(request_data, TeacherUpdateRequest):
-            request_subj_and_hours = {
+            request_subj_and_hours: dict = {
                 subj.id: subj.teaching_hours for subj in request_data.subjects
             }
-            existing_subjects_hours = {
+            existing_subjects_hours: dict = {
                 subj.subject_id: subj.teaching_hours for subj in teacher.subjects
             }
 
-            subjects_to_remove = (
+            subjects_to_remove: set = (
                 existing_subjects_hours.keys() - request_subj_and_hours.keys()
             )
-            subjects_to_add = (
+            subjects_to_add: set = (
                 request_subj_and_hours.keys() - existing_subjects_hours.keys()
             )
-            subjects_to_update = {
-                _id
-                for _id in request_subj_and_hours.keys()
-                & existing_subjects_hours.keys()
-                if request_subj_and_hours[_id] != existing_subjects_hours[_id]
+
+            subjects_to_update: set = {
+                id for id in request_subj_and_hours.keys() & existing_subjects_hours.keys()
+                if request_subj_and_hours[id] != existing_subjects_hours[id]
             }
 
             if subjects_to_remove:
@@ -145,6 +159,3 @@ class TeacherRepository(BaseRepository):
                 await session.execute(insert(TeacherSubject).values(new_associations))
 
             await session.flush()
-
-
-teacher_repository = TeacherRepository()

@@ -16,7 +16,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 
 FROM builder AS prestart
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 CMD ["bash", "app/scripts/prestart.sh"]
 
 
@@ -29,3 +28,6 @@ COPY --from=builder --chown=app:app /app /app
 
 
 ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+

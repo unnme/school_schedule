@@ -57,6 +57,3 @@ class ClassroomRepository(BaseRepository):
         await session.delete(classroom)
         await session.commit()
         return Classroom(**deleted_data)
-
-
-classroom_repository = ClassroomRepository()

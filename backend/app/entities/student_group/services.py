@@ -13,7 +13,7 @@ from app.entities.student_group.schemas import (
 from app.entities.student_group.validators import validate_student_group_request
 from app.utils.pagination import PaginationParamsDep
 
-from .repository import student_group_repository
+from app.api.depends.repository import student_group_repository
 
 
 class StudentGroupManager:

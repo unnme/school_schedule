@@ -12,8 +12,7 @@ from app.entities.teacher.schemas import (
 )
 from app.entities.teacher.validators import validate_teacher_request
 from app.utils.pagination import PaginationParamsDep
-
-from .repository import teacher_repository
+from app.api.depends.repository import teacher_repository
 
 
 class TeacherManager:

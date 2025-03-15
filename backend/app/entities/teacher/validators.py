@@ -1,7 +1,6 @@
 from collections import Counter
 from functools import wraps
 from inspect import BoundArguments
-from typing import Optional
 
 from sqlalchemy import select
 
@@ -14,7 +13,7 @@ from app.core.exceptions import (
 )
 from app.entities.subject.models import Subject
 from app.entities.teacher.models import Teacher
-from app.utils.common_utils import func_inspect
+from app.utils.common_utils import get_bound_arguments
 
 
 class TeacherValidator:
@@ -56,7 +55,7 @@ class TeacherValidator:
 def validate_teacher_request(func):
     @wraps(func)
     async def inner(*args, **kwargs):
-        bound_args: BoundArguments = func_inspect(func, *args, **kwargs)
+        bound_args: BoundArguments = get_bound_arguments(func, *args, **kwargs)
 
         if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()

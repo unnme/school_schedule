@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -14,9 +14,11 @@ class ClassroomBaseSchema(CustomBaseModel):
     name: str = Field(
         ..., min_length=1, max_length=5, description="Название классной комнаты."
     )
-    capacity: Optional[int] = Field(
-        default=None, gt=0, le=50, description="Вместительность классной комнаты."
-    )
+    capacity: Annotated[Optional[int], Field(
+        gt=0,
+        le=50,
+        description="Вместимость (чел.) классной комнаты",
+    )] = None
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:

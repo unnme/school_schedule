@@ -13,7 +13,7 @@ from app.entities.subject.schemas import (
 from app.entities.subject.validators import validate_subject_request
 from app.utils.pagination import PaginationParamsDep
 
-from .repository import subject_repository
+from app.api.depends.repository import subject_repository
 
 
 class SubjectManager:

@@ -13,7 +13,7 @@ from app.core.exceptions import (
 )
 from app.entities.student_group.models import StudentGroup
 from app.entities.subject.models import Subject
-from app.utils.common_utils import func_inspect
+from app.utils.common_utils import get_bound_arguments
 
 
 class StudentGroupValidator:
@@ -53,7 +53,7 @@ class StudentGroupValidator:
 def validate_student_group_request(func):
     @wraps(func)
     async def inner(*args, **kwargs):
-        bound_args = func_inspect(func, *args, **kwargs)
+        bound_args = get_bound_arguments(func, *args, **kwargs)
 
         if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()

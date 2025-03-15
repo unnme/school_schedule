@@ -82,9 +82,9 @@ services:
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
-      start_period: 30s
-      interval: 5s
-      timeout: 5s
+      start_period: 15s
+      interval: 30s
+      timeout: 10s
       retries: 1
       
     build:

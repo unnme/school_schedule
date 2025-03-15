@@ -31,6 +31,18 @@ class StudentGroupRepository(BaseRepository):
 
         return student_group
 
+
+    # async def _update_capacity(self, student_group, request_data):
+    #     student_group.capacity = request_data.capacity
+
+
+
+
+
+
+
+
+
     async def list_student_groups(
         self, session: AsyncSession, pagination: PaginationParamsDep
     ):
@@ -45,18 +57,20 @@ class StudentGroupRepository(BaseRepository):
         student_group_id: int,
         request_data: StudentGroupUpdateRequest,
     ) -> StudentGroup:
-        student_group = await self.get_by_id(
-            session, student_group_id, load_strategy="selectin"
-        )
+        async with session.begin():
 
-        update_data = request_data.model_dump(include={"name"})
-        for field, value in update_data.items():
-            setattr(student_group, field, value)
+            student_group = await self.get_by_id(
+                session, student_group_id, load_strategy="selectin"
+            )
 
-        await self._update_student_group_subjects(session, request_data, student_group)
-        await session.refresh(student_group)
+            update_data = request_data.model_dump(include={"name"})
+            for field, value in update_data.items():
+                setattr(student_group, field, value)
 
-        return student_group
+            await self._update_student_group_subjects(session, request_data, student_group)
+            await session.refresh(student_group)
+
+            return student_group
 
     async def delete_student_group(
         self, session: AsyncSession, student_group_id: int
@@ -70,6 +84,8 @@ class StudentGroupRepository(BaseRepository):
         await session.delete(student_group)
         await session.commit()
         return StudentGroup(**deleted_data)
+
+
 
     async def _update_student_group_subjects(
         self,
@@ -154,6 +170,3 @@ class StudentGroupRepository(BaseRepository):
                 )
 
             await session.flush()
-
-
-student_group_repository = StudentGroupRepository()

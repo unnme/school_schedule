@@ -5,7 +5,7 @@ from sqlalchemy import inspect, text
 from app.core.database import session_manager
 from app.core.logging_config import get_logger
 from app.entities.base import Base
-from app.utils.create_superuser import create_superuser
+from app.utils.superuser import create_superuser
 
 logger = get_logger(__name__)
 
@@ -39,7 +39,7 @@ class DatabaseManager:
     async def check_db_tables() -> bool:
         async with session_manager.async_engine.connect() as conn:
 
-            def _get_existing_tables(conn):  # INFO: NOT ASYNC
+            def _get_existing_tables(conn):
                 table_names = inspect(conn).get_table_names()
                 system_tables = {"alembic_version"}
 

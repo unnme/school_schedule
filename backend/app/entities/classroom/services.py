@@ -11,8 +11,8 @@ from app.entities.classroom.schemas import (
     _ClassroomUpdateResponse,
 )
 from app.utils.pagination import PaginationParamsDep
+from app.api.depends.repository import classroom_repository
 
-from .repository import classroom_repository
 
 
 class ClassroomManager:

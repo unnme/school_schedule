@@ -9,7 +9,7 @@ from app.core.exceptions import (
     RequestDataMissingException,
 )
 from app.entities.subject.models import Subject
-from app.utils.common_utils import func_inspect
+from app.utils.common_utils import get_bound_arguments
 
 
 class SubjectValidator:
@@ -34,7 +34,7 @@ class SubjectValidator:
 def validate_subject_request(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        bound_args = func_inspect(func, *args, **kwargs)
+        bound_args = get_bound_arguments(func, *args, **kwargs)
 
         if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()

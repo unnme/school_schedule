@@ -7,13 +7,14 @@ from rich.console import Console
 
 from app.core.config import settings
 from app.core.database import session_manager
+from app.core.router_manager import import_routers
 from app.utils.db_utils import first_run
-from app.utils.router_manager import import_routers
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await first_run()
+    import_routers(app)
     yield
 
     await session_manager.dispose()
@@ -46,6 +47,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-import_routers(app)

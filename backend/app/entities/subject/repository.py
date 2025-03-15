@@ -46,6 +46,3 @@ class SubjectRepository(BaseRepository):
         await session.delete(subject)
         await session.commit()
         return Subject(**deleted_data)
-
-
-subject_repository = SubjectRepository()
