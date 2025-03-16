@@ -38,10 +38,10 @@ class TeacherRepository(BaseRepository):
         return teachers
 
     async def update(
-        self, session: AsyncSession, entity_id: int, request_data: TeacherUpdateRequest
+        self, session: AsyncSession, id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
         async with session.begin():
-            teacher = await self.get_by_id(session, entity_id, load_strategy="selectin")
+            teacher = await self.get_by_id(session, id, load_strategy="selectin")
 
             await self._set_name(request_data, teacher)
             await self._set_active_flag(request_data, teacher)
@@ -51,8 +51,8 @@ class TeacherRepository(BaseRepository):
 
             return teacher
 
-    async def delete(self, session: AsyncSession, entity_id: int) -> Teacher:
-        teacher = await self.get_by_id(session, entity_id)
+    async def delete(self, session: AsyncSession, id: int) -> Teacher:
+        teacher = await self.get_by_id(session, id)
         deleted_data = {
             key: value
             for key, value in teacher.__dict__.items()

@@ -13,13 +13,28 @@ class ClassroomRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Classroom)
 
+    async def _set_name(self, classroom, request_data):
+        if request_data.name != classroom.name:
+            classroom.name = request_data.name
+        pass
+
+    async def _set_capacity(self, classroom, request_data):
+        if request_data.capacity is not None and request_data.capacity != classroom.capacity:
+            classroom.capacity = request_data.capacity
+
+
     async def create(
         self, session: AsyncSession, request_data: ClassroomCreateRequest
     ) -> Classroom:
-        classroom = self.sql_model(name=request_data.name)
+
+        classroom = self.sql_model(
+            name=request_data.name,
+            capacity=request_data.capacity
+        )
         session.add(classroom)
         await session.commit()
-        await session.refresh(classroom)
+
+        classroom = await self.get_by_id(session, classroom.id, load_strategy="selectin")
         return classroom
 
     async def list_classrooms(
@@ -28,20 +43,22 @@ class ClassroomRepository(BaseRepository):
         classrooms = await self.list_all(session, pagination, load_strategy="selectin")
         return classrooms
 
+
     async def update(
         self,
         session: AsyncSession,
         id: int,
         request_data: ClassroomUpdateRequest,
     ) -> Classroom:
-        # TODO: обновлять все остальное!
         classroom = await self.get_by_id(session, id, load_strategy="selectin")
 
-        if request_data.name != classroom.name:
-            classroom.name = request_data.name
-            await session.commit()
-            await session.refresh(classroom)
+        await self._set_name(classroom, request_data)
+        await self._set_capacity(classroom, request_data)
+
+        await session.commit()
+        await session.refresh(classroom)
         return classroom
+
 
     async def delete(self, session: AsyncSession, id: int) -> Classroom:
         classroom = await self.get_by_id(session, id)

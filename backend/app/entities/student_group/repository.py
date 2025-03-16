@@ -15,11 +15,19 @@ class StudentGroupRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(StudentGroup)
 
+    async def _update_capacity(self, student_group, request_data):
+        student_group.capacity = request_data.capacity
+
+
     async def create(
         self, session: AsyncSession, request_data: StudentGroupCreateRequest
     ) -> StudentGroup:
         async with session.begin():
-            student_group = StudentGroup(**request_data.model_dump(include={"name"}))
+
+            student_group = self.sql_model(
+            name=request_data.name,
+            capacity=request_data.capacity
+        )
             session.add(student_group)
             await session.flush()
             await self._update_student_group_subjects(
@@ -31,8 +39,6 @@ class StudentGroupRepository(BaseRepository):
 
         return student_group
 
-    # async def _update_capacity(self, student_group, request_data):
-    #     student_group.capacity = request_data.capacity
 
     async def list_student_groups(
         self, session: AsyncSession, pagination: PaginationParamsDep

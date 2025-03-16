@@ -7,6 +7,6 @@ cd "$(dirname "$0")/.."
 
 alembic upgrade head || exit 1
 
-isort app && ruff format app
+# isort app && ruff format app
 
 

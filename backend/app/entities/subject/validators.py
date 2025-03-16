@@ -7,7 +7,7 @@ from app.entities.base import BaseValidator
 from app.entities.subject.models import Subject
 
 
-class SubjectValidator(BaseValidator):
+class SubjectReqValidator(BaseValidator):
     def __init__(self, func, *args, **kwargs):
         super().__init__(func, *args, **kwargs)
 
@@ -27,7 +27,7 @@ class SubjectValidator(BaseValidator):
 def validate_subject_request(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        await SubjectValidator(func, *args, **kwargs).validate()
+        await SubjectReqValidator(func, *args, **kwargs).validate()
 
         return await func(*args, **kwargs)
 

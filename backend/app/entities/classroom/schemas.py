@@ -44,7 +44,7 @@ class ClassroomRequest(ClassroomBaseSchema):
 
     model_config = {
         "json_schema_extra": {
-            "example": {"name": "111-а", "capacity": None, "subjects": []}
+            "example": {"name": "111-а", "capacity": 32, "subjects": []}
         }
     }
 
