@@ -52,7 +52,6 @@ def validate_student_group_request(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         await StudentGroupReqValidator(func, *args, **kwargs).validate()
-
         return await func(*args, **kwargs)
 
     return wrapper
