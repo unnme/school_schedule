@@ -3,24 +3,32 @@ from functools import wraps
 from typing import Optional
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import session_manager
 from app.core.exceptions import (
+    DatabaseConnectionError,
     DuplicateStudentGroupException,
     DuplicateSubjectIDException,
     InvalidSubjectIDException,
     RequestDataMissingException,
 )
-from app.entities.student_group.models import StudentGroup
 from app.entities.subject.models import Subject
 from app.utils.common_utils import get_bound_arguments
 
+from .models import StudentGroup
+from .schemas import StudentGroupRequest
 
-class StudentGroupValidator:
-    def __init__(self, session, **kwargs):
+
+class StudentGroupRequestValidator:
+    def __init__(
+        self,
+        session: AsyncSession,
+        request_data: StudentGroupRequest,
+        student_group_id=None,
+    ) -> None:
         self._session = session
-        self._request_data = kwargs.get("request_data")
-        self._student_group_id: Optional[int] = kwargs.get("_student_group_id")
+        self._request_data = request_data
+        self._student_group_id: Optional[int] = student_group_id
 
     async def _check_duplicate_student_group(self):
         stmt = select(StudentGroup).where(
@@ -52,20 +60,22 @@ class StudentGroupValidator:
 
 def validate_student_group_request(func):
     @wraps(func)
-    async def inner(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         bound_args = get_bound_arguments(func, *args, **kwargs)
+
+        if not (session := bound_args.arguments.get("session")):
+            raise DatabaseConnectionError()
 
         if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()
 
         student_group_id: Optional[int] = bound_args.arguments.get("student_group_id")
 
-        async for session in session_manager.get_async_session():
-            validator = StudentGroupValidator(
-                session, student_group_id=student_group_id, request_data=request_data
-            )
-            await validator.validate()
+        validator = StudentGroupRequestValidator(
+            session, request_data, student_group_id
+        )
+        await validator.validate()
 
         return await func(*args, **kwargs)
 
-    return inner
+    return wrapper

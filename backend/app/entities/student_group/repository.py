@@ -15,7 +15,7 @@ class StudentGroupRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(StudentGroup)
 
-    async def create_student_group(
+    async def create(
         self, session: AsyncSession, request_data: StudentGroupCreateRequest
     ) -> StudentGroup:
         async with session.begin():
@@ -31,17 +31,8 @@ class StudentGroupRepository(BaseRepository):
 
         return student_group
 
-
     # async def _update_capacity(self, student_group, request_data):
     #     student_group.capacity = request_data.capacity
-
-
-
-
-
-
-
-
 
     async def list_student_groups(
         self, session: AsyncSession, pagination: PaginationParamsDep
@@ -51,31 +42,28 @@ class StudentGroupRepository(BaseRepository):
         )
         return student_groups
 
-    async def update_student_group(
+    async def update(
         self,
         session: AsyncSession,
-        student_group_id: int,
+        id: int,
         request_data: StudentGroupUpdateRequest,
     ) -> StudentGroup:
         async with session.begin():
-
-            student_group = await self.get_by_id(
-                session, student_group_id, load_strategy="selectin"
-            )
+            student_group = await self.get_by_id(session, id, load_strategy="selectin")
 
             update_data = request_data.model_dump(include={"name"})
             for field, value in update_data.items():
                 setattr(student_group, field, value)
 
-            await self._update_student_group_subjects(session, request_data, student_group)
+            await self._update_student_group_subjects(
+                session, request_data, student_group
+            )
             await session.refresh(student_group)
 
             return student_group
 
-    async def delete_student_group(
-        self, session: AsyncSession, student_group_id: int
-    ) -> StudentGroup:
-        student_group = await self.get_by_id(session, student_group_id)
+    async def delete(self, session: AsyncSession, id: int) -> StudentGroup:
+        student_group = await self.get_by_id(session, id)
         deleted_data = {
             key: value
             for key, value in student_group.__dict__.items()
@@ -84,8 +72,6 @@ class StudentGroupRepository(BaseRepository):
         await session.delete(student_group)
         await session.commit()
         return StudentGroup(**deleted_data)
-
-
 
     async def _update_student_group_subjects(
         self,

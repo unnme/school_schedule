@@ -9,9 +9,4 @@ logger = get_logger(__name__)
 subject_repository = SubjectRepository()
 student_group_repository = StudentGroupRepository()
 teacher_repository = TeacherRepository()
-classroom_repository  = ClassroomRepository()
-
-
-
-
-
+classroom_repository = ClassroomRepository()

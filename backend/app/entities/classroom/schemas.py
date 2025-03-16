@@ -14,11 +14,14 @@ class ClassroomBaseSchema(CustomBaseModel):
     name: str = Field(
         ..., min_length=1, max_length=5, description="Название классной комнаты."
     )
-    capacity: Annotated[Optional[int], Field(
-        gt=0,
-        le=50,
-        description="Вместимость (чел.) классной комнаты",
-    )] = None
+    capacity: Annotated[
+        Optional[int],
+        Field(
+            gt=0,
+            le=50,
+            description="Вместимость (чел.) классной комнаты",
+        ),
+    ] = None
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:

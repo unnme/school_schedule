@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from app.core.database import session_manager
 from app.core.exceptions import (
+    DatabaseConnectionError,
     DuplicateSubjectIDException,
     DuplicateTeacherException,
     InvalidSubjectIDException,
@@ -17,10 +18,10 @@ from app.utils.common_utils import get_bound_arguments
 
 
 class TeacherValidator:
-    def __init__(self, session, **kwargs):
+    def __init__(self, session, request_data, teacher_id):
         self._session = session
-        self._request_data = kwargs.get("request_data")
-        self._teacher_id = kwargs.get("teacher_id")
+        self._request_data = request_data
+        self._teacher_id = teacher_id
 
     async def check_duplicate_teacher(self):
         stmt = select(Teacher).where(
@@ -54,8 +55,11 @@ class TeacherValidator:
 
 def validate_teacher_request(func):
     @wraps(func)
-    async def inner(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         bound_args: BoundArguments = get_bound_arguments(func, *args, **kwargs)
+
+        if not (session := bound_args.arguments.get("session")):
+            raise DatabaseConnectionError()
 
         if not (request_data := bound_args.arguments.get("request_data")):
             raise RequestDataMissingException()
@@ -63,11 +67,9 @@ def validate_teacher_request(func):
         teacher_id = bound_args.arguments.get("teacher_id")
 
         async for session in session_manager.get_async_session():
-            validator = TeacherValidator(
-                session, request_data=request_data, teacher_id=teacher_id
-            )
+            validator = TeacherValidator(session, request_data, teacher_id)
             await validator.validate()
 
         return await func(*args, **kwargs)
 
-    return inner
+    return wrapper

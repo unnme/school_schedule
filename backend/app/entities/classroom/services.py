@@ -2,6 +2,7 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.depends.repository import classroom_repository
 from app.entities.classroom.schemas import (
     ClassroomCreateRequest,
     ClassroomResponse,
@@ -11,8 +12,6 @@ from app.entities.classroom.schemas import (
     _ClassroomUpdateResponse,
 )
 from app.utils.pagination import PaginationParamsDep
-from app.api.depends.repository import classroom_repository
-
 
 
 class ClassroomManager:
@@ -20,7 +19,7 @@ class ClassroomManager:
     async def create_classroom(
         cls, session: AsyncSession, request_data: ClassroomCreateRequest
     ) -> _ClassroomCreateResponse:
-        classroom = await classroom_repository.create_classroom(session, request_data)
+        classroom = await classroom_repository.create(session, request_data)
         return _ClassroomCreateResponse.model_validate(classroom)
 
     @classmethod
@@ -34,17 +33,15 @@ class ClassroomManager:
     async def update_classroom(
         cls,
         session: AsyncSession,
-        classroom_id: int,
+        id: int,
         request_data: ClassroomUpdateRequest,
     ) -> _ClassroomUpdateResponse:
-        subject = await classroom_repository.update_classroom(
-            session, classroom_id, request_data
-        )
+        subject = await classroom_repository.update(session, id, request_data)
         return _ClassroomUpdateResponse.model_validate(subject)
 
     @classmethod
     async def delete_classroom(
-        cls, session: AsyncSession, classroom_id: int
+        cls, session: AsyncSession, id: int
     ) -> _ClassroomDeleteResponse:
-        subject = await classroom_repository.delete_classroom(session, classroom_id)
+        subject = await classroom_repository.delete(session, id)
         return _ClassroomDeleteResponse.model_validate(subject)

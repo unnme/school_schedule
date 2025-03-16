@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Any, Optional, Sequence, Type
 
 from pydantic import BaseModel
@@ -13,9 +14,15 @@ from sqlalchemy.orm import (
 )
 
 from app.core.config import settings
-from app.core.exceptions import InvalidLoadStrategyException, NotFoundException
+from app.core.exceptions import (
+    DatabaseConnectionError,
+    InvalidLoadStrategyException,
+    NotFoundException,
+    RequestDataMissingException,
+)
 from app.core.logging_config import get_logger
 from app.utils.case_converter import camel_case_to_snake_case
+from app.utils.common_utils import get_bound_arguments
 from app.utils.pagination import PaginationParamsDep
 
 logger = get_logger(__name__)
@@ -40,7 +47,7 @@ class CustomBaseModel(BaseModel):
         from_attributes = True
 
 
-class BaseRepository:
+class BaseRepository(ABC):
     def __init__(self, sql_model: Type[Any]) -> None:
         self.sql_model = sql_model
 
@@ -110,3 +117,43 @@ class BaseRepository:
         result = await session.execute(stmt)
         entities = result.scalars().unique().all()
         return entities
+
+    @abstractmethod
+    async def create(self, session: AsyncSession, request_data) -> Any:
+        pass
+
+    @abstractmethod
+    async def update(self, session: AsyncSession, id: int, request_data) -> Any:
+        pass
+
+    @abstractmethod
+    async def delete(self, session: AsyncSession, id: int) -> Any:
+        pass
+
+
+class BaseValidator(ABC):
+    def __init__(self, func, *args, **kwargs):
+        bound_args = get_bound_arguments(func, *args, **kwargs)
+
+        if not (session := bound_args.arguments.get("session")):
+            raise DatabaseConnectionError()
+        else:
+            self.session = session
+
+        if not (request_data := bound_args.arguments.get("request_data")):
+            raise RequestDataMissingException()
+        else:
+            self.request_data = request_data
+
+        self.id = next(
+            (
+                value
+                for key, value in bound_args.arguments.items()
+                if key.endswith("_id")
+            ),
+            None,
+        )
+
+    @abstractmethod
+    async def validate(self) -> None:
+        pass

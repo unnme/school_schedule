@@ -1,11 +1,16 @@
 from typing import Optional
+
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.entities.base import BaseRepository
 from app.entities.relations.models import TeacherSubject
 from app.entities.teacher.models import Teacher
-from app.entities.teacher.schemas import TeacherCreateRequest, TeacherRequest, TeacherUpdateRequest
+from app.entities.teacher.schemas import (
+    TeacherCreateRequest,
+    TeacherRequest,
+    TeacherUpdateRequest,
+)
 from app.utils.pagination import PaginationParamsDep
 
 
@@ -13,7 +18,7 @@ class TeacherRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Teacher)
 
-    async def create_teacher(
+    async def create(
         self, session: AsyncSession, request_data: TeacherCreateRequest
     ) -> Teacher:
         async with session.begin():
@@ -32,11 +37,11 @@ class TeacherRepository(BaseRepository):
         teachers = await self.list_all(session, pagination, load_strategy="selectin")
         return teachers
 
-    async def update_teacher(
-        self, session: AsyncSession, teacher_id: int, request_data: TeacherUpdateRequest
+    async def update(
+        self, session: AsyncSession, entity_id: int, request_data: TeacherUpdateRequest
     ) -> Teacher:
         async with session.begin():
-            teacher = await self.get_by_id(session, teacher_id, load_strategy="selectin")
+            teacher = await self.get_by_id(session, entity_id, load_strategy="selectin")
 
             await self._set_name(request_data, teacher)
             await self._set_active_flag(request_data, teacher)
@@ -46,8 +51,8 @@ class TeacherRepository(BaseRepository):
 
             return teacher
 
-    async def delete_teacher(self, session: AsyncSession, teacher_id: int) -> Teacher:
-        teacher = await self.get_by_id(session, teacher_id)
+    async def delete(self, session: AsyncSession, entity_id: int) -> Teacher:
+        teacher = await self.get_by_id(session, entity_id)
         deleted_data = {
             key: value
             for key, value in teacher.__dict__.items()
@@ -57,8 +62,9 @@ class TeacherRepository(BaseRepository):
         await session.commit()
         return Teacher(**deleted_data)
 
-    async def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher]=None) -> Teacher:
-
+    async def _set_name(
+        self, request_data: TeacherRequest, teacher: Optional[Teacher] = None
+    ) -> Teacher:
         if teacher is None:
             teacher = Teacher(
                 **request_data.model_dump(
@@ -67,17 +73,15 @@ class TeacherRepository(BaseRepository):
             )
         else:
             full_name = request_data.model_dump(
-            include={"first_name", "last_name", "patronymic"}
+                include={"first_name", "last_name", "patronymic"}
             )
             for field, value in full_name.items():
                 setattr(teacher, field, value)
 
         return teacher
 
-
     async def _set_active_flag(self, request_data, teacher) -> None:
         teacher.is_active = request_data.is_active
-
 
     async def _update_teacher_subjects(
         self,
@@ -114,7 +118,8 @@ class TeacherRepository(BaseRepository):
             )
 
             subjects_to_update: set = {
-                id for id in request_subj_and_hours.keys() & existing_subjects_hours.keys()
+                id
+                for id in request_subj_and_hours.keys() & existing_subjects_hours.keys()
                 if request_subj_and_hours[id] != existing_subjects_hours[id]
             }
 

@@ -12,10 +12,7 @@ get_users_db_context = asynccontextmanager(get_user_db)
 get_user_manager_context = asynccontextmanager(get_user_manager)
 
 
-async def create_user(
-    user_manager: UserManager,
-    user_create: UserCreate,
-) -> User:
+async def create_user(user_manager: UserManager, user_create: UserCreate) -> User:
     user = await user_manager.create(
         user_create=user_create,
         safe=False,  # NOTE: delfault = False! change this for regular user

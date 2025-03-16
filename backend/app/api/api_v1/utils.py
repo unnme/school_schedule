@@ -18,7 +18,6 @@ async def health_check():
         raise DatabaseConnectionError()
 
 
-
 # @router.get("/some-check/") #BUG:
 # async def some_check():
 #     print(

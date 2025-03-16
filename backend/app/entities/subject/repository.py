@@ -10,7 +10,7 @@ class SubjectRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Subject)
 
-    async def create_subject(
+    async def create(
         self, session: AsyncSession, request_data: SubjectCreateRequest
     ) -> Subject:
         subject = self.sql_model(name=request_data.name)
@@ -25,10 +25,10 @@ class SubjectRepository(BaseRepository):
         subjects = await self.list_all(session, pagination, load_strategy="selectin")
         return subjects
 
-    async def update_subject(
-        self, session: AsyncSession, subject_id: int, request_data: SubjectUpdateRequest
+    async def update(
+        self, session: AsyncSession, id: int, request_data: SubjectUpdateRequest
     ) -> Subject:
-        subject = await self.get_by_id(session, subject_id, load_strategy="selectin")
+        subject = await self.get_by_id(session, id, load_strategy="selectin")
 
         if request_data.name != subject.name:
             subject.name = request_data.name
@@ -36,8 +36,8 @@ class SubjectRepository(BaseRepository):
             await session.refresh(subject)
         return subject
 
-    async def delete_subject(self, session: AsyncSession, subject_id: int) -> Subject:
-        subject = await self.get_by_id(session, subject_id)
+    async def delete(self, session: AsyncSession, id: int) -> Subject:
+        subject = await self.get_by_id(session, id)
         deleted_data = {
             key: value
             for key, value in subject.__dict__.items()

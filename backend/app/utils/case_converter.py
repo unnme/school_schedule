@@ -40,7 +40,7 @@ def snake_case_to_camel_case(input_str: str) -> str:
     """
     parts = input_str.split("_")
     # Первое слово в нижнем регистре, остальные начинаются с заглавной буквы
-    return parts[0] + ''.join(word.capitalize() for word in parts[1:])
+    return parts[0] + "".join(word.capitalize() for word in parts[1:])
 
 
 def method_name_to_snake_case(input_str: str) -> str:

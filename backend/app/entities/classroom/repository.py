@@ -13,7 +13,7 @@ class ClassroomRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Classroom)
 
-    async def create_classroom(
+    async def create(
         self, session: AsyncSession, request_data: ClassroomCreateRequest
     ) -> Classroom:
         classroom = self.sql_model(name=request_data.name)
@@ -28,16 +28,14 @@ class ClassroomRepository(BaseRepository):
         classrooms = await self.list_all(session, pagination, load_strategy="selectin")
         return classrooms
 
-    async def update_classroom(
+    async def update(
         self,
         session: AsyncSession,
-        classroom_id: int,
+        id: int,
         request_data: ClassroomUpdateRequest,
     ) -> Classroom:
         # TODO: обновлять все остальное!
-        classroom = await self.get_by_id(
-            session, classroom_id, load_strategy="selectin"
-        )
+        classroom = await self.get_by_id(session, id, load_strategy="selectin")
 
         if request_data.name != classroom.name:
             classroom.name = request_data.name
@@ -45,10 +43,8 @@ class ClassroomRepository(BaseRepository):
             await session.refresh(classroom)
         return classroom
 
-    async def delete_classroom(
-        self, session: AsyncSession, classroom_id: int
-    ) -> Classroom:
-        classroom = await self.get_by_id(session, classroom_id)
+    async def delete(self, session: AsyncSession, id: int) -> Classroom:
+        classroom = await self.get_by_id(session, id)
         deleted_data = {
             key: value
             for key, value in classroom.__dict__.items()

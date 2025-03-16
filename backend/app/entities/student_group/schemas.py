@@ -18,11 +18,14 @@ class StudentGroupBaseSchema(CustomBaseModel):
         ..., min_length=2, max_length=5, description="Название группы студентов"
     )
 
-    capacity: Annotated[Optional[int], Field(
-        gt=0,
-        le=50,
-        description="Максимальное количество студентов в группе",
-    )] = None
+    capacity: Annotated[
+        Optional[int],
+        Field(
+            gt=0,
+            le=50,
+            description="Максимальное количество студентов в группе",
+        ),
+    ] = None
 
     @field_validator("name")
     def validate_name(cls, value: str) -> str:
