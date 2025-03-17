@@ -4,7 +4,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/app/alembic/versions:/app/app/alembic/versions
+      - ./backend/app/:/app/app
+      - /app/.venv #BUG:?
     develop:
       watch:
         - action: sync
