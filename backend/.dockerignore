@@ -5,6 +5,7 @@
 **/._*
 
 # 🔥 Python файлы и кеши
+**/.ruff_cache/
 **/__pycache__/
 **/.cache/
 **/*.pyc

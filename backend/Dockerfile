@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 
 FROM builder AS prestart
-CMD ["bash", "app/scripts/prestart.sh"]
+CMD ["bash", "src/scripts/prestart.sh"]
 
 
 FROM python:3.12-slim-bookworm AS final
@@ -29,5 +29,5 @@ COPY --from=builder --chown=app:app /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
