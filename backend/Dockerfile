@@ -29,6 +29,4 @@ COPY --from=builder --chown=app:app /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "dev", "--host", "0.0.0.0", "/app/src/backend"]
-# CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-
+CMD ["fastapi", "dev", "--host", "0.0.0.0", "/app/src"]
