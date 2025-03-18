@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,17 +17,17 @@ class Subject(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
 
-    teachers: Mapped[list["TeacherSubject"]] = relationship(
+    teachers: Mapped[List["TeacherSubject"]] = relationship(
         back_populates="subject",
         cascade="all, delete-orphan",
     )
 
-    student_groups: Mapped[list["StudentGroupSubject"]] = relationship(
+    student_groups: Mapped[List["StudentGroupSubject"]] = relationship(
         back_populates="subject",
         cascade="all, delete-orphan",
     )
 
-    classrooms: Mapped[list["ClassroomSubject"]] = relationship(
+    classrooms: Mapped[List["ClassroomSubject"]] = relationship(
         back_populates="subject",
         cascade="all, delete-orphan",
     )

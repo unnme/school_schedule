@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,7 +15,7 @@ class Classroom(Base):
 
     capacity: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
-    subjects: Mapped[list["ClassroomSubject"]] = relationship(
+    subjects: Mapped[List["ClassroomSubject"]] = relationship(
         back_populates="classroom",
         cascade="all, delete-orphan",
     )

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -16,7 +16,7 @@ class Teacher(Base):
     patronymic: Mapped[str] = mapped_column(String, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
-    subjects: Mapped[list["TeacherSubject"]] = relationship(
+    subjects: Mapped[List["TeacherSubject"]] = relationship(
         back_populates="teacher",
         cascade="all, delete-orphan",
     )
