@@ -4,8 +4,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/src/:/app/src
-      - /app/.venv #BUG:?
+      - ./backend/src/backend:/app/src/backend
+      # - ./backend/.venv:/app/.venv
     develop:
       watch:
         - action: sync
