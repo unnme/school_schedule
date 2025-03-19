@@ -29,7 +29,7 @@ def import_routers(app: FastAPI):
                     sub_path = [str(pathlib.Path(base_path[0]) / module_name)]
                     recursive_import(sub_path, full_module_name)
 
-            except ImportError as e:
+            except ImportError as e:  # FIX:
                 logger.error(f"Import error {full_module_name}: {e}")
 
     recursive_import(api_path, path_to_dotted_string(settings.api_config.api_path))

@@ -9,10 +9,20 @@ class BasePathes:
         self._app_root_dir = self._project_root_dir / "src" / "backend"
         self._entities_dir = self._app_root_dir / "entities"
         self._api_root_dir = self._app_root_dir / "api"
+        self._workdir = self._project_root_dir / "src"
+        self._logs_path = self._workdir / "logs"
+
+    @cached_property
+    def logs_path(self) -> Path:
+        return self._logs_path
+
+    @cached_property
+    def app_root_dir(self) -> Path:
+        return self._app_root_dir
 
     @cached_property
     def workdir(self) -> Path:
-        return self._app_root_dir
+        return self._project_root_dir
 
     @cached_property
     def env_file(self) -> Path:

@@ -9,9 +9,8 @@ from backend.core.exceptions import (
     InvalidSubjectIDException,
 )
 from backend.entities.base import BaseValidator
+from backend.entities.student_group.models import StudentGroup
 from backend.entities.subject.models import Subject
-
-from .models import StudentGroup
 
 
 class StudentGroupReqValidator(BaseValidator):

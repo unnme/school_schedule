@@ -6,19 +6,18 @@ from urllib.parse import quote
 from pydantic import AnyUrl, BeforeValidator, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from backend.core.pathes import base_pathes
 from backend.utils.common_utils import parse_cors
-
-from .pathes import base_pathes
 
 
 class GlobalSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=str(base_pathes.env_file), extra="ignore"
+        env_file=str(base_pathes.env_file), env_file_encoding="utf-8", extra="ignore"
     )
 
 
 class LoggingConfig(BaseSettings):
-    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "ERROR"
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
     _LEVELS = {
         "CRITICAL": 50,
@@ -32,7 +31,7 @@ class LoggingConfig(BaseSettings):
     }
 
     @property
-    def get_log_level(self) -> int:
+    def log_level(self) -> int:
         return self._LEVELS[self.LOG_LEVEL]
 
 
@@ -69,7 +68,7 @@ class ApiConfig(GlobalSettings):
 
     @cached_property
     def api_path(self) -> Path:
-        return Path(base_pathes.workdir.name) / "api" / f"api_{self.API_VERSION}"
+        return Path(base_pathes.app_root_dir.name) / "api" / f"api_{self.API_VERSION}"
 
     @cached_property
     def api_prefix(self) -> str:
@@ -118,7 +117,7 @@ def get_settings() -> AppSettings:
         security=SecurityConfig(),  # pyright: ignore
         database=DatabaseConfig(),  # pyright: ignore
         api_config=ApiConfig(),  # pyright: ignore
-        logging_config=LoggingConfig(),
+        logging_config=LoggingConfig(),  # pyright: ignore
     )
 
 

@@ -17,15 +17,8 @@ class Lesson(Base):
         Integer, ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True
     )
 
-    subject: Mapped[int] = mapped_column(
-        Integer, ForeignKey("subjects.id")
-    )
+    subject: Mapped[int] = mapped_column(Integer, ForeignKey("subjects.id"))
 
-    teacher: Mapped[int] = mapped_column(
-        Integer, ForeignKey("teachers.id")
-    )
+    teacher: Mapped[int] = mapped_column(Integer, ForeignKey("teachers.id"))
 
-    student_group: Mapped[int] = mapped_column(
-        Integer, ForeignKey("student_groups.id")
-    )
-
+    student_group: Mapped[int] = mapped_column(Integer, ForeignKey("student_groups.id"))

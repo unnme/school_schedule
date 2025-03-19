@@ -19,7 +19,7 @@ class ClassroomBaseSchema(CustomBaseModel):
         Field(
             gt=0,
             le=50,
-            description="Вместимость (чел.) классной комнаты",
+            description="Вместимость (чел.) классной комнаты.",
         ),
     ] = None
 
@@ -28,7 +28,7 @@ class ClassroomBaseSchema(CustomBaseModel):
         if not re.match(r"^(?:[1-9][0-9]{0,2}|1000)(?:-[а-я])?$", value):
             raise HTTPException(
                 status_code=400,
-                detail="Название классной комнаты должно состоять из цифры (1-1000) или из цифры и строчной буквы через тире.",
+                detail="Название классной комнаты должно состоять из цифры (1-1000) или из цифры и строчной буквы русского алфавита через тире.",
             )
         return value
 
@@ -39,7 +39,7 @@ class ClassroomBaseSchema(CustomBaseModel):
 class ClassroomRequest(ClassroomBaseSchema):
     subjects: List[SubjectIDRequest] = Field(
         default_factory=list,
-        description="Закрепленные за классной комнатой предметы обучения",
+        description="Закрепленные за классной комнатой предметы обучения.",
     )
 
     model_config = {

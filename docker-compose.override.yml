@@ -6,6 +6,7 @@ services:
     volumes:
       - ./backend/src/backend:/app/src/backend
       # - ./backend/.venv:/app/.venv
+    command: fastapi dev --host 0.0.0.0 /app/src/backend
     develop:
       watch:
         - action: sync
