@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.base import BaseRepository
@@ -9,6 +11,15 @@ from backend.utils.pagination import PaginationParamsDep
 class SubjectRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Subject)
+
+    async def create_many(
+        self, session: AsyncSession, request_data_list: List[SubjectCreateRequest]
+    ):
+        async with session.begin():
+            subjects = [
+                self.sql_model(name=teacher.name) for teacher in request_data_list
+            ]
+            session.add_all(subjects)
 
     async def create(
         self, session: AsyncSession, request_data: SubjectCreateRequest

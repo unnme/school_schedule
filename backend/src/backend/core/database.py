@@ -14,6 +14,7 @@ class SessionManager:
         self.async_engine = create_async_engine(
             settings.database.async_db_url,
             future=True,
+            echo=False,
         )
 
         self.async_session = async_sessionmaker(

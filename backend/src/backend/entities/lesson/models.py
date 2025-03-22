@@ -9,7 +9,7 @@ from backend.entities.base import Base
 
 class Lesson(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    leeson_date: Mapped[date] = mapped_column(Date, default=date.today)
+    leeson_date: Mapped[date] = mapped_column(Date)
     school_shift: Mapped[int]
     lesson_number: Mapped[int]
 

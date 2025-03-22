@@ -8,7 +8,7 @@ from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.router_manager import import_routers
-from backend.utils.db_utils import first_run
+from backend.services.init_services import first_run
 
 logger = get_logger(__name__)
 

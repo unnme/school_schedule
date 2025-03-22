@@ -49,7 +49,7 @@ class StudentGroupRequest(StudentGroupBaseSchema):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "name": "11Г",
+                "name": "11г",
                 "capacity": 33,
                 "subjects": [
                     {"id": 1, "study_hours": 22},
@@ -91,6 +91,21 @@ class StudentGroupCreateRequest(StudentGroupRequest):
 class StudentGroupResponse(StudentGroupBaseSchema):
     id: int
     subjects: List[SubjectWithSHoursResponse]
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "11г",
+                "capacity": 33,
+                "subjects": [
+                    {"id": 1, "study_hours": 22},
+                    {"id": 2, "study_hours": 0},
+                    {"id": 3, "study_hours": 13},
+                ],
+            }
+        }
+    }
 
 
 # INFO: UPDATEresponse

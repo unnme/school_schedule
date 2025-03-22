@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,11 +18,22 @@ class TeacherRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Teacher)
 
+    async def create_many(
+        self, session: AsyncSession, request_data_list: List[TeacherCreateRequest]
+    ):
+        async with session.begin():
+            teachers = [self._set_name(data) for data in request_data_list]
+            session.add_all(teachers)
+            await session.flush()
+
+            for teacher, request_data in zip(teachers, request_data_list):
+                await self._update_teacher_subjects(session, request_data, teacher)
+
     async def create(
         self, session: AsyncSession, request_data: TeacherCreateRequest
     ) -> Teacher:
         async with session.begin():
-            teacher: Teacher = await self._set_name(request_data)
+            teacher: Teacher = self._set_name(request_data)
             session.add(teacher)
             await session.flush()
             await self._update_teacher_subjects(session, request_data, teacher)
@@ -43,8 +54,8 @@ class TeacherRepository(BaseRepository):
         async with session.begin():
             teacher = await self.get_by_id(session, id, load_strategy="selectin")
 
-            await self._set_name(request_data, teacher)
-            await self._set_active_flag(request_data, teacher)
+            self._set_name(request_data, teacher)
+            self._set_active_flag(request_data, teacher)
 
             await self._update_teacher_subjects(session, request_data, teacher)
             await session.refresh(teacher)
@@ -62,7 +73,7 @@ class TeacherRepository(BaseRepository):
         await session.commit()
         return Teacher(**deleted_data)
 
-    async def _set_name(
+    def _set_name(
         self, request_data: TeacherRequest, teacher: Optional[Teacher] = None
     ) -> Teacher:
         if teacher is None:
@@ -80,7 +91,7 @@ class TeacherRepository(BaseRepository):
 
         return teacher
 
-    async def _set_active_flag(self, request_data, teacher) -> None:
+    def _set_active_flag(self, request_data, teacher) -> None:
         teacher.is_active = request_data.is_active
 
     async def _update_teacher_subjects(

@@ -65,6 +65,24 @@ class SubjectResponse(SubjectBaseSchema):
     student_groups: List[StudentGroupWithHoursResponse]
     classrooms: List[ClassroomIDResponse]
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "Биология",
+                "teachers": [
+                    {"teacher_id": 1, "teaching_hours": 12},
+                    {"teacher_id": 2, "teaching_hours": 32},
+                ],
+                "student_groups": [
+                    {"student_group_id": 1, "study_hours": 17},
+                    {"student_group_id": 2, "study_hours": 31},
+                ],
+                "classrooms": [{"id": 1}, {"id": 2}],
+            }
+        }
+    }
+
 
 # INFO: CREATEresponse
 

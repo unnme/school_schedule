@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.base import BaseRepository
@@ -24,6 +26,16 @@ class ClassroomRepository(BaseRepository):
             and request_data.capacity != classroom.capacity
         ):
             classroom.capacity = request_data.capacity
+
+    async def create_many(
+        self, session: AsyncSession, request_data_list: List[ClassroomCreateRequest]
+    ):
+        async with session.begin():
+            classrooms = [
+                self.sql_model(name=data.name, capacity=data.capacity)
+                for data in request_data_list
+            ]
+            session.add_all(classrooms)
 
     async def create(
         self, session: AsyncSession, request_data: ClassroomCreateRequest

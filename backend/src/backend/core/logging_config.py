@@ -1,6 +1,8 @@
 import logging
 
-log_format = "%(levelname)s:     [%(filename)s:%(lineno)d] {%(funcName)s} - %(message)s"
+log_format = (
+    "      %(levelname)s   [%(filename)s:%(lineno)d] {%(funcName)s} - %(message)s"
+)
 
 
 logging.basicConfig(
@@ -9,9 +11,11 @@ logging.basicConfig(
     force=True,
 )
 
-sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
-sqlalchemy_logger.setLevel(logging.WARNING)
-sqlalchemy_logger.propagate = True
+fastapi_logger = logging.getLogger("uvicorn")
+access_logger = logging.getLogger("uvicorn.access")
+error_logger = logging.getLogger("uvicorn.error")
+fastapi_logger.setLevel(logging.DEBUG)
+fastapi_logger.propagate = False
 
 
 def get_logger(name: str):
