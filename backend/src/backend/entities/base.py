@@ -118,17 +118,17 @@ class BaseRepository(ABC):
         entities = result.scalars().unique().all()
         return entities
 
-    @abstractmethod
-    async def create(self, session: AsyncSession, request_data) -> Any:
-        pass
-
-    @abstractmethod
-    async def update(self, session: AsyncSession, id: int, request_data) -> Any:
-        pass
-
-    @abstractmethod
-    async def delete(self, session: AsyncSession, id: int) -> Any:
-        pass
+    # @abstractmethod
+    # async def create(self, session: AsyncSession, request_data) -> Any:
+    #     pass
+    #
+    # @abstractmethod
+    # async def update(self, session: AsyncSession, id: int, request_data) -> Any:
+    #     pass
+    #
+    # @abstractmethod
+    # async def delete(self, session: AsyncSession, id: int) -> Any:
+    #     pass
 
 
 class BaseValidator(ABC):

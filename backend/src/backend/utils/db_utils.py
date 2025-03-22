@@ -5,6 +5,7 @@ from sqlalchemy import inspect, text
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.entities.base import Base
+from tests.main import F
 
 logger = get_logger(__name__)
 
@@ -66,6 +67,8 @@ async def first_run() -> None:
         await DatabaseManager.create_db_tables()
 
         logger.info("✅ First run setup completed.")
+
+        await F.to_fake()
 
 
 if __name__ == "__main__":

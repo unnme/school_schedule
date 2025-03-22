@@ -1,24 +1,28 @@
-from datetime import datetime
-from typing import Optional
+from datetime import date
+from functools import cached_property
 
-from sqlalchemy import Date, ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Date, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.entities.base import Base
 
 
 class Lesson(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    lesson_number: Mapped[int] = mapped_column(Integer)
-    date: Mapped[datetime] = mapped_column(Date)
-    school_shift: Mapped[int] = mapped_column(Integer)
+    leeson_date: Mapped[date] = mapped_column(Date, default=date.today)
+    school_shift: Mapped[int]
+    lesson_number: Mapped[int]
 
-    class_profile: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True
-    )
+    classroom_id: Mapped[int] = mapped_column(ForeignKey("classrooms.id"))
+    subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id"))
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"))
+    student_group_id: Mapped[int] = mapped_column(ForeignKey("student_groups.id"))
 
-    subject: Mapped[int] = mapped_column(Integer, ForeignKey("subjects.id"))
+    classroom = relationship("Classroom", lazy="joined")
+    subject = relationship("Subject", lazy="joined")
+    teacher = relationship("Teacher", lazy="joined")
+    student_group = relationship("StudentGroup", lazy="joined")
 
-    teacher: Mapped[int] = mapped_column(Integer, ForeignKey("teachers.id"))
-
-    student_group: Mapped[int] = mapped_column(Integer, ForeignKey("student_groups.id"))
+    @cached_property
+    def lesson_day(self) -> int:
+        return self.leeson_date.weekday()

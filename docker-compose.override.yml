@@ -1,12 +1,16 @@
 services:
   backend:
-    restart: no
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     volumes:
       - ./backend/src/backend:/app/src/backend
-      # - ./backend/.venv:/app/.venv
+    environment:
+      - UV_COMPILE_BYTECODE=0
     command: fastapi dev --host 0.0.0.0 /app/src/backend
+    restart: no
     develop:
       watch:
         - action: sync
@@ -15,5 +19,6 @@ services:
           ignore:
             - .venv
             - ./backend/.venv
+
         - action: rebuild
           path: ./backend/pyproject.toml
