@@ -37,7 +37,7 @@ class RussianPatronymicProvider(BaseProvider):
 fake.add_provider(RussianPatronymicProvider)
 
 
-class F:
+class F: #TODO: перенести в инит предметы
     subject_names = [
         "Математика",
         "Физика",
@@ -127,12 +127,7 @@ class F:
     #             name="",
     #             capacity=33,
     #             subjects=[]
-    #
     #         )
-
-    @classmethod
-    async def fake_classrooms(cls, session):
-        pass
 
     @classmethod
     async def fake_lessons(cls, session):
@@ -143,5 +138,4 @@ class F:
         await cls.fake_subjects()
         await cls.fake_teachers(count=TEACHERS_COUNT)
         # await cls.fake_student_groups(session)
-        # await cls.fake_classrooms(session)
         # await cls.fake_lessons(session)
