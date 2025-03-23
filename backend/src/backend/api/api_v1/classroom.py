@@ -39,7 +39,7 @@ async def update_classroom(
         session, classroom_id, request_data
     )
     return ClassroomUpdateResponse(
-        message="Учитель успешно обновлен", data=updated_classroom
+        message="Учебный класс успешно обновлен", data=updated_classroom
     )
 
 
@@ -49,5 +49,5 @@ async def delete_classroom(
 ) -> ClassroomDeleteResponse:
     deleted_classroom = await ClassroomManager.delete_classroom(session, classroom_id)
     return ClassroomDeleteResponse(
-        message="Учитель успешно удален", data=deleted_classroom
+        message="Учебный класс успешно удален", data=deleted_classroom
     )

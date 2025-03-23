@@ -1,14 +1,15 @@
 from random import choice, randint
 from typing import Dict, List
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from faker import Faker
 from faker.providers import BaseProvider
 
-from backend.api.depends.repository import subject_repository, teacher_repository
-from backend.core.database import session_manager as sm
-from backend.entities.student_group.schemas import StudentGroupCreateRequest
-from backend.entities.subject.schemas import SubjectCreateRequest
+from backend.api.depends.repository import teacher_repository
+from backend.core.database import session_manager
 from backend.entities.teacher.schemas import TeacherCreateRequest
+from backend.services.init_services import MassInit
+
 
 TEACHERS_COUNT = 10
 fake = Faker("ru_RU")
@@ -33,11 +34,34 @@ class RussianPatronymicProvider(BaseProvider):
     def patronymic_female(self):
         return str(self.random_element(self.patronymics) + "на")
 
-
 fake.add_provider(RussianPatronymicProvider)
 
 
-class F: #TODO: перенести в инит предметы
+class F:
+
+    classroom_names = [
+        "1", "1-а", "1-б",
+        "2", "2-а", "2-б",
+        "3", "3-а", "3-б",
+        "4", "4-а", "4-б",
+        "5", "5-а", "5-б",
+        "6", "6-а", "6-б",
+        "7", "7-а", "7-б",
+        "8", "8-а", "8-б",
+        "9", "9-а", "9-б",
+        "10", "10-а", "10-б",
+        "11", "11-а", "11-б",
+        "12", "12-а", "12-б",
+        "13", "13-а", "13-б",
+        "14", "14-а", "14-б",
+        "15", "15-а", "15-б",
+        "16", "16-а", "16-б",
+        "17", "17-а", "17-б",
+        "18", "18-а", "18-б",
+        "19", "19-а", "19-б",
+        "20", "20-а", "20-б",
+    ]
+
     subject_names = [
         "Математика",
         "Физика",
@@ -50,6 +74,7 @@ class F: #TODO: перенести в инит предметы
         "Английский язык",
         "Обществознание",
     ]
+
 
     @classmethod
     def _rand_subject_id(cls):
@@ -96,29 +121,21 @@ class F: #TODO: перенести в инит предметы
 
         return _list
 
-    @classmethod
-    async def fake_subjects(cls):
-        async for session in sm.get_async_session():
-            request_data_list = [
-                SubjectCreateRequest(name=name) for name in cls.subject_names
-            ]
-            await subject_repository.create_many(session, request_data_list)
+
 
     @classmethod
-    async def fake_teachers(cls, count: int):
-        async for session in sm.get_async_session():
-            teacher_names: List[Dict] = cls._get_teacher_names(count)
-            request_data_list = [
-                TeacherCreateRequest(
-                    first_name=full_name["first_name"],
-                    last_name=full_name["last_name"],
-                    patronymic=full_name["patronymic"],
-                    subjects=cls._make_teacher_subjects(),
-                )
-                for full_name in teacher_names
-            ]
-
-            await teacher_repository.create_many(session, request_data_list)
+    async def fake_teachers(cls, session: AsyncSession, count: int):
+        teacher_names: List[Dict] = cls._get_teacher_names(count)
+        request_data_list = [
+            TeacherCreateRequest(
+                first_name=full_name["first_name"],
+                last_name=full_name["last_name"],
+                patronymic=full_name["patronymic"],
+                subjects=cls._make_teacher_subjects(),
+            )
+            for full_name in teacher_names
+        ]
+        await teacher_repository.create_many(session, request_data_list)
 
     # @classmethod
     # async def fake_student_groups(cls, count: int):
@@ -130,12 +147,17 @@ class F: #TODO: перенести в инит предметы
     #         )
 
     @classmethod
-    async def fake_lessons(cls, session):
+    async def fake_lessons(cls, session: AsyncSession):
         pass
 
     @classmethod
     async def generate_fake_data(cls):
-        await cls.fake_subjects()
-        await cls.fake_teachers(count=TEACHERS_COUNT)
-        # await cls.fake_student_groups(session)
-        # await cls.fake_lessons(session)
+        async for session in session_manager.get_async_session():
+
+            await MassInit.init_classrooms(session, cls.classroom_names)
+            await MassInit.init_subjects(session, cls.subject_names)
+
+            await cls.fake_teachers(session, count=TEACHERS_COUNT)
+            # await cls.fake_student_groups(session)
+            # await cls.fake_lessons(session)
+

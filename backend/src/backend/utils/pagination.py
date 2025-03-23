@@ -17,7 +17,7 @@ def get_pagination(
     limit: int = Query(
         10, ge=1, le=100, description="Количество элементов на странице"
     ),
-    order_by: Optional[str] = Query(None, description="Поле для сортировки"),
+    order_by: Optional[str] = Query("id", description="Поле для сортировки"),
     desc: bool = Query(False, description="Сортировка по убыванию"),
 ) -> PaginationParams:
     return PaginationParams(offset=offset, limit=limit, order_by=order_by, desc=desc)
