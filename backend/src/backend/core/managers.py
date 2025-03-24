@@ -2,22 +2,26 @@ import asyncio
 import pathlib
 import pkgutil
 from importlib import import_module
+from typing import List
 
 from fastapi import FastAPI
 from sqlalchemy import inspect, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.api.depends.repository import classroom_repository, subject_repository
 from backend.core.config import settings
-from backend.core.pathes import base_pathes
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
+from backend.core.pathes import base_pathes
 from backend.entities.base import Base
+from backend.entities.classroom.schemas import ClassroomCreateRequest
+from backend.entities.subject.schemas import SubjectCreateRequest
 from backend.utils.common_utils import path_to_dotted_string
-
 
 logger = get_logger(__name__)
 
-class ImportManager:
 
+class ImportManager:
     @classmethod
     def _import_routers(cls, app: FastAPI):
         from backend.api.api_v1 import __path__ as api_path
@@ -42,7 +46,6 @@ class ImportManager:
 
         recursive_import(api_path, path_to_dotted_string(settings.api_config.api_path))
 
-
     @classmethod
     def _import_entity_models(cls):
         for app_dir in base_pathes.entities_dir.iterdir():
@@ -57,6 +60,31 @@ class ImportManager:
         cls._import_routers(app)
         cls._import_entity_models()
 
+
+class EntitiesInitManager:
+    @classmethod
+    async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
+        request_data_list = [
+            ClassroomCreateRequest(name=name) for name in classroom_names
+        ]
+
+        await classroom_repository.create_many(session, request_data_list)
+
+    @classmethod
+    async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
+        request_data_list = [SubjectCreateRequest(name=name) for name in subject_names]
+        await subject_repository.create_many(session, request_data_list)
+
+    @classmethod
+    async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
+        """
+        принимает нормер недели
+        функция работает по недельно. сначала проверяет наличие записи, если нет
+        создает неделю уроков. с пн по пт.
+        нужно учесть школьные смены и воскресенье.
+        """
+        request_data_list = [SubjectCreateRequest(name=name) for name in subject_names]
+        await subject_repository.create_many(session, request_data_list)
 
 
 class DatabaseManager:
@@ -85,7 +113,6 @@ class DatabaseManager:
                 logger.error(f"❌ Error occurred: {e}")
                 raise
 
-
     @staticmethod
     async def check_db_tables() -> bool:
         async with session_manager.async_engine.connect() as conn:
@@ -103,12 +130,10 @@ class DatabaseManager:
                 return True
         return False
 
-
     @staticmethod
     async def check_connection() -> None:
         async for session in session_manager.get_async_session():
             await session.execute(text("SELECT 1"))
-
 
 
 if __name__ == "__main__":

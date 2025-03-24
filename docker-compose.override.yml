@@ -6,8 +6,7 @@ services:
       - "8000:8000"
     environment:
       - UV_COMPILE_BYTECODE=0
-    command: fastapi dev --host 0.0.0.0 /app/src/backend
-    restart: no
+    command: uvicorn app.src.backend:app --host 0.0.0.0 --port 8000 --reload
     develop:
       watch:
         - action: sync
@@ -16,6 +15,5 @@ services:
           ignore:
             - .venv
             - ./backend/.venv
-
         - action: rebuild
           path: ./backend/pyproject.toml

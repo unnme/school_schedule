@@ -8,7 +8,6 @@ from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.managers import DatabaseManager, ImportManager
-
 from tests.main import F
 
 logger = get_logger(__name__)

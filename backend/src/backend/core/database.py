@@ -38,5 +38,4 @@ class SessionManager:
         await self.async_engine.dispose()
 
 
-
 session_manager = SessionManager()

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
+from backend.core.database import DatabaseManager
 from backend.core.exceptions import DatabaseConnectionError
 from backend.core.logging_config import get_logger
-from backend.core.managers import DatabaseManager
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/utils", tags=["utils"])
