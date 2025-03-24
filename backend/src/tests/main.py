@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.api.depends.repository import teacher_repository
 from backend.core.database import session_manager
+from backend.core.managers import EntitiesInitManager
 from backend.entities.teacher.schemas import TeacherCreateRequest
-from backend.services.init_services import MassInit
 
 TEACHERS_COUNT = 10
 fake = Faker("ru_RU")
@@ -189,8 +189,8 @@ class F:
     @classmethod
     async def generate_fake_data(cls):
         async for session in session_manager.get_async_session():
-            await MassInit.init_classrooms(session, cls.classroom_names)
-            await MassInit.init_subjects(session, cls.subject_names)
+            await EntitiesInitManager.init_classrooms(session, cls.classroom_names)
+            await EntitiesInitManager.init_subjects(session, cls.subject_names)
 
             await cls.fake_teachers(session, count=TEACHERS_COUNT)
             # await cls.fake_student_groups(session)
