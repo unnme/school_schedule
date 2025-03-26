@@ -29,6 +29,7 @@ logger = get_logger(__name__)
 
 
 # INFO: sqlalchemy
+
 class Base(DeclarativeBase):
     __abstract__ = True
 
@@ -42,10 +43,13 @@ class Base(DeclarativeBase):
 
 
 # INFO: pydantic
+
 class CustomBaseModel(BaseModel):
     class Config:
         from_attributes = True
 
+
+# INFO: BASEs
 
 class BaseRepository(ABC):
     def __init__(self, sql_model: Type[Any]) -> None:
@@ -104,6 +108,41 @@ class BaseRepository(ABC):
 
         return entity
 
+    def _get_related_model(self, field_name: str):
+        relationship_prop = self.sql_model.__mapper__.relationships.get(field_name)
+        if not relationship_prop:
+            raise ValueError(f"Не найдено отношение для поля '{field_name}' в модели {self.sql_model.__name__}")
+
+        return relationship_prop.mapper.class_
+
+    async def update_fields(self, session: AsyncSession, id: int, request_data):
+        entity = await self.get_by_id(session, id)
+
+        for k, v in request_data.model_dump(exclude_none=True).items():
+            if hasattr(entity, k):
+                attr = getattr(entity, k)
+
+                if isinstance(attr, list) and isinstance(v, list):  # Если поле — список (многие ко многим или один ко многим)
+                    related_model = self._get_related_model(k)  # Получаем модель связанной таблицы
+                    existing_items = {item.id: item for item in attr}  # Текущие объекты связи
+
+                    for item_data in v:
+                        item_id = item_data.get("id")
+                        if item_id and item_id in existing_items:
+                            # Обновляем существующий объект
+                            for field, value in item_data.items():
+                                setattr(existing_items[item_id], field, value)
+                        else:
+                            # Создаём новый объект и добавляем в список
+                            new_item = related_model(**item_data)
+                            attr.append(new_item)
+
+                else:
+                    setattr(entity, k, v)  # Обычные поля
+
+        return entity
+
+
     async def list_all(
         self,
         session: AsyncSession,
@@ -130,7 +169,6 @@ class BaseRepository(ABC):
     # async def delete(self, session: AsyncSession, id: int) -> Any:
     #     pass
 
-
 class BaseValidator(ABC):
     def __init__(self, func, *args, **kwargs):
         bound_args = get_bound_arguments(func, *args, **kwargs)
@@ -147,9 +185,8 @@ class BaseValidator(ABC):
 
         self.id = next(
             (
-                value
-                for key, value in bound_args.arguments.items()
-                if key.endswith("_id")
+                v for k, v in bound_args.arguments.items()
+                if k.endswith("_id")
             ),
             None,
         )

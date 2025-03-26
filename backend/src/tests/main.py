@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.api.depends.repository import teacher_repository
 from backend.core.database import session_manager
 from backend.core.managers import EntitiesInitManager
-from backend.entities.teacher.schemas import TeacherCreateRequest
+from backend.entities.teacher.schemas import TeacherPostRequest
 
 TEACHERS_COUNT = 10
 fake = Faker("ru_RU")
@@ -161,17 +161,18 @@ class F:
 
     @classmethod
     async def fake_teachers(cls, session: AsyncSession, count: int):
-        teacher_names: List[Dict] = cls._get_teacher_names(count)
-        request_data_list = [
-            TeacherCreateRequest(
-                first_name=full_name["first_name"],
-                last_name=full_name["last_name"],
-                patronymic=full_name["patronymic"],
-                subjects=cls._make_teacher_subjects(),
-            )
-            for full_name in teacher_names
-        ]
-        await teacher_repository.create_many(session, request_data_list)
+        async with session.begin():
+            teacher_names: List[Dict] = cls._get_teacher_names(count)
+            request_data_list = [
+                TeacherPostRequest(
+                    first_name=full_name["first_name"],
+                    last_name=full_name["last_name"],
+                    patronymic=full_name["patronymic"],
+                    subjects=cls._make_teacher_subjects(),
+                )
+                for full_name in teacher_names
+            ]
+            await teacher_repository.create_many(session, request_data_list)
 
     # @classmethod
     # async def fake_student_groups(cls, count: int):

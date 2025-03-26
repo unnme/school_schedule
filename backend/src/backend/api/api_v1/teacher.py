@@ -1,13 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from backend.core.depends import AsyncSessionDep
 from backend.entities.teacher.schemas import (
-    TeacherCreateRequest,
+    TeacherPostRequest,
     TeacherCreateResponse,
-    TeacherDeleteResponse,
     TeacherResponse,
-    TeacherUpdateRequest,
     TeacherUpdateResponse,
+    TeacherPutRequest,
 )
 from backend.entities.teacher.services import TeacherManager
 from backend.utils.pagination import PaginationParamsDep
@@ -15,37 +14,30 @@ from backend.utils.pagination import PaginationParamsDep
 router = APIRouter(prefix="/teachers", tags=["Учителя"])
 
 
-@router.post("/", response_model=TeacherCreateResponse)
+@router.post("/", response_model=TeacherCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_teacher(
-    session: AsyncSessionDep, request_data: TeacherCreateRequest
+    session: AsyncSessionDep, request_data: TeacherPostRequest
 ) -> TeacherCreateResponse:
-    created_teacher = await TeacherManager.create_teacher(session, request_data)
-    return TeacherCreateResponse(
-        message="Учитель успешно создан.", data=created_teacher
-    )
-
+    return await TeacherManager.create_teacher(session, request_data)
 
 @router.get("/", response_model=list[TeacherResponse])
 async def list_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
     teachers = await TeacherManager.list_teachers(session, params)
     return teachers
 
+#TODO: router.patch
 
 @router.put("/{teacher_id}", response_model=TeacherUpdateResponse)
 async def update_teacher(
-    session: AsyncSessionDep, teacher_id: int, request_data: TeacherUpdateRequest
+    session: AsyncSessionDep, teacher_id: int, request_data: TeacherPutRequest
 ) -> TeacherUpdateResponse:
-    updated_teacher = await TeacherManager.update_teacher(
+    return await TeacherManager.update_teacher(
         session, teacher_id, request_data
     )
-    return TeacherUpdateResponse(
-        message="Учитель успешно обновлен", data=updated_teacher
-    )
 
 
-@router.delete("/{teacher_id}", response_model=TeacherDeleteResponse)
+@router.delete("/{teacher_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_teacher(
     session: AsyncSessionDep, teacher_id: int
-) -> TeacherDeleteResponse:
-    deleted_teacher = await TeacherManager.delete_teacher(session, teacher_id)
-    return TeacherDeleteResponse(message="Учитель успешно удален", data=deleted_teacher)
+) -> None:
+    await TeacherManager.delete_teacher(session, teacher_id)

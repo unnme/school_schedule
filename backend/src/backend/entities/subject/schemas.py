@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Optional, get_type_hints
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -45,16 +45,18 @@ class SubjectRequest(SubjectBaseSchema):
 # INFO: CREATErequest
 
 
-class SubjectCreateRequest(SubjectRequest):
+class SubjectPostRequest(SubjectRequest):
     pass
 
 
 # INFO: UPDATErequest
 
 
-class SubjectUpdateRequest(SubjectRequest):
+class SubjectPutRequest(SubjectRequest):
     pass
 
+class SubjectPatchRequest(SubjectRequest):
+    __annotations__ = {k: Optional[v] for k, v in get_type_hints(SubjectRequest).items()}
 
 # INFO: RESPONSE
 
@@ -87,34 +89,13 @@ class SubjectResponse(SubjectBaseSchema):
 # INFO: CREATEresponse
 
 
-class _SubjectCreateResponse(SubjectBaseSchema):
+class SubjectCreateResponse(SubjectBaseSchema):
     id: int
-
-
-class SubjectCreateResponse(CustomBaseModel):
-    message: str
-    data: _SubjectCreateResponse
 
 
 # INFO: UPDATEresponse
 
 
-class _SubjectUpdateResponse(SubjectResponse):
+class SubjectUpdateResponse(SubjectResponse):
     pass
 
-
-class SubjectUpdateResponse(CustomBaseModel):
-    message: str
-    data: _SubjectUpdateResponse
-
-
-# INFO: DELETEresponse
-
-
-class _SubjectDeleteResponse(SubjectBaseSchema):
-    id: int
-
-
-class SubjectDeleteResponse(CustomBaseModel):
-    message: str
-    data: _SubjectDeleteResponse

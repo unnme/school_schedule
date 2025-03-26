@@ -3,44 +3,43 @@ from typing import List, Optional
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.utils.pagination import PaginationParamsDep
 from backend.entities.base import BaseRepository
 from backend.entities.relations.models import TeacherSubject
 from backend.entities.teacher.models import Teacher
 from backend.entities.teacher.schemas import (
-    TeacherCreateRequest,
+    TeacherPostRequest,
     TeacherRequest,
-    TeacherUpdateRequest,
+    TeacherPatchRequest,
+    TeacherPutRequest,
 )
-from backend.utils.pagination import PaginationParamsDep
-
 
 class TeacherRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Teacher)
 
-    async def create_many(
-        self, session: AsyncSession, request_data_list: List[TeacherCreateRequest]
-    ):
-        async with session.begin():
-            teachers = [self._set_name(data) for data in request_data_list]
-            session.add_all(teachers)
-            await session.flush()
-
-            for teacher, request_data in zip(teachers, request_data_list):
-                await self._update_teacher_subjects(session, request_data, teacher)
-
     async def create(
-        self, session: AsyncSession, request_data: TeacherCreateRequest
+        self, session: AsyncSession, request_data: TeacherPostRequest
     ) -> Teacher:
-        async with session.begin():
-            teacher: Teacher = self._set_name(request_data)
-            session.add(teacher)
-            await session.flush()
-            await self._update_teacher_subjects(session, request_data, teacher)
+        teacher: Teacher = self._set_name(request_data)
+        session.add(teacher)
+        await session.flush()
+        await self._update_teacher_subjects(session, request_data, teacher)
 
         teacher = await self.get_by_id(session, teacher.id, load_strategy="selectin")
 
         return teacher
+
+    async def create_many(
+        self, session: AsyncSession, request_data_list: List[TeacherPostRequest]
+    ):
+        teachers = [self._set_name(data) for data in request_data_list]
+        session.add_all(teachers)
+        await session.flush()
+
+        for teacher, request_data in zip(teachers, request_data_list):
+            await self._update_teacher_subjects(session, request_data, teacher)
+
 
     async def list_teachers(
         self, session: AsyncSession, pagination: PaginationParamsDep
@@ -48,30 +47,25 @@ class TeacherRepository(BaseRepository):
         teachers = await self.list_all(session, pagination, load_strategy="selectin")
         return teachers
 
+
     async def update(
-        self, session: AsyncSession, id: int, request_data: TeacherUpdateRequest
+        self, session: AsyncSession, id: int, request_data: TeacherPutRequest
     ) -> Teacher:
-        async with session.begin():
-            teacher = await self.get_by_id(session, id, load_strategy="selectin")
+        teacher = await self.get_by_id(session, id, load_strategy="selectin")
 
-            self._set_name(request_data, teacher)
-            self._set_active_flag(request_data, teacher)
+        self._set_name(request_data, teacher)
+        self._set_active_flag(request_data, teacher)
 
-            await self._update_teacher_subjects(session, request_data, teacher)
-            await session.refresh(teacher)
+        await self._update_teacher_subjects(session, request_data, teacher)
 
-            return teacher
+        return teacher
 
-    async def delete(self, session: AsyncSession, id: int) -> Teacher:
-        teacher = await self.get_by_id(session, id)
-        deleted_data = {
-            key: value
-            for key, value in teacher.__dict__.items()
-            if not key.startswith("_")
-        }
-        await session.delete(teacher)
-        await session.commit()
-        return Teacher(**deleted_data)
+    async def update_teacher_fields(
+        self, session: AsyncSession, id: int, request_data: TeacherPatchRequest
+    ) -> Teacher:
+        teacher = await self.update_fields(session, id, request_data)
+        return teacher 
+
 
     def _set_name(
         self, request_data: TeacherRequest, teacher: Optional[Teacher] = None
@@ -97,10 +91,10 @@ class TeacherRepository(BaseRepository):
     async def _update_teacher_subjects(
         self,
         session: AsyncSession,
-        request_data: TeacherCreateRequest | TeacherUpdateRequest,
+        request_data: TeacherPostRequest | TeacherPutRequest,
         teacher: Teacher,
     ) -> None:
-        if isinstance(request_data, TeacherCreateRequest):
+        if isinstance(request_data, TeacherPostRequest):
             teacher_subjects = [
                 TeacherSubject(
                     teacher_id=teacher.id,
@@ -113,7 +107,7 @@ class TeacherRepository(BaseRepository):
             session.add_all(teacher_subjects)
             await session.flush()
 
-        elif isinstance(request_data, TeacherUpdateRequest):
+        elif isinstance(request_data, TeacherPutRequest):
             request_subj_and_hours: dict = {
                 subj.id: subj.teaching_hours for subj in request_data.subjects
             }

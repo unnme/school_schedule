@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Optional, get_type_hints
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -53,10 +53,28 @@ class TeacherRequest(TeacherBaseSchema):
         return value
 
 
+# INFO: CREATErequest
+
+
+class TeacherPostRequest(TeacherRequest):
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "first_name": "Дмитрий",
+                "last_name": "Мамин-Сибиряк",
+                "patronymic": "Наркисович",
+                "subjects": [
+                    {"id": 1, "teaching_hours": 22},
+                    {"id": 4, "teaching_hours": 13},
+                ],
+            }
+        }
+    }
+
+
 # INFO: UPDATErequest
 
-
-class TeacherUpdateRequest(TeacherRequest):
+class _TeacherUpdateRequest(TeacherRequest):
     is_active: bool
 
     model_config = {
@@ -65,7 +83,7 @@ class TeacherUpdateRequest(TeacherRequest):
                 "first_name": "Дмитрий",
                 "last_name": "Мамин-Сибиряк",
                 "patronymic": "Наркисович",
-                "is_active": True,  # Важно
+                "is_active": True,
                 "subjects": [
                     {"id": 1, "teaching_hours": 22},
                     {"id": 4, "teaching_hours": 13},
@@ -74,24 +92,11 @@ class TeacherUpdateRequest(TeacherRequest):
         }
     }
 
+class TeacherPutRequest(_TeacherUpdateRequest):
+    pass
 
-# INFO: CREATErequest
-
-
-class TeacherCreateRequest(TeacherRequest):
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "first_name": "Дмитрий",
-                "last_name": "Мамин-Сибиряк",
-                "patronymic": "Наркисович",
-                "subjects": [
-                    {"id": 1, "teaching_hours": 22},
-                    {"id": 4, "teaching_hours": 13},
-                ],
-            }
-        }
-    }
+class TeacherPatchRequest(_TeacherUpdateRequest):
+    __annotations__ = {k: Optional[v] for k, v in get_type_hints(TeacherRequest).items()}
 
 
 # INFO: RESPONSE
@@ -106,32 +111,12 @@ class TeacherResponse(TeacherBaseSchema):
 # INFO: UPDATEresponse
 
 
-class _TeacherUpdateResponse(TeacherResponse):
+class TeacherUpdateResponse(TeacherResponse):
     pass
-
-
-class TeacherUpdateResponse(CustomBaseModel):
-    message: str
-    data: _TeacherUpdateResponse
 
 
 # INFO: CREATEresponse
-class _TeacherCreateResponse(TeacherResponse):
+class TeacherCreateResponse(TeacherResponse):
     pass
 
 
-class TeacherCreateResponse(CustomBaseModel):
-    message: str
-    data: _TeacherCreateResponse
-
-
-# INFO: DELETEresponse
-
-
-class _TeacherDeleteResponse(TeacherBaseSchema):
-    id: int
-
-
-class TeacherDeleteResponse(CustomBaseModel):
-    message: str
-    data: _TeacherDeleteResponse

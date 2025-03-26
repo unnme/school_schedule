@@ -15,7 +15,7 @@ from backend.core.logging_config import get_logger
 from backend.core.pathes import base_pathes
 from backend.entities.base import Base
 from backend.entities.classroom.schemas import ClassroomCreateRequest
-from backend.entities.subject.schemas import SubjectCreateRequest
+from backend.entities.subject.schemas import SubjectPostRequest
 from backend.utils.common_utils import path_to_dotted_string
 
 logger = get_logger(__name__)
@@ -72,8 +72,9 @@ class EntitiesInitManager:
 
     @classmethod
     async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
-        request_data_list = [SubjectCreateRequest(name=name) for name in subject_names]
-        await subject_repository.create_many(session, request_data_list)
+        async with session.begin():
+            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+            await subject_repository.create_many(session, request_data_list)
 
     @classmethod
     async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
@@ -83,8 +84,10 @@ class EntitiesInitManager:
         создает неделю уроков. с пн по пт.
         нужно учесть школьные смены и воскресенье.
         """
-        request_data_list = [SubjectCreateRequest(name=name) for name in subject_names]
-        await subject_repository.create_many(session, request_data_list)
+        async with session.begin():
+
+            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+            await subject_repository.create_many(session, request_data_list)
 
 
 class DatabaseManager:

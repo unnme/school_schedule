@@ -10,7 +10,6 @@ dependencies = [
     "asyncpg (>=0.30.0,<0.31.0)",
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "orjson>=3.10.15",
-    "gunicorn>=23.0.0",
     "fastapi>=0.115.12",
     "pydantic[email]>=2.10.6",
 ]
