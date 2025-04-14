@@ -21,8 +21,7 @@ async def create_teacher(session: AsyncSessionDep, request_data: TeacherPostRequ
 
 @router.get("/", response_model=list[TeacherResponse])
 async def list_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
-    teachers = await TeacherManager.list_teachers(session, params)
-    return teachers
+    return await TeacherManager.list_teachers(session, params)
 
 
 # TODO: router.patch

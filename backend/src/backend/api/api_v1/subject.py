@@ -17,7 +17,7 @@ from backend.entities.subject.schemas import (
 router = APIRouter(prefix="/subjects", tags=["Учебные дисциплины"])
 
 
-@router.post("/", response_model=SubjectUpdateResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=SubjectCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_subject(session: AsyncSessionDep, request_data: SubjectPostRequest) -> SubjectCreateResponse:
     return await SubjectManager.create_subject(session, request_data)
 
@@ -31,8 +31,7 @@ async def list_subjects(pagination: PaginationParamsDep, session: AsyncSessionDe
 async def update_subject(
     session: AsyncSessionDep, subject_id: int, request_data: SubjectPutRequest
 ) -> SubjectUpdateResponse:
-    updated_subject = await SubjectManager.update_subject(session, subject_id, request_data)
-    return updated_subject
+    return await SubjectManager.update_subject(session, subject_id, request_data)
 
 
 @router.delete("/{subject_id}", status_code=status.HTTP_204_NO_CONTENT)

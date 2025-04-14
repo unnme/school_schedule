@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from backend.api.depends import AsyncSessionDep
 from backend.entities.lesson.schemas import (
@@ -14,7 +14,7 @@ from backend.utils.pagination import PaginationParamsDep
 router = APIRouter(prefix="/lessons", tags=["Уроки"])
 
 
-@router.post("/", response_model=LessonCreateResponse)
+@router.post("/", response_model=LessonCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_lesson(session: AsyncSessionDep, request_data: LessonPostRequest) -> LessonCreateResponse:
     return await LessonManager.create_lesson(session, request_data)
 

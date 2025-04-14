@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.base import BaseRepository
 from backend.entities.subject.models import Subject
-from backend.entities.subject.schemas import SubjectPatchRequest, SubjectPostRequest, SubjectPutRequest
+from backend.entities.subject.schemas import SubjectPostRequest, SubjectPutRequest
 from backend.utils.pagination import PaginationParamsDep
 
 
@@ -28,11 +28,6 @@ class SubjectRepository(BaseRepository):
     async def update(self, session: AsyncSession, id: int, request_data: SubjectPutRequest) -> Subject:
         subject = await self.get_by_id(session, id, load_strategy="selectin")
         subject.name = request_data.name
-        session.add(subject)
-        return subject
-
-    async def update_subject_fields(self, session: AsyncSession, id: int, request_data: SubjectPatchRequest) -> Subject:
-        subject = await self.update_fields(session, id, request_data)
         session.add(subject)
         return subject
 

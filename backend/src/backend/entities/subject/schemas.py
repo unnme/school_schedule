@@ -5,8 +5,8 @@ from fastapi import HTTPException
 from pydantic import Field, field_validator
 
 from backend.entities.base import CustomBaseModel
-from backend.entities.classroom.schemas import ClassroomIDResponse
 from backend.entities.relations.schemas import (
+    ClassroomIDResponse,
     StudentGroupWithHoursResponse,
     TeacherWithHoursResponse,
 )

@@ -21,8 +21,7 @@ async def create_classroom(session: AsyncSessionDep, request_data: ClassroomPost
 
 @router.get("/", response_model=list[ClassroomResponse])
 async def list_classrooms(session: AsyncSessionDep, params: PaginationParamsDep):
-    classrooms = await ClassroomManager.list_classrooms(session, params)
-    return classrooms
+    return await ClassroomManager.list_classrooms(session, params)
 
 
 @router.put("/{classroom_id}", response_model=ClassroomUpdateResponse)

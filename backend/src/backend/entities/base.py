@@ -142,7 +142,7 @@ class BaseValidator(ABC):
             self.request_data = request_data
 
         self.id = next(
-            (v for k, v in bound_args.arguments.items() if k.endswith("_id")),
+            (v for k, v in bound_args.arguments.items() if k.endswith("id")),
             None,
         )
 

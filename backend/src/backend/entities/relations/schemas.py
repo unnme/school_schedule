@@ -26,6 +26,10 @@ class SubjectIDResponse(CustomBaseModel):
     id: int = Field(..., description="ID предмета")
 
 
+class ClassroomIDResponse(CustomBaseModel):
+    id: int = Field(..., description="ID предмета")
+
+
 class TeacherWithHoursResponse(CustomBaseModel):
     teacher_id: int = Field(..., description="ID преподавателя")
     teaching_hours: int = Field(..., ge=0, description="Количество часов преподавания")

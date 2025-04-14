@@ -65,10 +65,6 @@ class ClassroomResponse(ClassroomBaseSchema):
     subjects: List[SubjectIDResponse]
 
 
-class ClassroomIDResponse(CustomBaseModel):
-    id: int
-
-
 # INFO: UPDATEresponse
 
 

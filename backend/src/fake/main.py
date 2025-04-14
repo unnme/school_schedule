@@ -6,7 +6,7 @@ from faker.providers import BaseProvider
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.database import session_manager
-from backend.entities.classroom.schemas import ClassroomCreateRequest
+from backend.entities.classroom.schemas import ClassroomPostRequest
 from backend.entities.subject.schemas import SubjectPostRequest
 from backend.entities.teacher.schemas import TeacherPostRequest
 from backend.entities.teacher.repository import teacher_repository
@@ -204,7 +204,7 @@ class F:
 class EntitiesInit:
     @classmethod
     async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
-        request_data_list = [ClassroomCreateRequest(name=name) for name in classroom_names]
+        request_data_list = [ClassroomPostRequest(name=name) for name in classroom_names]
 
         await classroom_repository.create_many(session, request_data_list)
 
