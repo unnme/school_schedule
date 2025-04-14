@@ -2,7 +2,6 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.api.depends.repository import student_group_repository
 from backend.entities.student_group.schemas import (
     StudentGroupCreateRequest,
     StudentGroupResponse,
@@ -13,6 +12,7 @@ from backend.entities.student_group.schemas import (
 )
 from backend.entities.student_group.validators import validate_student_group_request
 from backend.utils.pagination import PaginationParamsDep
+from backend.entities.student_group.repository import student_group_repository
 
 
 class StudentGroupManager:
@@ -39,14 +39,10 @@ class StudentGroupManager:
         request_data: StudentGroupUpdateRequest,
     ) -> _StudentGroupUpdateResponse:
         async with session.begin():
-            student_group = await student_group_repository.update(
-                session, id, request_data
-            )
+            student_group = await student_group_repository.update(session, id, request_data)
             return _StudentGroupUpdateResponse.model_validate(student_group)
 
     @classmethod
-    async def delete_student_group(
-        cls, session: AsyncSession, id: int
-    ) -> _StudentGroupDeleteResponse:
+    async def delete_student_group(cls, session: AsyncSession, id: int) -> _StudentGroupDeleteResponse:
         student_group = await student_group_repository.delete(session, id)
         return _StudentGroupDeleteResponse.model_validate(student_group)

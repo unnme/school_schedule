@@ -21,39 +21,23 @@ class ClassroomRepository(BaseRepository):
         pass
 
     async def _set_capacity(self, classroom, request_data):
-        if (
-            request_data.capacity is not None
-            and request_data.capacity != classroom.capacity
-        ):
+        if request_data.capacity is not None and request_data.capacity != classroom.capacity:
             classroom.capacity = request_data.capacity
 
-    async def create_many(
-        self, session: AsyncSession, request_data_list: List[ClassroomCreateRequest]
-    ):
+    async def create_many(self, session: AsyncSession, request_data_list: List[ClassroomCreateRequest]):
         async with session.begin():
-            classrooms = [
-                self.sql_model(name=data.name, capacity=data.capacity)
-                for data in request_data_list
-            ]
+            classrooms = [self.sql_model(name=data.name, capacity=data.capacity) for data in request_data_list]
             session.add_all(classrooms)
 
-    async def create(
-        self, session: AsyncSession, request_data: ClassroomCreateRequest
-    ) -> Classroom:
-        classroom = self.sql_model(
-            name=request_data.name, capacity=request_data.capacity
-        )
+    async def create(self, session: AsyncSession, request_data: ClassroomCreateRequest) -> Classroom:
+        classroom = self.sql_model(name=request_data.name, capacity=request_data.capacity)
         session.add(classroom)
         await session.commit()
 
-        classroom = await self.get_by_id(
-            session, classroom.id, load_strategy="selectin"
-        )
+        classroom = await self.get_by_id(session, classroom.id, load_strategy="selectin")
         return classroom
 
-    async def list_classrooms(
-        self, session: AsyncSession, pagination: PaginationParamsDep
-    ):
+    async def list_classrooms(self, session: AsyncSession, pagination: PaginationParamsDep):
         classrooms = await self.list_all(session, pagination, load_strategy="selectin")
         return classrooms
 
@@ -74,11 +58,10 @@ class ClassroomRepository(BaseRepository):
 
     async def delete(self, session: AsyncSession, id: int) -> Classroom:
         classroom = await self.get_by_id(session, id)
-        deleted_data = {
-            key: value
-            for key, value in classroom.__dict__.items()
-            if not key.startswith("_")
-        }
+        deleted_data = {key: value for key, value in classroom.__dict__.items() if not key.startswith("_")}
         await session.delete(classroom)
         await session.commit()
         return Classroom(**deleted_data)
+
+
+classroom_repository = ClassroomRepository()

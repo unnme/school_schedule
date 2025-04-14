@@ -34,20 +34,17 @@ services:
     env_file:
       - .env
     environment:
-      # 🔹 Общие настройки приложения
       - DOMAIN=${DOMAIN}
       - ENVIRONMENT=${ENVIRONMENT}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
       - SECRET_KEY=${SECRET_KEY}
 
-      # 🔹 Настройки БД
       - POSTGRES_SERVER=db
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
-      # 🔹 Мониторинг и логирование
       - SENTRY_DSN=${SENTRY_DSN}
 
   backend:
@@ -63,20 +60,17 @@ services:
     env_file:
       - .env
     environment:
-      # 🔹 Общие настройки приложения
       - DOMAIN=${DOMAIN}
       - ENVIRONMENT=${ENVIRONMENT}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
       - SECRET_KEY=${SECRET_KEY}
 
-      # 🔹 Настройки БД
       - POSTGRES_SERVER=db
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
-      # 🔹 Мониторинг и логирование
       - SENTRY_DSN=${SENTRY_DSN}
 
     healthcheck:

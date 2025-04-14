@@ -8,7 +8,6 @@ from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.managers import DatabaseManager, ImportManager
-from tests.main import F
 
 logger = get_logger(__name__)
 
@@ -20,7 +19,6 @@ async def lifespan(app: FastAPI):
 
         if not await DatabaseManager.check_db_tables():
             await DatabaseManager.create_db_tables()
-            await F.generate_fake_data()
 
     ImportManager.base_init(app)
     yield

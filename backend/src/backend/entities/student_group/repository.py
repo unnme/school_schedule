@@ -18,30 +18,18 @@ class StudentGroupRepository(BaseRepository):
     async def _update_capacity(self, student_group, request_data):
         student_group.capacity = request_data.capacity
 
-    async def create(
-        self, session: AsyncSession, request_data: StudentGroupCreateRequest
-    ) -> StudentGroup:
+    async def create(self, session: AsyncSession, request_data: StudentGroupCreateRequest) -> StudentGroup:
         async with session.begin():
-            student_group = self.sql_model(
-                name=request_data.name, capacity=request_data.capacity
-            )
+            student_group = self.sql_model(name=request_data.name, capacity=request_data.capacity)
             session.add(student_group)
             await session.flush()
-            await self._update_student_group_subjects(
-                session, request_data, student_group
-            )
-        student_group = await self.get_by_id(
-            session, student_group.id, load_strategy="selectin"
-        )
+            await self._update_student_group_subjects(session, request_data, student_group)
+        student_group = await self.get_by_id(session, student_group.id, load_strategy="selectin")
 
         return student_group
 
-    async def list_student_groups(
-        self, session: AsyncSession, pagination: PaginationParamsDep
-    ):
-        student_groups = await self.list_all(
-            session, pagination, load_strategy="selectin"
-        )
+    async def list_student_groups(self, session: AsyncSession, pagination: PaginationParamsDep):
+        student_groups = await self.list_all(session, pagination, load_strategy="selectin")
         return student_groups
 
     async def update(
@@ -57,20 +45,14 @@ class StudentGroupRepository(BaseRepository):
             for field, value in update_data.items():
                 setattr(student_group, field, value)
 
-            await self._update_student_group_subjects(
-                session, request_data, student_group
-            )
+            await self._update_student_group_subjects(session, request_data, student_group)
             await session.refresh(student_group)
 
             return student_group
 
     async def delete(self, session: AsyncSession, id: int) -> StudentGroup:
         student_group = await self.get_by_id(session, id)
-        deleted_data = {
-            key: value
-            for key, value in student_group.__dict__.items()
-            if not key.startswith("_")
-        }
+        deleted_data = {key: value for key, value in student_group.__dict__.items() if not key.startswith("_")}
         await session.delete(student_group)
         await session.commit()
         return StudentGroup(**deleted_data)
@@ -95,23 +77,14 @@ class StudentGroupRepository(BaseRepository):
             await session.flush()
 
         elif isinstance(request_data, StudentGroupUpdateRequest):
-            request_subj_and_hours = {
-                subj.id: subj.study_hours for subj in request_data.subjects
-            }
-            existing_subjects_hours = {
-                subj.subject_id: subj.study_hours for subj in student_group.subjects
-            }
+            request_subj_and_hours = {subj.id: subj.study_hours for subj in request_data.subjects}
+            existing_subjects_hours = {subj.subject_id: subj.study_hours for subj in student_group.subjects}
 
-            subjects_to_remove = (
-                existing_subjects_hours.keys() - request_subj_and_hours.keys()
-            )
-            subjects_to_add = (
-                request_subj_and_hours.keys() - existing_subjects_hours.keys()
-            )
+            subjects_to_remove = existing_subjects_hours.keys() - request_subj_and_hours.keys()
+            subjects_to_add = request_subj_and_hours.keys() - existing_subjects_hours.keys()
             subjects_to_update = {
                 _id
-                for _id in request_subj_and_hours.keys()
-                & existing_subjects_hours.keys()
+                for _id in request_subj_and_hours.keys() & existing_subjects_hours.keys()
                 if request_subj_and_hours[_id] != existing_subjects_hours[_id]
             }
 
@@ -153,8 +126,9 @@ class StudentGroupRepository(BaseRepository):
                     }
                     for subject_id in subjects_to_add
                 ]
-                await session.execute(
-                    insert(StudentGroupSubject).values(new_associations)
-                )
+                await session.execute(insert(StudentGroupSubject).values(new_associations))
 
             await session.flush()
+
+
+student_group_repository = StudentGroupRepository()

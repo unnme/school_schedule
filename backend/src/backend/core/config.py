@@ -11,28 +11,7 @@ from backend.utils.common_utils import parse_cors
 
 
 class GlobalSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=str(base_pathes.env_file), env_file_encoding="utf-8", extra="ignore"
-    )
-
-
-class LoggingConfig(BaseSettings):
-    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
-    _LEVELS = {
-        "CRITICAL": 50,
-        "FATAL": 50,
-        "ERROR": 40,
-        "WARNING": 30,
-        "WARN": 30,
-        "INFO": 20,
-        "DEBUG": 10,
-        "NOTSET": 0,
-    }
-
-    @property
-    def log_level(self) -> int:
-        return self._LEVELS[self.LOG_LEVEL]
+    model_config = SettingsConfigDict(env_file=str(base_pathes.env_file), env_file_encoding="utf-8", extra="ignore")
 
 
 class BaseConfig(GlobalSettings):
@@ -75,11 +54,6 @@ class ApiConfig(GlobalSettings):
         """-> /api/v1"""
         return f"/{self.api_root_dir_name}/{self.API_VERSION}"
 
-    @property
-    def bearer_token_url(self) -> str:
-        """-> api/v1/auth/login"""
-        return f"{self.api_root_dir_name}/{self.API_VERSION}{self.login}"  # BUG: {self.auth}?
-
 
 class DatabaseConfig(GlobalSettings):
     POSTGRES_SERVER: str
@@ -107,7 +81,6 @@ class AppSettings(GlobalSettings):
     base: BaseConfig
     security: SecurityConfig
     database: DatabaseConfig
-    logging_config: LoggingConfig
 
 
 @lru_cache
@@ -117,7 +90,6 @@ def get_settings() -> AppSettings:
         security=SecurityConfig(),  # pyright: ignore
         database=DatabaseConfig(),  # pyright: ignore
         api_config=ApiConfig(),  # pyright: ignore
-        logging_config=LoggingConfig(),  # pyright: ignore
     )
 
 

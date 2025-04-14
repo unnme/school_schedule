@@ -2,7 +2,6 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.api.depends.repository import classroom_repository
 from backend.entities.classroom.schemas import (
     ClassroomCreateRequest,
     ClassroomResponse,
@@ -40,8 +39,6 @@ class ClassroomManager:
         return _ClassroomUpdateResponse.model_validate(subject)
 
     @classmethod
-    async def delete_classroom(
-        cls, session: AsyncSession, id: int
-    ) -> _ClassroomDeleteResponse:
+    async def delete_classroom(cls, session: AsyncSession, id: int) -> _ClassroomDeleteResponse:
         subject = await classroom_repository.delete(session, id)
         return _ClassroomDeleteResponse.model_validate(subject)

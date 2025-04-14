@@ -2,20 +2,16 @@ import asyncio
 import pathlib
 import pkgutil
 from importlib import import_module
-from typing import List
 
 from fastapi import FastAPI
-from sqlalchemy import inspect, text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
+from sqlalchemy import inspect as alchemy_inspect
 
-from backend.api.depends.repository import classroom_repository, subject_repository
 from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.pathes import base_pathes
 from backend.entities.base import Base
-from backend.entities.classroom.schemas import ClassroomCreateRequest
-from backend.entities.subject.schemas import SubjectPostRequest
 from backend.utils.common_utils import path_to_dotted_string
 
 logger = get_logger(__name__)
@@ -33,9 +29,7 @@ class ImportManager:
                     module = import_module(full_module_name)
 
                     if hasattr(module, "router"):
-                        app.include_router(
-                            module.router, prefix=settings.api_config.api_prefix
-                        )
+                        app.include_router(module.router, prefix=settings.api_config.api_prefix)
 
                     if is_pkg:
                         sub_path = [str(pathlib.Path(base_path[0]) / module_name)]
@@ -50,8 +44,7 @@ class ImportManager:
     def _import_entity_models(cls):
         for app_dir in base_pathes.entities_dir.iterdir():
             if app_dir.is_dir() and not app_dir.name.startswith("_"):
-                models_file = app_dir / "models.py"
-                if models_file.exists():
+                if (app_dir / "models.py").is_file():
                     module_name = f"backend.entities.{app_dir.name}.models"
                     import_module(module_name)
 
@@ -59,35 +52,6 @@ class ImportManager:
     def base_init(cls, app):
         cls._import_routers(app)
         cls._import_entity_models()
-
-
-class EntitiesInitManager:
-    @classmethod
-    async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
-        request_data_list = [
-            ClassroomCreateRequest(name=name) for name in classroom_names
-        ]
-
-        await classroom_repository.create_many(session, request_data_list)
-
-    @classmethod
-    async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
-        async with session.begin():
-            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-            await subject_repository.create_many(session, request_data_list)
-
-    @classmethod
-    async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
-        """
-        принимает нормер недели
-        функция работает по недельно. сначала проверяет наличие записи, если нет
-        создает неделю уроков. с пн по пт.
-        нужно учесть школьные смены и воскресенье.
-        """
-        async with session.begin():
-
-            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-            await subject_repository.create_many(session, request_data_list)
 
 
 class DatabaseManager:
@@ -121,12 +85,10 @@ class DatabaseManager:
         async with session_manager.async_engine.connect() as conn:
 
             def _get_existing_tables(conn):
-                table_names = inspect(conn).get_table_names()
+                table_names = alchemy_inspect(conn).get_table_names()
                 system_tables = {"alembic_version"}
 
-                if existing_tables := next(
-                    (name for name in table_names if name not in system_tables), None
-                ):
+                if existing_tables := next((name for name in table_names if name not in system_tables), None):
                     return existing_tables
 
             if await conn.run_sync(_get_existing_tables):

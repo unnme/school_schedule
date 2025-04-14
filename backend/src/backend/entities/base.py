@@ -28,7 +28,18 @@ from backend.utils.pagination import PaginationParamsDep
 logger = get_logger(__name__)
 
 
+class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
 # INFO: sqlalchemy
+
 
 class Base(DeclarativeBase):
     __abstract__ = True
@@ -44,6 +55,7 @@ class Base(DeclarativeBase):
 
 # INFO: pydantic
 
+
 class CustomBaseModel(BaseModel):
     class Config:
         from_attributes = True
@@ -51,13 +63,12 @@ class CustomBaseModel(BaseModel):
 
 # INFO: BASEs
 
+
 class BaseRepository(ABC):
     def __init__(self, sql_model: Type[Any]) -> None:
         self.sql_model = sql_model
 
-    def _apply_load_strategy(
-        self, stmt: Select, load_strategy: Optional[str] = None
-    ) -> Select:
+    def _apply_load_strategy(self, stmt: Select, load_strategy: Optional[str] = None) -> Select:
         model_relations = inspect(self.sql_model).relationships.keys()
         if not model_relations or load_strategy is None:
             return stmt
@@ -74,27 +85,18 @@ class BaseRepository(ABC):
             raise InvalidLoadStrategyException(load_strategy, load_methods.keys())
 
         load_method = load_methods[load_strategy]
-        options = [
-            load_method(getattr(self.sql_model, relation))
-            for relation in model_relations
-        ]
+        options = [load_method(getattr(self.sql_model, relation)) for relation in model_relations]
 
         return stmt.options(*options)
 
-    def _apply_pagination(
-        self, stmt: Select, pagination: PaginationParamsDep
-    ) -> Select:
+    def _apply_pagination(self, stmt: Select, pagination: PaginationParamsDep) -> Select:
         if pagination.order_by and hasattr(self.sql_model, pagination.order_by):
             order_clause = getattr(self.sql_model, pagination.order_by)
-            stmt = stmt.order_by(
-                order_clause.desc() if pagination.desc else order_clause
-            )
+            stmt = stmt.order_by(order_clause.desc() if pagination.desc else order_clause)
 
         return stmt.offset(pagination.offset).limit(pagination.limit)
 
-    async def get_by_id(
-        self, session: AsyncSession, id: int, load_strategy: Optional[str] = None
-    ):
+    async def get_by_id(self, session: AsyncSession, id: int, load_strategy: Optional[str] = None):
         stmt = select(self.sql_model).where(self.sql_model.id == id)
 
         if load_strategy is not None:
@@ -122,7 +124,9 @@ class BaseRepository(ABC):
             if hasattr(entity, k):
                 attr = getattr(entity, k)
 
-                if isinstance(attr, list) and isinstance(v, list):  # Если поле — список (многие ко многим или один ко многим)
+                if isinstance(attr, list) and isinstance(
+                    v, list
+                ):  # Если поле — список (многие ко многим или один ко многим)
                     related_model = self._get_related_model(k)  # Получаем модель связанной таблицы
                     existing_items = {item.id: item for item in attr}  # Текущие объекты связи
 
@@ -141,7 +145,6 @@ class BaseRepository(ABC):
                     setattr(entity, k, v)  # Обычные поля
 
         return entity
-
 
     async def list_all(
         self,
@@ -169,6 +172,7 @@ class BaseRepository(ABC):
     # async def delete(self, session: AsyncSession, id: int) -> Any:
     #     pass
 
+
 class BaseValidator(ABC):
     def __init__(self, func, *args, **kwargs):
         bound_args = get_bound_arguments(func, *args, **kwargs)
@@ -184,10 +188,7 @@ class BaseValidator(ABC):
             self.request_data = request_data
 
         self.id = next(
-            (
-                v for k, v in bound_args.arguments.items()
-                if k.endswith("_id")
-            ),
+            (v for k, v in bound_args.arguments.items() if k.endswith("_id")),
             None,
         )
 

@@ -5,10 +5,13 @@ from faker import Faker
 from faker.providers import BaseProvider
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.api.depends.repository import teacher_repository
 from backend.core.database import session_manager
-from backend.core.managers import EntitiesInitManager
+from backend.entities.classroom.schemas import ClassroomCreateRequest
+from backend.entities.subject.schemas import SubjectPostRequest
 from backend.entities.teacher.schemas import TeacherPostRequest
+from backend.entities.teacher.repository import teacher_repository
+from backend.entities.classroom.repository import classroom_repository
+from backend.entities.subject.repository import subject_repository
 
 TEACHERS_COUNT = 10
 fake = Faker("ru_RU")
@@ -16,7 +19,7 @@ fake = Faker("ru_RU")
 
 class RussianPatronymicProvider(BaseProvider):
     patronymics = [
-        f"Александров",
+        "Александров",
         "Алексеев",
         "Дмитриев",
         "Иванов",
@@ -183,9 +186,9 @@ class F:
     #             subjects=[]
     #         )
 
-    @classmethod
-    async def fake_lessons(cls, session: AsyncSession):
-        pass
+    # @classmethod
+    # async def fake_lessons(cls, session: AsyncSession):
+    #     pass
 
     @classmethod
     async def generate_fake_data(cls):
@@ -196,3 +199,29 @@ class F:
             await cls.fake_teachers(session, count=TEACHERS_COUNT)
             # await cls.fake_student_groups(session)
             # await cls.fake_lessons(session)
+
+
+class EntitiesInitManager:
+    @classmethod
+    async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
+        request_data_list = [ClassroomCreateRequest(name=name) for name in classroom_names]
+
+        await classroom_repository.create_many(session, request_data_list)
+
+    @classmethod
+    async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
+        async with session.begin():
+            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+            await subject_repository.create_many(session, request_data_list)
+
+    @classmethod
+    async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
+        """
+        принимает нормер недели
+        функция работает по недельно. сначала проверяет наличие записи, если нет
+        создает неделю уроков. с пн по пт.
+        нужно учесть школьные смены и воскресенье.
+        """
+        async with session.begin():
+            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+            await subject_repository.create_many(session, request_data_list)
