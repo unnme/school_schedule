@@ -8,7 +8,6 @@ from backend.entities.teacher.schemas import (
     TeacherPutRequest,
     TeacherResponse,
     TeacherUpdateResponse,
-    TeacherPatchRequest,
 )
 from backend.entities.teacher.validators import validate_teacher_request
 from backend.utils.pagination import PaginationParamsDep
@@ -34,14 +33,6 @@ class TeacherManager:
     ) -> TeacherUpdateResponse:
         async with session.begin():
             teacher = await teacher_repository.update(session, id, request_data)
-        return TeacherUpdateResponse.model_validate(teacher)
-
-    @classmethod
-    # @validate_teacher_request
-    async def update_teacher_fields(
-        cls, session: AsyncSession, id: int, request_data: TeacherPatchRequest
-    ) -> TeacherUpdateResponse:
-        teacher = await teacher_repository.update_teacher_fields(session, id, request_data)
         return TeacherUpdateResponse.model_validate(teacher)
 
     @classmethod

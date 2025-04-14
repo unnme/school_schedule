@@ -193,15 +193,15 @@ class F:
     @classmethod
     async def generate_fake_data(cls):
         async for session in session_manager.get_async_session():
-            await EntitiesInitManager.init_classrooms(session, cls.classroom_names)
-            await EntitiesInitManager.init_subjects(session, cls.subject_names)
+            await EntitiesInit.init_classrooms(session, cls.classroom_names)
+            await EntitiesInit.init_subjects(session, cls.subject_names)
 
             await cls.fake_teachers(session, count=TEACHERS_COUNT)
             # await cls.fake_student_groups(session)
             # await cls.fake_lessons(session)
 
 
-class EntitiesInitManager:
+class EntitiesInit:
     @classmethod
     async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
         request_data_list = [ClassroomCreateRequest(name=name) for name in classroom_names]

@@ -28,16 +28,6 @@ from backend.utils.pagination import PaginationParamsDep
 logger = get_logger(__name__)
 
 
-class SingletonMeta(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
 # INFO: sqlalchemy
 
 
@@ -107,42 +97,6 @@ class BaseRepository(ABC):
         if entity is None:
             logger.error(f"Entity {self.sql_model.__name__} with id:{id} wasn't found")
             raise NotFoundException(self.sql_model.__name__, id)
-
-        return entity
-
-    def _get_related_model(self, field_name: str):
-        relationship_prop = self.sql_model.__mapper__.relationships.get(field_name)
-        if not relationship_prop:
-            raise ValueError(f"Не найдено отношение для поля '{field_name}' в модели {self.sql_model.__name__}")
-
-        return relationship_prop.mapper.class_
-
-    async def update_fields(self, session: AsyncSession, id: int, request_data):
-        entity = await self.get_by_id(session, id)
-
-        for k, v in request_data.model_dump(exclude_none=True).items():
-            if hasattr(entity, k):
-                attr = getattr(entity, k)
-
-                if isinstance(attr, list) and isinstance(
-                    v, list
-                ):  # Если поле — список (многие ко многим или один ко многим)
-                    related_model = self._get_related_model(k)  # Получаем модель связанной таблицы
-                    existing_items = {item.id: item for item in attr}  # Текущие объекты связи
-
-                    for item_data in v:
-                        item_id = item_data.get("id")
-                        if item_id and item_id in existing_items:
-                            # Обновляем существующий объект
-                            for field, value in item_data.items():
-                                setattr(existing_items[item_id], field, value)
-                        else:
-                            # Создаём новый объект и добавляем в список
-                            new_item = related_model(**item_data)
-                            attr.append(new_item)
-
-                else:
-                    setattr(entity, k, v)  # Обычные поля
 
         return entity
 

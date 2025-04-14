@@ -2,27 +2,24 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.api.depends.repository import lesson_repository
+from backend.entities.lesson.repository import lesson_repository
+
 from backend.entities.lesson.schemas import (
-    LessonCreateRequest,
+    LessonPostRequest,
     LessonResponse,
-    _LessonCreateResponse,
+    LessonCreateResponse,
 )
 from backend.utils.pagination import PaginationParamsDep
 
 
 class LessonManager:
     @classmethod
-    async def create_lesson(
-        cls, session: AsyncSession, request_data: LessonCreateRequest
-    ) -> _LessonCreateResponse:
+    async def create_lesson(cls, session: AsyncSession, request_data: LessonPostRequest) -> LessonCreateResponse:
         lesson = await lesson_repository.create(session, request_data)
-        return _LessonCreateResponse.model_validate(lesson)
+        return LessonCreateResponse.model_validate(lesson)
 
     @classmethod
-    async def list_lessons(
-        cls, session: AsyncSession, pagination: PaginationParamsDep
-    ) -> Sequence[LessonResponse]:
+    async def list_lessons(cls, session: AsyncSession, pagination: PaginationParamsDep) -> Sequence[LessonResponse]:
         lessons = await lesson_repository.list_lessons(session, pagination)
         return lessons
 

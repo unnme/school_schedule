@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.base import BaseRepository
 from backend.entities.lesson.models import Lesson
-from backend.entities.lesson.schemas import LessonCreateRequest, LessonUpdateRequest
+from backend.entities.lesson.schemas import LessonPostRequest
 from backend.utils.pagination import PaginationParamsDep
 
 
@@ -10,7 +10,7 @@ class LessonRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Lesson)
 
-    async def create(self, session: AsyncSession, request_data: LessonCreateRequest) -> Lesson:
+    async def create(self, session: AsyncSession, request_data: LessonPostRequest) -> Lesson:
         lesson = self.sql_model(**request_data.model_dump())
         session.add(lesson)
         await session.commit()
@@ -42,3 +42,6 @@ class LessonRepository(BaseRepository):
     #     await session.delete(lesson)
     #     await session.commit()
     #     return Lesson(**deleted_data)
+
+
+lesson_repository = LessonRepository()

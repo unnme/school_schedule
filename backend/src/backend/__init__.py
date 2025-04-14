@@ -8,6 +8,7 @@ from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.managers import DatabaseManager, ImportManager
+from fake.main import F
 
 logger = get_logger(__name__)
 
@@ -15,12 +16,13 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.base.ENVIRONMENT == "local":
-        # await DatabaseManager.drop_all_tables()  # WARN: REMOVE THIS!
+        await DatabaseManager.drop_all_tables()  # WARN: REMOVE THIS!
 
         if not await DatabaseManager.check_db_tables():
             await DatabaseManager.create_db_tables()
+            await F.generate_fake_data()
 
-    ImportManager.base_init(app)
+    ImportManager.import_routers(app)
     yield
 
     await session_manager.dispose()

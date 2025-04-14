@@ -3,42 +3,40 @@ from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.classroom.schemas import (
-    ClassroomCreateRequest,
+    ClassroomCreateResponse,
+    ClassroomPostRequest,
+    ClassroomPutRequest,
     ClassroomResponse,
-    ClassroomUpdateRequest,
-    _ClassroomCreateResponse,
-    _ClassroomDeleteResponse,
-    _ClassroomUpdateResponse,
+    ClassroomUpdateResponse,
 )
 from backend.utils.pagination import PaginationParamsDep
+from backend.entities.classroom.repository import classroom_repository
 
 
 class ClassroomManager:
     @classmethod  # TODO: @validate_classroom_request
     async def create_classroom(
-        cls, session: AsyncSession, request_data: ClassroomCreateRequest
-    ) -> _ClassroomCreateResponse:
+        cls, session: AsyncSession, request_data: ClassroomPostRequest
+    ) -> ClassroomCreateResponse:
         classroom = await classroom_repository.create(session, request_data)
-        return _ClassroomCreateResponse.model_validate(classroom)
+        return ClassroomCreateResponse.model_validate(classroom)
 
     @classmethod
     async def list_classrooms(
         cls, session: AsyncSession, pagination: PaginationParamsDep
     ) -> Sequence[ClassroomResponse]:
-        subjects = await classroom_repository.list_classrooms(session, pagination)
-        return subjects
+        return await classroom_repository.list_classrooms(session, pagination)
 
     @classmethod  # TODO: @validate_classroom_request
     async def update_classroom(
         cls,
         session: AsyncSession,
         id: int,
-        request_data: ClassroomUpdateRequest,
-    ) -> _ClassroomUpdateResponse:
+        request_data: ClassroomPutRequest,
+    ) -> ClassroomUpdateResponse:
         subject = await classroom_repository.update(session, id, request_data)
-        return _ClassroomUpdateResponse.model_validate(subject)
+        return ClassroomUpdateResponse.model_validate(subject)
 
     @classmethod
-    async def delete_classroom(cls, session: AsyncSession, id: int) -> _ClassroomDeleteResponse:
-        subject = await classroom_repository.delete(session, id)
-        return _ClassroomDeleteResponse.model_validate(subject)
+    async def delete_classroom(cls, session: AsyncSession, id: int) -> None:
+        await session.delete(await classroom_repository.get_by_id(session, id))

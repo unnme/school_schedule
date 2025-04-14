@@ -7,7 +7,6 @@ from backend.utils.pagination import PaginationParamsDep
 from backend.api.depends import AsyncSessionDep
 from backend.entities.subject.schemas import (
     SubjectCreateResponse,
-    SubjectPatchRequest,
     SubjectPostRequest,
     SubjectUpdateResponse,
     SubjectResponse,
@@ -33,14 +32,6 @@ async def update_subject(
     session: AsyncSessionDep, subject_id: int, request_data: SubjectPutRequest
 ) -> SubjectUpdateResponse:
     updated_subject = await SubjectManager.update_subject(session, subject_id, request_data)
-    return updated_subject
-
-
-@router.patch("/{subject_id}", response_model=SubjectUpdateResponse)
-async def update_subject_fields(
-    session: AsyncSessionDep, subject_id: int, request_data: SubjectPatchRequest
-) -> SubjectUpdateResponse:
-    updated_subject = await SubjectManager.update_subject_fields(session, subject_id, request_data)
     return updated_subject
 
 

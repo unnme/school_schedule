@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, get_type_hints
+from typing import List
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -25,9 +25,7 @@ class SubjectBaseSchema(CustomBaseModel):
     @field_validator("name")
     @classmethod
     def validate_subject_name(cls, value: str) -> str:
-        if not re.fullmatch(
-            r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value
-        ):
+        if not re.fullmatch(r"^[А-ЯЁ][а-яё]+(?:[-\s][А-ЯЁа-яё]+)*$|^[А-ЯЁ]+(?:-[А-ЯЁ]+)?$", value):
             raise HTTPException(
                 status_code=400,
                 detail=f"Название предмета '{value}' содержит недопустимые символы или имеет неправильный формат.",
@@ -55,8 +53,6 @@ class SubjectPostRequest(SubjectRequest):
 class SubjectPutRequest(SubjectRequest):
     pass
 
-class SubjectPatchRequest(SubjectRequest):
-    __annotations__ = {k: Optional[v] for k, v in get_type_hints(SubjectRequest).items()}
 
 # INFO: RESPONSE
 
@@ -98,4 +94,3 @@ class SubjectCreateResponse(SubjectBaseSchema):
 
 class SubjectUpdateResponse(SubjectResponse):
     pass
-

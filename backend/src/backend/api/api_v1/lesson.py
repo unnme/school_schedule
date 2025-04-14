@@ -2,9 +2,9 @@ from typing import Sequence
 
 from fastapi import APIRouter
 
-from backend.core.depends import AsyncSessionDep
+from backend.api.depends import AsyncSessionDep
 from backend.entities.lesson.schemas import (
-    LessonCreateRequest,
+    LessonPostRequest,
     LessonCreateResponse,
     LessonResponse,
 )
@@ -15,19 +15,13 @@ router = APIRouter(prefix="/lessons", tags=["Уроки"])
 
 
 @router.post("/", response_model=LessonCreateResponse)
-async def create_lesson(
-    session: AsyncSessionDep, request_data: LessonCreateRequest
-) -> LessonCreateResponse:
-    created_subject = await LessonManager.create_lesson(session, request_data)
-    return LessonCreateResponse(message="Урок успешно создан.", data=created_subject)
+async def create_lesson(session: AsyncSessionDep, request_data: LessonPostRequest) -> LessonCreateResponse:
+    return await LessonManager.create_lesson(session, request_data)
 
 
 @router.get("/", response_model=list[LessonResponse])
-async def list_lessons(
-    pagination: PaginationParamsDep, session: AsyncSessionDep
-) -> Sequence[LessonResponse]:
-    lessons = await LessonManager.list_lessons(session, pagination)
-    return lessons
+async def list_lessons(pagination: PaginationParamsDep, session: AsyncSessionDep) -> Sequence[LessonResponse]:
+    return await LessonManager.list_lessons(session, pagination)
 
 
 # @router.put("/{subject_id}", response_model=SubjectUpdateResponse)

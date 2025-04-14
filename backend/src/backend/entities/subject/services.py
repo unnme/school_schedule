@@ -2,10 +2,9 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.entities.mixins import CommitRefreshMixin
+from backend.core.mixins import CommitRefreshMixin
 from backend.entities.subject.schemas import (
     SubjectCreateResponse,
-    SubjectPatchRequest,
     SubjectPostRequest,
     SubjectResponse,
     SubjectPutRequest,
@@ -38,15 +37,6 @@ class SubjectManager(CommitRefreshMixin):
         subject = await subject_repository.update(session, id, request_data)
         await cls.commit_refresh(session, subject)
 
-        return SubjectUpdateResponse.model_validate(subject)
-
-    @classmethod
-    # @validate_subject_request
-    async def update_subject_fields(
-        cls, session: AsyncSession, id: int, request_data: SubjectPatchRequest
-    ) -> SubjectUpdateResponse:
-        subject = await subject_repository.update_subject_fields(session, id, request_data)
-        await cls.commit_refresh(session, subject)
         return SubjectUpdateResponse.model_validate(subject)
 
     @classmethod

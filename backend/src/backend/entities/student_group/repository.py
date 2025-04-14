@@ -5,8 +5,8 @@ from backend.entities.base import BaseRepository
 from backend.entities.relations.models import StudentGroupSubject
 from backend.entities.student_group.models import StudentGroup
 from backend.entities.student_group.schemas import (
-    StudentGroupCreateRequest,
-    StudentGroupUpdateRequest,
+    StudentGroupPostRequest,
+    StudentGroupPutRequest,
 )
 from backend.utils.pagination import PaginationParamsDep
 
@@ -15,10 +15,7 @@ class StudentGroupRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(StudentGroup)
 
-    async def _update_capacity(self, student_group, request_data):
-        student_group.capacity = request_data.capacity
-
-    async def create(self, session: AsyncSession, request_data: StudentGroupCreateRequest) -> StudentGroup:
+    async def create(self, session: AsyncSession, request_data: StudentGroupPostRequest) -> StudentGroup:
         async with session.begin():
             student_group = self.sql_model(name=request_data.name, capacity=request_data.capacity)
             session.add(student_group)
@@ -36,7 +33,7 @@ class StudentGroupRepository(BaseRepository):
         self,
         session: AsyncSession,
         id: int,
-        request_data: StudentGroupUpdateRequest,
+        request_data: StudentGroupPutRequest,
     ) -> StudentGroup:
         async with session.begin():
             student_group = await self.get_by_id(session, id, load_strategy="selectin")
@@ -50,20 +47,13 @@ class StudentGroupRepository(BaseRepository):
 
             return student_group
 
-    async def delete(self, session: AsyncSession, id: int) -> StudentGroup:
-        student_group = await self.get_by_id(session, id)
-        deleted_data = {key: value for key, value in student_group.__dict__.items() if not key.startswith("_")}
-        await session.delete(student_group)
-        await session.commit()
-        return StudentGroup(**deleted_data)
-
     async def _update_student_group_subjects(
         self,
         session: AsyncSession,
-        request_data: StudentGroupCreateRequest | StudentGroupUpdateRequest,
+        request_data: StudentGroupPostRequest | StudentGroupPutRequest,
         student_group: StudentGroup,
     ) -> None:
-        if isinstance(request_data, StudentGroupCreateRequest):
+        if isinstance(request_data, StudentGroupPostRequest):
             student_group_subjects = [
                 StudentGroupSubject(
                     student_group_id=student_group.id,
@@ -76,7 +66,7 @@ class StudentGroupRepository(BaseRepository):
             session.add_all(student_group_subjects)
             await session.flush()
 
-        elif isinstance(request_data, StudentGroupUpdateRequest):
+        elif isinstance(request_data, StudentGroupPutRequest):
             request_subj_and_hours = {subj.id: subj.study_hours for subj in request_data.subjects}
             existing_subjects_hours = {subj.subject_id: subj.study_hours for subj in student_group.subjects}
 

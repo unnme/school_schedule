@@ -40,14 +40,14 @@ class LessonRequest(LessonBaseSchema):
 # INFO: CREATErequest
 
 
-class LessonCreateRequest(LessonRequest):
+class LessonPostRequest(LessonRequest):
     pass
 
 
 # INFO: UPDATErequest
 
 
-class LessonUpdateRequest(LessonRequest):
+class LessonPutRequest(LessonRequest):
     pass
 
 
@@ -77,34 +77,12 @@ class LessonResponse(LessonBaseSchema):
 # INFO: CREATEresponse
 
 
-class _LessonCreateResponse(LessonResponse):
+class LessonCreateResponse(LessonResponse):
     pass
-
-
-class LessonCreateResponse(CustomBaseModel):
-    message: str
-    data: _LessonCreateResponse
 
 
 # INFO: UPDATEresponse
 
 
-class _LessonUpdateResponse(LessonResponse):
+class LessonUpdateResponse(LessonResponse):
     pass
-
-
-class LessonUpdateResponse(CustomBaseModel):
-    message: str
-    data: _LessonUpdateResponse
-
-
-# INFO: DELETEresponse
-
-
-class _LessonDeleteResponse(LessonResponse):
-    pass
-
-
-class LessonDeleteResponse(CustomBaseModel):
-    message: str
-    data: _LessonDeleteResponse

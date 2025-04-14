@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, get_type_hints
+from typing import List
 
 from fastapi import HTTPException
 from pydantic import Field, field_validator
@@ -14,13 +14,9 @@ from backend.entities.relations.schemas import (
 
 
 class TeacherBaseSchema(CustomBaseModel):
-    last_name: str = Field(
-        ..., min_length=2, max_length=30, description="Фамилия учителя"
-    )
+    last_name: str = Field(..., min_length=2, max_length=30, description="Фамилия учителя")
     first_name: str = Field(..., min_length=2, max_length=30, description="Имя учителя")
-    patronymic: str = Field(
-        ..., min_length=2, max_length=30, description="Отчество учителя"
-    )
+    patronymic: str = Field(..., min_length=2, max_length=30, description="Отчество учителя")
 
     @field_validator("last_name", "first_name", "patronymic")
     def validate_name(cls, value: str) -> str:
@@ -42,9 +38,7 @@ class TeacherRequest(TeacherBaseSchema):
     )
 
     @field_validator("subjects", mode="before")
-    def validate_subjects_length(
-        cls, value: List[SubjectWithTHoursRequest]
-    ) -> List[SubjectWithTHoursRequest]:
+    def validate_subjects_length(cls, value: List[SubjectWithTHoursRequest]) -> List[SubjectWithTHoursRequest]:
         if not value:
             raise HTTPException(
                 status_code=400,
@@ -74,6 +68,7 @@ class TeacherPostRequest(TeacherRequest):
 
 # INFO: UPDATErequest
 
+
 class _TeacherUpdateRequest(TeacherRequest):
     is_active: bool
 
@@ -92,11 +87,9 @@ class _TeacherUpdateRequest(TeacherRequest):
         }
     }
 
+
 class TeacherPutRequest(_TeacherUpdateRequest):
     pass
-
-class TeacherPatchRequest(_TeacherUpdateRequest):
-    __annotations__ = {k: Optional[v] for k, v in get_type_hints(TeacherRequest).items()}
 
 
 # INFO: RESPONSE
@@ -118,5 +111,3 @@ class TeacherUpdateResponse(TeacherResponse):
 # INFO: CREATEresponse
 class TeacherCreateResponse(TeacherResponse):
     pass
-
-

@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.entities.base import BaseRepository
 from backend.entities.classroom.models import Classroom
 from backend.entities.classroom.schemas import (
-    ClassroomCreateRequest,
-    ClassroomUpdateRequest,
+    ClassroomPostRequest,
+    ClassroomPutRequest,
 )
 from backend.utils.pagination import PaginationParamsDep
 
@@ -24,12 +24,12 @@ class ClassroomRepository(BaseRepository):
         if request_data.capacity is not None and request_data.capacity != classroom.capacity:
             classroom.capacity = request_data.capacity
 
-    async def create_many(self, session: AsyncSession, request_data_list: List[ClassroomCreateRequest]):
+    async def create_many(self, session: AsyncSession, request_data_list: List[ClassroomPostRequest]):
         async with session.begin():
             classrooms = [self.sql_model(name=data.name, capacity=data.capacity) for data in request_data_list]
             session.add_all(classrooms)
 
-    async def create(self, session: AsyncSession, request_data: ClassroomCreateRequest) -> Classroom:
+    async def create(self, session: AsyncSession, request_data: ClassroomPostRequest) -> Classroom:
         classroom = self.sql_model(name=request_data.name, capacity=request_data.capacity)
         session.add(classroom)
         await session.commit()
@@ -45,7 +45,7 @@ class ClassroomRepository(BaseRepository):
         self,
         session: AsyncSession,
         id: int,
-        request_data: ClassroomUpdateRequest,
+        request_data: ClassroomPutRequest,
     ) -> Classroom:
         classroom = await self.get_by_id(session, id, load_strategy="selectin")
 
@@ -55,13 +55,6 @@ class ClassroomRepository(BaseRepository):
         await session.commit()
         await session.refresh(classroom)
         return classroom
-
-    async def delete(self, session: AsyncSession, id: int) -> Classroom:
-        classroom = await self.get_by_id(session, id)
-        deleted_data = {key: value for key, value in classroom.__dict__.items() if not key.startswith("_")}
-        await session.delete(classroom)
-        await session.commit()
-        return Classroom(**deleted_data)
 
 
 classroom_repository = ClassroomRepository()

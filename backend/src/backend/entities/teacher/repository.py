@@ -10,7 +10,6 @@ from backend.entities.teacher.models import Teacher
 from backend.entities.teacher.schemas import (
     TeacherPostRequest,
     TeacherRequest,
-    TeacherPatchRequest,
     TeacherPutRequest,
 )
 
@@ -49,10 +48,6 @@ class TeacherRepository(BaseRepository):
 
         await self._update_teacher_subjects(session, request_data, teacher)
 
-        return teacher
-
-    async def update_teacher_fields(self, session: AsyncSession, id: int, request_data: TeacherPatchRequest) -> Teacher:
-        teacher = await self.update_fields(session, id, request_data)
         return teacher
 
     def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher] = None) -> Teacher:

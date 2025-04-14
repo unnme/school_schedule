@@ -3,15 +3,14 @@ from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.entities.student_group.schemas import (
-    StudentGroupCreateRequest,
+    StudentGroupPostRequest,
+    StudentGroupCreateResponse,
     StudentGroupResponse,
-    StudentGroupUpdateRequest,
-    _StudentGroupCreateResponse,
-    _StudentGroupDeleteResponse,
-    _StudentGroupUpdateResponse,
+    StudentGroupPutRequest,
+    StudentGroupUpdateResponse,
 )
-from backend.entities.student_group.validators import validate_student_group_request
 from backend.utils.pagination import PaginationParamsDep
+from backend.entities.student_group.validators import validate_student_group_request
 from backend.entities.student_group.repository import student_group_repository
 
 
@@ -19,10 +18,10 @@ class StudentGroupManager:
     @classmethod
     @validate_student_group_request
     async def create_student_group(
-        cls, session: AsyncSession, request_data: StudentGroupCreateRequest
-    ) -> _StudentGroupCreateResponse:
+        cls, session: AsyncSession, request_data: StudentGroupPostRequest
+    ) -> StudentGroupCreateResponse:
         student_group = await student_group_repository.create(session, request_data)
-        return _StudentGroupCreateResponse.model_validate(student_group)
+        return StudentGroupCreateResponse.model_validate(student_group)
 
     @classmethod
     async def list_student_groups(
@@ -36,13 +35,13 @@ class StudentGroupManager:
         cls,
         session: AsyncSession,
         id: int,
-        request_data: StudentGroupUpdateRequest,
-    ) -> _StudentGroupUpdateResponse:
+        request_data: StudentGroupPutRequest,
+    ) -> StudentGroupUpdateResponse:
         async with session.begin():
             student_group = await student_group_repository.update(session, id, request_data)
-            return _StudentGroupUpdateResponse.model_validate(student_group)
+            return StudentGroupUpdateResponse.model_validate(student_group)
 
     @classmethod
-    async def delete_student_group(cls, session: AsyncSession, id: int) -> _StudentGroupDeleteResponse:
-        student_group = await student_group_repository.delete(session, id)
-        return _StudentGroupDeleteResponse.model_validate(student_group)
+    async def delete_student_group(cls, session: AsyncSession, id: int) -> None:
+        await session.delete(await student_group_repository.get_by_id(session, id))
+        await session.commit()

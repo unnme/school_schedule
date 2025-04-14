@@ -14,9 +14,7 @@ from backend.entities.relations.schemas import (
 
 
 class StudentGroupBaseSchema(CustomBaseModel):
-    name: str = Field(
-        ..., min_length=2, max_length=5, description="Название группы студентов."
-    )
+    name: str = Field(..., min_length=2, max_length=5, description="Название группы студентов.")
 
     capacity: Annotated[
         Optional[int],
@@ -60,9 +58,7 @@ class StudentGroupRequest(StudentGroupBaseSchema):
     }
 
     @field_validator("subjects", mode="before")
-    def validate_subjects_length(
-        cls, value: List[SubjectWithSHoursRequest]
-    ) -> List[SubjectWithSHoursRequest]:
+    def validate_subjects_length(cls, value: List[SubjectWithSHoursRequest]) -> List[SubjectWithSHoursRequest]:
         if not value:
             raise HTTPException(
                 status_code=400,
@@ -74,14 +70,14 @@ class StudentGroupRequest(StudentGroupBaseSchema):
 # INFO: UPDATErequest
 
 
-class StudentGroupUpdateRequest(StudentGroupRequest):
+class StudentGroupPutRequest(StudentGroupRequest):
     pass
 
 
 # INFO: CREATErequest
 
 
-class StudentGroupCreateRequest(StudentGroupRequest):
+class StudentGroupPostRequest(StudentGroupRequest):
     pass
 
 
@@ -111,34 +107,12 @@ class StudentGroupResponse(StudentGroupBaseSchema):
 # INFO: UPDATEresponse
 
 
-class _StudentGroupUpdateResponse(StudentGroupResponse):
+class StudentGroupUpdateResponse(StudentGroupResponse):
     pass
-
-
-class StudentGroupUpdateResponse(CustomBaseModel):
-    message: str
-    data: _StudentGroupUpdateResponse
 
 
 # INFO: CREATEresponse
 
 
-class _StudentGroupCreateResponse(StudentGroupResponse):
+class StudentGroupCreateResponse(StudentGroupResponse):
     pass
-
-
-class StudentGroupCreateResponse(CustomBaseModel):
-    message: str
-    data: _StudentGroupCreateResponse
-
-
-# INFO: DELETEresponse
-
-
-class _StudentGroupDeleteResponse(StudentGroupBaseSchema):
-    id: int
-
-
-class StudentGroupDeleteResponse(CustomBaseModel):
-    message: str
-    data: _StudentGroupDeleteResponse

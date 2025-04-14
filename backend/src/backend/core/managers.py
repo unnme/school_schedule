@@ -4,13 +4,11 @@ import pkgutil
 from importlib import import_module
 
 from fastapi import FastAPI
-from sqlalchemy import text
-from sqlalchemy import inspect as alchemy_inspect
+from sqlalchemy import inspect, text
 
 from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
-from backend.core.pathes import base_pathes
 from backend.entities.base import Base
 from backend.utils.common_utils import path_to_dotted_string
 
@@ -18,8 +16,8 @@ logger = get_logger(__name__)
 
 
 class ImportManager:
-    @classmethod
-    def _import_routers(cls, app: FastAPI):
+    @staticmethod
+    def import_routers(app: FastAPI):
         from backend.api.api_v1 import __path__ as api_path
 
         def recursive_import(base_path, package_prefix):
@@ -39,19 +37,6 @@ class ImportManager:
                     logger.error(f"Import error {full_module_name}: {e}")
 
         recursive_import(api_path, path_to_dotted_string(settings.api_config.api_path))
-
-    @classmethod
-    def _import_entity_models(cls):
-        for app_dir in base_pathes.entities_dir.iterdir():
-            if app_dir.is_dir() and not app_dir.name.startswith("_"):
-                if (app_dir / "models.py").is_file():
-                    module_name = f"backend.entities.{app_dir.name}.models"
-                    import_module(module_name)
-
-    @classmethod
-    def base_init(cls, app):
-        cls._import_routers(app)
-        cls._import_entity_models()
 
 
 class DatabaseManager:
@@ -85,7 +70,7 @@ class DatabaseManager:
         async with session_manager.async_engine.connect() as conn:
 
             def _get_existing_tables(conn):
-                table_names = alchemy_inspect(conn).get_table_names()
+                table_names = inspect(conn).get_table_names()
                 system_tables = {"alembic_version"}
 
                 if existing_tables := next((name for name in table_names if name not in system_tables), None):
