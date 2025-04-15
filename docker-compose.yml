@@ -86,7 +86,9 @@ services:
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND}:${TAG-latest}'
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     restart: always
     ports:
       - "3000:80"
