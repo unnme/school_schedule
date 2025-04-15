@@ -13,8 +13,9 @@ RUN npm run build
 
 FROM nginx:1-alpine
 
-# COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-# COPY ./nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx-global.conf /etc/nginx/conf.d/global.conf
+COPY ./nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
 
 
 COPY --from=builder /app/dist/ /usr/share/nginx/html
