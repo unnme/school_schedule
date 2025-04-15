@@ -84,5 +84,18 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
+  frontend:
+    image: '${DOCKER_IMAGE_FRONTEND}:${TAG-latest}'
+    build: ./frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
+    env_file:
+      - .env
+
 volumes:
   pg-data:
