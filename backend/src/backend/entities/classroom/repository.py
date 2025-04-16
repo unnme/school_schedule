@@ -8,7 +8,7 @@ from backend.entities.classroom.schemas import (
     ClassroomPostRequest,
     ClassroomPutRequest,
 )
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 
 class ClassroomRepository(BaseRepository):

@@ -2,10 +2,10 @@ from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.api.depends import PaginationParamsDep
 from backend.entities.base import BaseRepository
 from backend.entities.subject.models import Subject
 from backend.entities.subject.schemas import SubjectPostRequest, SubjectPutRequest
-from backend.utils.pagination import PaginationParamsDep
 
 
 class SubjectRepository(BaseRepository):
@@ -37,8 +37,7 @@ class SubjectRepository(BaseRepository):
         return subject
 
     async def delete(self, session: AsyncSession, id: int) -> None:
-        subject = await self.get_by_id(session, id)
-        await session.delete(subject)
+        await session.delete(await self.get_by_id(session, id))
         await session.commit()
 
 

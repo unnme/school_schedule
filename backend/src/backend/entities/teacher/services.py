@@ -1,7 +1,6 @@
-from typing import Sequence
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.entities.base import ListResponseModel
 from backend.entities.teacher.schemas import (
     TeacherCreateResponse,
     TeacherPostRequest,
@@ -10,8 +9,8 @@ from backend.entities.teacher.schemas import (
     TeacherUpdateResponse,
 )
 from backend.entities.teacher.validators import validate_teacher_request
-from backend.utils.pagination import PaginationParamsDep
 from backend.entities.teacher.repository import teacher_repository
+from backend.api.depends import PaginationParamsDep
 
 
 class TeacherManager:
@@ -23,8 +22,12 @@ class TeacherManager:
         return TeacherCreateResponse.model_validate(teacher)
 
     @classmethod
-    async def list_teachers(cls, session: AsyncSession, pagination: PaginationParamsDep) -> Sequence[TeacherResponse]:
-        return await teacher_repository.list_teachers(session, pagination)
+    async def list_teachers(cls, session: AsyncSession, pagination: PaginationParamsDep) -> ListResponseModel:
+        teachers = await teacher_repository.list_teachers(session, pagination)
+        total = await teacher_repository.entity_count(session)
+        return ListResponseModel[TeacherResponse](
+            items=teachers, total=total, limit=pagination.limit, offset=pagination.offset
+        )
 
     @classmethod
     @validate_teacher_request

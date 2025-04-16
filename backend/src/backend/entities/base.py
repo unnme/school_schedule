@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
-from typing import Any, Optional, Sequence, Type
+from typing import Any, Generic, Optional, Sequence, Type, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import MetaData, Select, inspect, select
+from sqlalchemy import MetaData, Select, func, inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -13,6 +12,7 @@ from sqlalchemy.orm import (
     subqueryload,
 )
 
+from backend.api.depends import PaginationParamsDep
 from backend.core.config import settings
 from backend.core.exceptions import (
     DatabaseConnectionError,
@@ -23,7 +23,6 @@ from backend.core.exceptions import (
 from backend.core.logging_config import get_logger
 from backend.utils.case_converter import camel_case_to_snake_case
 from backend.utils.common_utils import get_bound_arguments
-from backend.utils.pagination import PaginationParamsDep
 
 logger = get_logger(__name__)
 
@@ -49,6 +48,16 @@ class Base(DeclarativeBase):
 class CustomBaseModel(BaseModel):
     class Config:
         from_attributes = True
+
+
+T = TypeVar("T")
+
+
+class ListResponseModel(CustomBaseModel, Generic[T]):
+    items: Sequence[T]
+    total: int
+    limit: int
+    offset: int
 
 
 # INFO: BASEs
@@ -114,8 +123,13 @@ class BaseRepository:
         entities = result.scalars().unique().all()
         return entities
 
+    async def entity_count(self, session) -> int:
+        count_stmt = select(func.count()).select_from(self.sql_model)
+        total_result = await session.execute(count_stmt)
+        return total_result.scalar()
 
-class BaseValidator(ABC):
+
+class BaseValidator:
     def __init__(self, func, *args, **kwargs):
         bound_args = get_bound_arguments(func, *args, **kwargs)
 
@@ -133,7 +147,3 @@ class BaseValidator(ABC):
             (v for k, v in bound_args.arguments.items() if k.endswith("id")),
             None,
         )
-
-    @abstractmethod
-    async def validate(self) -> None:
-        pass

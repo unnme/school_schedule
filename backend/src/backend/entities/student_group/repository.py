@@ -8,7 +8,7 @@ from backend.entities.student_group.schemas import (
     StudentGroupPostRequest,
     StudentGroupPutRequest,
 )
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 
 class StudentGroupRepository(BaseRepository):

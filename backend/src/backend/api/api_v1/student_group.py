@@ -11,7 +11,7 @@ from backend.entities.student_group.schemas import (
     StudentGroupUpdateResponse,
 )
 from backend.entities.student_group.services import StudentGroupManager
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 router = APIRouter(prefix="/student_groups", tags=["Ученические группы"])
 

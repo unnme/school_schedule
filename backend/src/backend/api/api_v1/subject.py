@@ -1,15 +1,12 @@
-from typing import Sequence
-
 from fastapi import APIRouter, status
 
+from backend.entities.base import ListResponseModel
 from backend.entities.subject.services import SubjectManager
-from backend.utils.pagination import PaginationParamsDep
-from backend.api.depends import AsyncSessionDep
+from backend.api.depends import AsyncSessionDep, PaginationParamsDep
 from backend.entities.subject.schemas import (
     SubjectCreateResponse,
     SubjectPostRequest,
     SubjectUpdateResponse,
-    SubjectResponse,
     SubjectPutRequest,
 )
 
@@ -22,8 +19,8 @@ async def create_subject(session: AsyncSessionDep, request_data: SubjectPostRequ
     return await SubjectManager.create_subject(session, request_data)
 
 
-@router.get("/", response_model=list[SubjectResponse])
-async def list_subjects(pagination: PaginationParamsDep, session: AsyncSessionDep) -> Sequence[SubjectResponse]:
+@router.get("/", response_model=ListResponseModel)
+async def list_subjects(pagination: PaginationParamsDep, session: AsyncSessionDep) -> ListResponseModel:
     return await SubjectManager.list_subjects(session, pagination)
 
 

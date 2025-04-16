@@ -33,6 +33,7 @@ class SecurityConfig(GlobalSettings):
 
 class ApiConfig(GlobalSettings):
     API_VERSION: str
+    PAGINATION_LIMIT: int
 
     auth: str = "/auth"
     users: str = "/users"

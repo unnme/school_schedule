@@ -9,9 +9,10 @@ from backend.entities.student_group.schemas import (
     StudentGroupPutRequest,
     StudentGroupUpdateResponse,
 )
-from backend.utils.pagination import PaginationParamsDep
-from backend.entities.student_group.validators import validate_student_group_request
+from backend.api.depends import PaginationParamsDep
+
 from backend.entities.student_group.repository import student_group_repository
+from backend.entities.student_group.validators import validate_student_group_request
 
 
 class StudentGroupManager:

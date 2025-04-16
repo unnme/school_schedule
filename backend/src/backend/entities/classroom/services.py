@@ -9,8 +9,8 @@ from backend.entities.classroom.schemas import (
     ClassroomResponse,
     ClassroomUpdateResponse,
 )
-from backend.utils.pagination import PaginationParamsDep
 from backend.entities.classroom.repository import classroom_repository
+from backend.api.depends import PaginationParamsDep
 
 
 class ClassroomManager:

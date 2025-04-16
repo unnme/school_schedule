@@ -9,7 +9,7 @@ from backend.entities.classroom.schemas import (
     ClassroomUpdateResponse,
 )
 from backend.entities.classroom.services import ClassroomManager
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 router = APIRouter(prefix="/classrooms", tags=["Учебные классы"])
 

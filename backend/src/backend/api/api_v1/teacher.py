@@ -1,15 +1,15 @@
 from fastapi import APIRouter, status
 
 from backend.api.depends import AsyncSessionDep
+from backend.entities.base import ListResponseModel
 from backend.entities.teacher.schemas import (
     TeacherPostRequest,
     TeacherCreateResponse,
-    TeacherResponse,
     TeacherUpdateResponse,
     TeacherPutRequest,
 )
 from backend.entities.teacher.services import TeacherManager
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 router = APIRouter(prefix="/teachers", tags=["Учителя"])
 
@@ -19,7 +19,7 @@ async def create_teacher(session: AsyncSessionDep, request_data: TeacherPostRequ
     return await TeacherManager.create_teacher(session, request_data)
 
 
-@router.get("/", response_model=list[TeacherResponse])
+@router.get("/", response_model=ListResponseModel)
 async def list_teachers(session: AsyncSessionDep, params: PaginationParamsDep):
     return await TeacherManager.list_teachers(session, params)
 

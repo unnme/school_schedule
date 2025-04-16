@@ -3,7 +3,8 @@ from typing import List, Optional
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
+
 from backend.entities.base import BaseRepository
 from backend.entities.relations.models import TeacherSubject
 from backend.entities.teacher.models import Teacher
@@ -135,6 +136,10 @@ class TeacherRepository(BaseRepository):
                 await session.execute(insert(TeacherSubject).values(new_associations))
 
             await session.flush()
+
+    async def delete(self, session: AsyncSession, id: int) -> None:
+        await session.delete(await self.get_by_id(session, id))
+        await session.commit()
 
 
 teacher_repository = TeacherRepository()

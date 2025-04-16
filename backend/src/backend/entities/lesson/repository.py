@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.entities.base import BaseRepository
 from backend.entities.lesson.models import Lesson
 from backend.entities.lesson.schemas import LessonPostRequest
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 
 class LessonRepository(BaseRepository):

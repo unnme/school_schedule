@@ -9,7 +9,7 @@ from backend.entities.lesson.schemas import (
     LessonResponse,
 )
 from backend.entities.lesson.services import LessonManager
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 router = APIRouter(prefix="/lessons", tags=["Уроки"])
 

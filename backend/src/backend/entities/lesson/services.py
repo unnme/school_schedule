@@ -9,7 +9,7 @@ from backend.entities.lesson.schemas import (
     LessonResponse,
     LessonCreateResponse,
 )
-from backend.utils.pagination import PaginationParamsDep
+from backend.api.depends import PaginationParamsDep
 
 
 class LessonManager:
