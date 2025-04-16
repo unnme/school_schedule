@@ -29,12 +29,13 @@ class TeacherRepository(BaseRepository):
         return teacher
 
     async def create_many(self, session: AsyncSession, request_data_list: List[TeacherPostRequest]):
-        teachers = [self._set_name(data) for data in request_data_list]
-        session.add_all(teachers)
-        await session.flush()
+        async with session.begin():
+            teachers = [self._set_name(data) for data in request_data_list]
+            session.add_all(teachers)
+            await session.flush()
 
-        for teacher, request_data in zip(teachers, request_data_list):
-            await self._update_teacher_subjects(session, request_data, teacher)
+            for teacher, request_data in zip(teachers, request_data_list):
+                await self._update_teacher_subjects(session, request_data, teacher)
 
     async def list_teachers(self, session: AsyncSession, pagination: PaginationParamsDep):
         teachers = await self.list_all(session, pagination, load_strategy="selectin")

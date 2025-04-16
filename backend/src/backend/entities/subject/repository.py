@@ -13,12 +13,15 @@ class SubjectRepository(BaseRepository):
         super().__init__(Subject)
 
     async def create_many(self, session: AsyncSession, request_data_list: List[SubjectPostRequest]):
-        subjects = [self.sql_model(name=data.name) for data in request_data_list]
-        session.add_all(subjects)
+        async with session.begin():
+            subjects = [self.sql_model(name=data.name) for data in request_data_list]
+            session.add_all(subjects)
 
-    def create(self, session: AsyncSession, request_data: SubjectPostRequest) -> Subject:
+    async def create(self, session: AsyncSession, request_data: SubjectPostRequest) -> Subject:
         subject = self.sql_model(name=request_data.name)
         session.add(subject)
+        await session.commit()
+        await session.refresh(subject)
         return subject
 
     async def list_subjects(self, session: AsyncSession, pagination: PaginationParamsDep):
@@ -29,7 +32,14 @@ class SubjectRepository(BaseRepository):
         subject = await self.get_by_id(session, id, load_strategy="selectin")
         subject.name = request_data.name
         session.add(subject)
+        await session.commit()
+        await session.refresh(subject)
         return subject
+
+    async def delete(self, session: AsyncSession, id: int) -> None:
+        subject = await self.get_by_id(session, id)
+        await session.delete(subject)
+        await session.commit()
 
 
 subject_repository = SubjectRepository()

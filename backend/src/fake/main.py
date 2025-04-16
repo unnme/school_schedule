@@ -164,18 +164,17 @@ class F:
 
     @classmethod
     async def fake_teachers(cls, session: AsyncSession, count: int):
-        async with session.begin():
-            teacher_names: List[Dict] = cls._get_teacher_names(count)
-            request_data_list = [
-                TeacherPostRequest(
-                    first_name=full_name["first_name"],
-                    last_name=full_name["last_name"],
-                    patronymic=full_name["patronymic"],
-                    subjects=cls._make_teacher_subjects(),
-                )
-                for full_name in teacher_names
-            ]
-            await teacher_repository.create_many(session, request_data_list)
+        teacher_names: List[Dict] = cls._get_teacher_names(count)
+        request_data_list = [
+            TeacherPostRequest(
+                first_name=full_name["first_name"],
+                last_name=full_name["last_name"],
+                patronymic=full_name["patronymic"],
+                subjects=cls._make_teacher_subjects(),
+            )
+            for full_name in teacher_names
+        ]
+        await teacher_repository.create_many(session, request_data_list)
 
     # @classmethod
     # async def fake_student_groups(cls, count: int):
@@ -210,18 +209,17 @@ class EntitiesInit:
 
     @classmethod
     async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
-        async with session.begin():
-            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-            await subject_repository.create_many(session, request_data_list)
+        request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+        await subject_repository.create_many(session, request_data_list)
 
-    @classmethod
-    async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
-        """
-        принимает нормер недели
-        функция работает по недельно. сначала проверяет наличие записи, если нет
-        создает неделю уроков. с пн по пт.
-        нужно учесть школьные смены и воскресенье.
-        """
-        async with session.begin():
-            request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-            await subject_repository.create_many(session, request_data_list)
+    # @classmethod
+    # async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
+    #     """
+    #     принимает нормер недели
+    #     функция работает по недельно. сначала проверяет наличие записи, если нет
+    #     создает неделю уроков. с пн по пт.
+    #     нужно учесть школьные смены и воскресенье.
+    #     """
+    #     async with session.begin():
+    #         request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
+    #         await subject_repository.create_many(session, request_data_list)

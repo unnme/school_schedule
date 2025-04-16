@@ -54,7 +54,7 @@ class CustomBaseModel(BaseModel):
 # INFO: BASEs
 
 
-class BaseRepository(ABC):
+class BaseRepository:
     def __init__(self, sql_model: Type[Any]) -> None:
         self.sql_model = sql_model
 
@@ -113,18 +113,6 @@ class BaseRepository(ABC):
         result = await session.execute(stmt)
         entities = result.scalars().unique().all()
         return entities
-
-    # @abstractmethod
-    # async def create(self, session: AsyncSession, request_data) -> Any:
-    #     pass
-    #
-    # @abstractmethod
-    # async def update(self, session: AsyncSession, id: int, request_data) -> Any:
-    #     pass
-    #
-    # @abstractmethod
-    # async def delete(self, session: AsyncSession, id: int) -> Any:
-    #     pass
 
 
 class BaseValidator(ABC):
