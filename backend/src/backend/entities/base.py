@@ -5,6 +5,7 @@ from sqlalchemy import MetaData, Select, func, inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     DeclarativeBase,
+    class_mapper,
     declared_attr,
     joinedload,
     lazyload,
@@ -40,6 +41,28 @@ class Base(DeclarativeBase):
     @declared_attr.directive
     def __tablename__(cls) -> str:
         return f"{camel_case_to_snake_case(cls.__name__)}s"
+
+    def to_dict(self, include_relationships=True, depth=1):
+        result = {}
+
+        for column in class_mapper(self.__class__).columns:
+            value = getattr(self, column.name)
+            result[column.name] = value
+
+        if include_relationships and depth > 0:
+            for rel in self.__mapper__.relationships:
+                rel_name = rel.key
+                relation = getattr(self, rel_name)
+                if relation:
+                    if isinstance(relation, list):
+                        result[rel_name] = [
+                            r.to_dict(depth=depth - 1) if hasattr(r, "to_dict") else str(r) for r in relation
+                        ]
+                    else:
+                        result[rel_name] = (
+                            relation.to_dict(depth=depth - 1) if hasattr(relation, "to_dict") else str(relation)
+                        )
+        return result
 
 
 # INFO: pydantic

@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.base.ENVIRONMENT == "local":
-        await DatabaseManager.drop_all_tables()  # WARN: REMOVE THIS!
+        # await DatabaseManager.drop_all_tables()  # WARN: REMOVE THIS!
 
         if not await DatabaseManager.check_db_tables():
             await DatabaseManager.create_db_tables()

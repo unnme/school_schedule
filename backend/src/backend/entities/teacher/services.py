@@ -40,5 +40,4 @@ class TeacherManager:
 
     @classmethod
     async def delete_teacher(cls, session: AsyncSession, id: int) -> None:
-        await session.delete(await teacher_repository.get_by_id(session, id))
-        await session.commit()
+        await teacher_repository.delete(session, id)
