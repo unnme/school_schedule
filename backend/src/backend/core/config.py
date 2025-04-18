@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 from urllib.parse import quote
 
-from pydantic import AnyUrl, BeforeValidator, EmailStr
+from pydantic import AnyUrl, BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from backend.core.pathes import base_pathes
@@ -11,36 +11,26 @@ from backend.utils.common_utils import parse_cors
 
 
 class GlobalSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=str(base_pathes.env_file), env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(base_pathes.env_file), env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 class BaseConfig(GlobalSettings):
-    PROJECT_NAME: str
-    PROJECT_VERSION: str
-
-    SUPERUSER_MAIL: EmailStr
-    SUPERUSER_PASS: str
+    BACKEND_APP_NAME: str
+    BACKEND_APP_VERSION: str
 
     ENVIRONMENT: Literal["local", "staging", "production"]
-
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
 
 
 class SecurityConfig(GlobalSettings):
     SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
 
 
 class ApiConfig(GlobalSettings):
     API_VERSION: str
     PAGINATION_LIMIT: int
-
-    auth: str = "/auth"
-    users: str = "/users"
-    messages: str = "/messages"
-    service: str = "/service"
-    login: str = "/login"
-    jwt: str = "/jwt"
 
     @cached_property
     def api_root_dir_name(self) -> str:

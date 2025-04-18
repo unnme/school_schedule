@@ -9,8 +9,7 @@ class BaseAPIException(HTTPException):
 class InvalidLoadStrategyException(BaseAPIException):
     def __init__(self, load_strategy, allowed_methods):
         super().__init__(
-            status_code=400,
-            detail=f"Неверная 'load_strategy': {load_strategy}. Допустимые значения: {allowed_methods}",  # BUG: fixme!
+            status_code=400, detail=f"Неверная 'load_strategy': {load_strategy}. Допустимые значения: {allowed_methods}"
         )
 
 

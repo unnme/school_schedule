@@ -29,8 +29,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title=settings.base.PROJECT_NAME,
-    version=settings.base.PROJECT_VERSION,
+    title=settings.base.BACKEND_APP_NAME,
+    version=settings.base.BACKEND_APP_VERSION,
     lifespan=lifespan,
     default_response_class=ORJSONResponse,
 )

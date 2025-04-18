@@ -180,6 +180,7 @@ pnpm-debug.log*
 # Vite env
 .env.*
 .env.local
+!.env_example
 
 # Build output (в некоторых случаях)
 build/

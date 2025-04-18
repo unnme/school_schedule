@@ -16,17 +16,24 @@ from backend.api.depends import PaginationParamsDep
 class TeacherManager:
     @classmethod
     @validate_teacher_request
-    async def create_teacher(cls, session: AsyncSession, request_data: TeacherPostRequest) -> TeacherCreateResponse:
+    async def create_teacher(
+        cls, session: AsyncSession, request_data: TeacherPostRequest
+    ) -> TeacherCreateResponse:
         async with session.begin():
             teacher = await teacher_repository.create(session, request_data)
             return TeacherCreateResponse.model_validate(teacher)
 
     @classmethod
-    async def list_teachers(cls, session: AsyncSession, pagination: PaginationParamsDep) -> ListResponseModel:
+    async def list_teachers(
+        cls, session: AsyncSession, pagination: PaginationParamsDep
+    ) -> ListResponseModel:
         teachers = await teacher_repository.list_teachers(session, pagination)
         total = await teacher_repository.entity_count(session)
         return ListResponseModel[TeacherResponse](
-            items=teachers, total=total, limit=pagination.limit, offset=pagination.offset
+            items=teachers,
+            total=total,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
 
     @classmethod
