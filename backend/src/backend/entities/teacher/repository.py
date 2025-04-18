@@ -50,6 +50,8 @@ class TeacherRepository(BaseRepository):
 
         await self._update_teacher_subjects(session, request_data, teacher)
 
+        await session.refresh(teacher)
+
         return teacher
 
     def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher] = None) -> Teacher:

@@ -19,7 +19,7 @@ class TeacherManager:
     async def create_teacher(cls, session: AsyncSession, request_data: TeacherPostRequest) -> TeacherCreateResponse:
         async with session.begin():
             teacher = await teacher_repository.create(session, request_data)
-        return TeacherCreateResponse.model_validate(teacher)
+            return TeacherCreateResponse.model_validate(teacher)
 
     @classmethod
     async def list_teachers(cls, session: AsyncSession, pagination: PaginationParamsDep) -> ListResponseModel:
@@ -36,7 +36,7 @@ class TeacherManager:
     ) -> TeacherUpdateResponse:
         async with session.begin():
             teacher = await teacher_repository.update(session, id, request_data)
-        return TeacherUpdateResponse.model_validate(teacher)
+            return TeacherUpdateResponse.model_validate(teacher)
 
     @classmethod
     async def delete_teacher(cls, session: AsyncSession, id: int) -> None:
