@@ -141,7 +141,6 @@ class TeacherRepository(BaseRepository):
 
     async def delete(self, session: AsyncSession, id: int) -> None:
         await session.delete(await self.get_by_id(session, id))
-        await session.commit()
 
 
 teacher_repository = TeacherRepository()

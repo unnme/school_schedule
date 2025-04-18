@@ -15,7 +15,7 @@ class ClassroomBaseSchema(CustomBaseModel):
     capacity: Annotated[
         Optional[int],
         Field(
-            gt=0,
+            ge=1,
             le=50,
             description="Вместимость (чел.) классной комнаты.",
         ),

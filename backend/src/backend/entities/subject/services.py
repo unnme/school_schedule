@@ -18,6 +18,7 @@ class SubjectManager:
     @validate_subject_request
     async def create_subject(cls, session: AsyncSession, request_data: SubjectPostRequest) -> SubjectCreateResponse:
         subject = await subject_repository.create(session, request_data)
+        await session.commit()
         return SubjectCreateResponse.model_validate(subject)
 
     @classmethod
@@ -34,8 +35,10 @@ class SubjectManager:
         cls, session: AsyncSession, id: int, request_data: SubjectPutRequest
     ) -> SubjectUpdateResponse:
         subject = await subject_repository.update(session, id, request_data)
+        await session.commit()
         return SubjectUpdateResponse.model_validate(subject)
 
     @classmethod
     async def delete_subject(cls, session: AsyncSession, id: int) -> None:
         await subject_repository.delete(session, id)
+        await session.commit()
