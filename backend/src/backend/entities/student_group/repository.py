@@ -1,3 +1,4 @@
+from typing import Sequence
 from sqlalchemy import case, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,6 +8,7 @@ from backend.entities.student_group.models import StudentGroup
 from backend.entities.student_group.schemas import (
     StudentGroupPostRequest,
     StudentGroupPutRequest,
+    StudentGroupResponse,
 )
 from backend.api.depends import PaginationParamsDep
 
@@ -16,16 +18,17 @@ class StudentGroupRepository(BaseRepository):
         super().__init__(StudentGroup)
 
     async def create(self, session: AsyncSession, request_data: StudentGroupPostRequest) -> StudentGroup:
-        async with session.begin():
-            student_group = self.sql_model(name=request_data.name, capacity=request_data.capacity)
-            session.add(student_group)
-            await session.flush()
-            await self._update_student_group_subjects(session, request_data, student_group)
+        student_group = self.sql_model(name=request_data.name, capacity=request_data.capacity)
+        session.add(student_group)
+        await session.flush()
+        await self._update_student_group_subjects(session, request_data, student_group)
         student_group = await self.get_by_id(session, student_group.id, load_strategy="selectin")
 
         return student_group
 
-    async def list_student_groups(self, session: AsyncSession, pagination: PaginationParamsDep):
+    async def list_student_groups(
+        self, session: AsyncSession, pagination: PaginationParamsDep
+    ) -> Sequence[StudentGroupResponse]:
         student_groups = await self.list_all(session, pagination, load_strategy="selectin")
         return student_groups
 
@@ -35,17 +38,16 @@ class StudentGroupRepository(BaseRepository):
         id: int,
         request_data: StudentGroupPutRequest,
     ) -> StudentGroup:
-        async with session.begin():
-            student_group = await self.get_by_id(session, id, load_strategy="selectin")
+        student_group = await self.get_by_id(session, id, load_strategy="selectin")
 
-            update_data = request_data.model_dump(include={"name"})
-            for field, value in update_data.items():
-                setattr(student_group, field, value)
+        update_data = request_data.model_dump(include={"name"})
+        for field, value in update_data.items():
+            setattr(student_group, field, value)
 
-            await self._update_student_group_subjects(session, request_data, student_group)
-            await session.refresh(student_group)
+        await self._update_student_group_subjects(session, request_data, student_group)
+        await session.refresh(student_group)
 
-            return student_group
+        return student_group
 
     async def _update_student_group_subjects(
         self,

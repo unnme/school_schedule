@@ -19,7 +19,6 @@ class ClassroomManager:
     ) -> ClassroomCreateResponse:
         classroom = await classroom_repository.create(session, request_data)
         await session.commit()
-        await session.refresh(classroom)  # BUG:?
         return ClassroomCreateResponse.model_validate(classroom)
 
     @classmethod
@@ -42,4 +41,5 @@ class ClassroomManager:
 
     @classmethod
     async def delete_classroom(cls, session: AsyncSession, id: int) -> None:
-        await session.delete(await classroom_repository.get_by_id(session, id))
+        await classroom_repository.delete(session, id)
+        await session.commit()

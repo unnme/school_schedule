@@ -1,12 +1,10 @@
-from typing import Sequence
-
 from fastapi import APIRouter, status
 
 from backend.api.depends import AsyncSessionDep
+from backend.entities.base import ListResponseModel
 from backend.entities.student_group.schemas import (
     StudentGroupPostRequest,
     StudentGroupCreateResponse,
-    StudentGroupResponse,
     StudentGroupPutRequest,
     StudentGroupUpdateResponse,
 )
@@ -23,8 +21,8 @@ async def create_student_group(
     return await StudentGroupManager.create_student_group(session, request_data)
 
 
-@router.get("/", response_model=list[StudentGroupResponse])
-async def list_student_groups(session: AsyncSessionDep, params: PaginationParamsDep) -> Sequence[StudentGroupResponse]:
+@router.get("/", response_model=ListResponseModel)
+async def list_student_groups(session: AsyncSessionDep, params: PaginationParamsDep) -> ListResponseModel:
     return await StudentGroupManager.list_student_groups(session, params)
 
 

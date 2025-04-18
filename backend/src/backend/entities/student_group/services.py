@@ -1,7 +1,6 @@
-from typing import Sequence
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.entities.base import ListResponseModel
 from backend.entities.student_group.schemas import (
     StudentGroupPostRequest,
     StudentGroupCreateResponse,
@@ -21,14 +20,17 @@ class StudentGroupManager:
     async def create_student_group(
         cls, session: AsyncSession, request_data: StudentGroupPostRequest
     ) -> StudentGroupCreateResponse:
-        student_group = await student_group_repository.create(session, request_data)
-        return StudentGroupCreateResponse.model_validate(student_group)
+        async with session.begin():
+            student_group = await student_group_repository.create(session, request_data)
+            return StudentGroupCreateResponse.model_validate(student_group)
 
     @classmethod
-    async def list_student_groups(
-        cls, session: AsyncSession, pagination: PaginationParamsDep
-    ) -> Sequence[StudentGroupResponse]:
-        return await student_group_repository.list_student_groups(session, pagination)
+    async def list_student_groups(cls, session: AsyncSession, pagination: PaginationParamsDep) -> ListResponseModel:
+        student_groups = await student_group_repository.list_student_groups(session, pagination)
+        total = await student_group_repository.entity_count(session)
+        return ListResponseModel[StudentGroupResponse](
+            items=student_groups, total=total, limit=pagination.limit, offset=pagination.offset
+        )
 
     @classmethod
     @validate_student_group_request

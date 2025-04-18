@@ -18,7 +18,7 @@ class DatabaseConnectionError(BaseAPIException):
     def __init__(self):
         super().__init__(
             status_code=500,
-            detail=f"Соездинение с бд отсутствует",
+            detail="Соездинение с бд отсутствует",
         )
 
 
@@ -48,9 +48,7 @@ class DuplicateSubjectIDException(BaseAPIException):
 
 class DuplicateTeacherException(BaseAPIException):
     def __init__(self, teacher_name: str):
-        super().__init__(
-            status_code=400, detail=f"Преподаватель '{teacher_name}' уже существует."
-        )
+        super().__init__(status_code=400, detail=f"Преподаватель '{teacher_name}' уже существует.")
 
 
 class InvalidSubjectIDException(BaseAPIException):

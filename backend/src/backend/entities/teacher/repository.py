@@ -26,7 +26,6 @@ class TeacherRepository(BaseRepository):
         await self._update_teacher_subjects(session, request_data, teacher)
 
         teacher = await self.get_by_id(session, teacher.id, load_strategy="selectin")
-
         return teacher
 
     async def create_many(self, session: AsyncSession, request_data_list: List[TeacherPostRequest]):
@@ -49,10 +48,11 @@ class TeacherRepository(BaseRepository):
         self._set_active_flag(request_data, teacher)
 
         await self._update_teacher_subjects(session, request_data, teacher)
-
         await session.refresh(teacher)
-
         return teacher
+
+    async def delete(self, session: AsyncSession, id: int) -> None:
+        await session.delete(await self.get_by_id(session, id))
 
     def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher] = None) -> Teacher:
         if teacher is None:
@@ -61,7 +61,6 @@ class TeacherRepository(BaseRepository):
             full_name = request_data.model_dump(include={"first_name", "last_name", "patronymic"})
             for field, value in full_name.items():
                 setattr(teacher, field, value)
-
         return teacher
 
     def _set_active_flag(self, request_data, teacher) -> None:
@@ -82,7 +81,6 @@ class TeacherRepository(BaseRepository):
                 )
                 for subj in request_data.subjects
             ]
-
             session.add_all(teacher_subjects)
             await session.flush()
 
@@ -138,9 +136,6 @@ class TeacherRepository(BaseRepository):
                 await session.execute(insert(TeacherSubject).values(new_associations))
 
             await session.flush()
-
-    async def delete(self, session: AsyncSession, id: int) -> None:
-        await session.delete(await self.get_by_id(session, id))
 
 
 teacher_repository = TeacherRepository()

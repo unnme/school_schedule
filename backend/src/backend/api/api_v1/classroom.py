@@ -1,10 +1,10 @@
 from fastapi import APIRouter, status
 
 from backend.api.depends import AsyncSessionDep
+from backend.entities.base import ListResponseModel
 from backend.entities.classroom.schemas import (
     ClassroomPostRequest,
     ClassroomCreateResponse,
-    ClassroomResponse,
     ClassroomPutRequest,
     ClassroomUpdateResponse,
 )
@@ -19,8 +19,8 @@ async def create_classroom(session: AsyncSessionDep, request_data: ClassroomPost
     return await ClassroomManager.create_classroom(session, request_data)
 
 
-@router.get("/", response_model=list[ClassroomResponse])
-async def list_classrooms(session: AsyncSessionDep, params: PaginationParamsDep):
+@router.get("/", response_model=ListResponseModel)
+async def list_classrooms(session: AsyncSessionDep, params: PaginationParamsDep) -> ListResponseModel:
     return await ClassroomManager.list_classrooms(session, params)
 
 
