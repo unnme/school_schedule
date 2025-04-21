@@ -1,5 +1,5 @@
 from random import choice, randint
-from typing import Dict, List
+from typing import List, Dict
 
 from faker import Faker
 from faker.providers import BaseProvider
@@ -12,9 +12,6 @@ from backend.entities.teacher.schemas import TeacherPostRequest
 from backend.entities.teacher.repository import teacher_repository
 from backend.entities.classroom.repository import classroom_repository
 from backend.entities.subject.repository import subject_repository
-
-TEACHERS_COUNT = 10
-fake = Faker("ru_RU")
 
 
 class RussianPatronymicProvider(BaseProvider):
@@ -31,80 +28,39 @@ class RussianPatronymicProvider(BaseProvider):
     ]
 
     def patronymic_male(self):
-        return str(self.random_element(self.patronymics) + "ич")
+        return self.random_element(self.patronymics) + "ич"
 
     def patronymic_female(self):
-        return str(self.random_element(self.patronymics) + "на")
+        return self.random_element(self.patronymics) + "на"
 
 
-fake.add_provider(RussianPatronymicProvider)
+class BaseFactory:
+    fake = Faker("ru_RU")
+    fake.add_provider(RussianPatronymicProvider)
+
+    @classmethod
+    def _rand_hours(cls):
+        return randint(10, 60)
 
 
-class F:
-    classroom_names = [
-        "1",
-        "1-а",
-        "1-б",
-        "2",
-        "2-а",
-        "2-б",
-        "3",
-        "3-а",
-        "3-б",
-        "4",
-        "4-а",
-        "4-б",
-        "5",
-        "5-а",
-        "5-б",
-        "6",
-        "6-а",
-        "6-б",
-        "7",
-        "7-а",
-        "7-б",
-        "8",
-        "8-а",
-        "8-б",
-        "9",
-        "9-а",
-        "9-б",
-        "10",
-        "10-а",
-        "10-б",
-        "11",
-        "11-а",
-        "11-б",
-        "12",
-        "12-а",
-        "12-б",
-        "13",
-        "13-а",
-        "13-б",
-        "14",
-        "14-а",
-        "14-б",
-        "15",
-        "15-а",
-        "15-б",
-        "16",
-        "16-а",
-        "16-б",
-        "17",
-        "17-а",
-        "17-б",
-        "18",
-        "18-а",
-        "18-б",
-        "19",
-        "19-а",
-        "19-б",
-        "20",
-        "20-а",
-        "20-б",
-    ]
+class ClassroomFactory(BaseFactory):
+    letters = ["а", "б", "в"]
 
-    subject_names = [
+    @classmethod
+    def generate_names(cls) -> List[str]:
+        names = []
+        for num in range(1, 20):
+            for i in range(randint(1, len(cls.letters))):
+                names.append(f"{num}-{cls.letters[i]}")
+        return names
+
+    @classmethod
+    def make_requests(cls, names: List[str]) -> List[ClassroomPostRequest]:
+        return [ClassroomPostRequest(name=n) for n in names]
+
+
+class SubjectFactory(BaseFactory):
+    SUBJECT_NAMES = [
         "Математика",
         "Физика",
         "Химия",
@@ -118,108 +74,74 @@ class F:
     ]
 
     @classmethod
-    def _rand_subject_id(cls):
-        return randint(1, len(cls.subject_names))
+    def make_requests(cls) -> List[SubjectPostRequest]:
+        return [SubjectPostRequest(name=name) for name in cls.SUBJECT_NAMES]
 
     @classmethod
-    def _rand_hours(cls):
-        return randint(10, 60)
+    def get_subject_count(cls) -> int:
+        return len(cls.SUBJECT_NAMES)
 
+
+class TeacherFactory(BaseFactory):
     @classmethod
-    def _get_teacher_names(cls, count: int) -> List:
-        full_name_list = []
-        full_name_set = set()
-        while len(full_name_list) < count:
+    def _generate_names(cls, count: int) -> List[Dict]:
+        names, seen = [], set()
+        while len(names) < count:
             is_male = choice([True, False])
-            first_name = fake.first_name_male() if is_male else fake.first_name_female()
-            last_name = fake.last_name_male() if is_male else fake.last_name_female()
-            patronymic = fake.patronymic_male() if is_male else fake.patronymic_female()
-
-            full_name = f"{first_name} {last_name} {patronymic}"
-
-            if full_name not in full_name_set:
-                full_name_set.add(full_name)
-                full_name_list.append(
-                    {
-                        "first_name": first_name,
-                        "last_name": last_name,
-                        "patronymic": patronymic,
-                    }
-                )
-
-        return full_name_list
-
-    @classmethod
-    def _make_teacher_subjects(cls):
-        _list = []
-        _set = set()
-        target_size = randint(1, 3)
-        while len(_list) < target_size:
-            id = cls._rand_subject_id()
-            if id not in _set:
-                _set.add(id)
-                _list.append({"id": id, "teaching_hours": cls._rand_hours()})
-
-        return _list
-
-    @classmethod
-    async def fake_teachers(cls, session: AsyncSession, count: int):
-        teacher_names: List[Dict] = cls._get_teacher_names(count)
-        request_data_list = [
-            TeacherPostRequest(
-                first_name=full_name["first_name"],
-                last_name=full_name["last_name"],
-                patronymic=full_name["patronymic"],
-                subjects=cls._make_teacher_subjects(),
+            first = (
+                cls.fake.first_name_male() if is_male else cls.fake.first_name_female()
             )
-            for full_name in teacher_names
+            last = cls.fake.last_name_male() if is_male else cls.fake.last_name_female()
+            patronymic = (
+                cls.fake.patronymic_male() if is_male else cls.fake.patronymic_female()
+            )
+            full = f"{first} {last} {patronymic}"
+            if full not in seen:
+                seen.add(full)
+                names.append(
+                    {"first_name": first, "last_name": last, "patronymic": patronymic}
+                )
+        return names
+
+    @classmethod
+    def _generate_subjects(cls) -> List[Dict]:
+        ids = set()
+        subject_count = SubjectFactory.get_subject_count()
+        while len(ids) < randint(1, 3):
+            ids.add(randint(1, subject_count))
+        return [{"id": sid, "teaching_hours": cls._rand_hours()} for sid in ids]
+
+    @classmethod
+    def make_requests(cls, count: int) -> List[TeacherPostRequest]:
+        people = cls._generate_names(count)
+        return [
+            TeacherPostRequest(**person, subjects=cls._generate_subjects())  # pyright: ignore
+            for person in people
         ]
-        await teacher_repository.create_many(session, request_data_list)
 
-    # @classmethod
-    # async def fake_student_groups(cls, count: int):
-    #     async for session in sm.get_async_session():
-    #         StudentGroupCreateRequest(
-    #             name="",
-    #             capacity=33,
-    #             subjects=[]
-    #         )
 
-    # @classmethod
-    # async def fake_lessons(cls, session: AsyncSession):
-    #     pass
+class Seeder:
+    TEACHER_COUNT = 10
 
     @classmethod
-    async def generate_fake_data(cls):
+    async def seed_all(cls):
         async for session in session_manager.get_async_session():
-            await EntitiesInit.init_classrooms(session, cls.classroom_names)
-            await EntitiesInit.init_subjects(session, cls.subject_names)
-
-            await cls.fake_teachers(session, count=TEACHERS_COUNT)
-            # await cls.fake_student_groups(session)
-            # await cls.fake_lessons(session)
-
-
-class EntitiesInit:
-    @classmethod
-    async def init_classrooms(cls, session: AsyncSession, classroom_names: List[str]):
-        request_data_list = [ClassroomPostRequest(name=name) for name in classroom_names]
-
-        await classroom_repository.create_many(session, request_data_list)
+            await cls._seed_classrooms(session)
+            await cls._seed_subjects(session)
+            await cls._seed_teachers(session)
 
     @classmethod
-    async def init_subjects(cls, session: AsyncSession, subject_names: List[str]):
-        request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-        await subject_repository.create_many(session, request_data_list)
+    async def _seed_classrooms(cls, session: AsyncSession):
+        names = ClassroomFactory.generate_names()
+        data = ClassroomFactory.make_requests(names)
+        await classroom_repository.create_many(session, data)
 
-    # @classmethod
-    # async def init_week_lessons(cls, session: AsyncSession, subject_names: List[str]):
-    #     """
-    #     принимает нормер недели
-    #     функция работает по недельно. сначала проверяет наличие записи, если нет
-    #     создает неделю уроков. с пн по пт.
-    #     нужно учесть школьные смены и воскресенье.
-    #     """
-    #     async with session.begin():
-    #         request_data_list = [SubjectPostRequest(name=name) for name in subject_names]
-    #         await subject_repository.create_many(session, request_data_list)
+    @classmethod
+    async def _seed_subjects(cls, session: AsyncSession):
+        data = SubjectFactory.make_requests()
+        await subject_repository.create_many(session, data)
+
+    @classmethod
+    async def _seed_teachers(cls, session: AsyncSession):
+        data = TeacherFactory.make_requests(cls.TEACHER_COUNT)
+        await teacher_repository.create_many(session, data)

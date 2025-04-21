@@ -19,7 +19,9 @@ class TeacherRepository(BaseRepository):
     def __init__(self) -> None:
         super().__init__(Teacher)
 
-    async def create(self, session: AsyncSession, request_data: TeacherPostRequest) -> Teacher:
+    async def create(
+        self, session: AsyncSession, request_data: TeacherPostRequest
+    ) -> Teacher:
         teacher: Teacher = self._set_name(request_data)
         session.add(teacher)
         await session.flush()
@@ -28,7 +30,9 @@ class TeacherRepository(BaseRepository):
         teacher = await self.get_by_id(session, teacher.id, load_strategy="selectin")
         return teacher
 
-    async def create_many(self, session: AsyncSession, request_data_list: List[TeacherPostRequest]):
+    async def create_many(
+        self, session: AsyncSession, request_data_list: List[TeacherPostRequest]
+    ):
         async with session.begin():
             teachers = [self._set_name(data) for data in request_data_list]
             session.add_all(teachers)
@@ -37,11 +41,15 @@ class TeacherRepository(BaseRepository):
             for teacher, request_data in zip(teachers, request_data_list):
                 await self._update_teacher_subjects(session, request_data, teacher)
 
-    async def list_teachers(self, session: AsyncSession, pagination: PaginationParamsDep):
+    async def list_teachers(
+        self, session: AsyncSession, pagination: PaginationParamsDep
+    ):
         teachers = await self.list_all(session, pagination, load_strategy="selectin")
         return teachers
 
-    async def update(self, session: AsyncSession, id: int, request_data: TeacherPutRequest) -> Teacher:
+    async def update(
+        self, session: AsyncSession, id: int, request_data: TeacherPutRequest
+    ) -> Teacher:
         teacher = await self.get_by_id(session, id, load_strategy="selectin")
 
         self._set_name(request_data, teacher)
@@ -54,11 +62,19 @@ class TeacherRepository(BaseRepository):
     async def delete(self, session: AsyncSession, id: int) -> None:
         await session.delete(await self.get_by_id(session, id))
 
-    def _set_name(self, request_data: TeacherRequest, teacher: Optional[Teacher] = None) -> Teacher:
+    def _set_name(
+        self, request_data: TeacherRequest, teacher: Optional[Teacher] = None
+    ) -> Teacher:
         if teacher is None:
-            teacher = Teacher(**request_data.model_dump(include={"last_name", "first_name", "patronymic"}))
+            teacher = Teacher(
+                **request_data.model_dump(
+                    include={"last_name", "first_name", "patronymic"}
+                )
+            )
         else:
-            full_name = request_data.model_dump(include={"first_name", "last_name", "patronymic"})
+            full_name = request_data.model_dump(
+                include={"first_name", "last_name", "patronymic"}
+            )
             for field, value in full_name.items():
                 setattr(teacher, field, value)
         return teacher
@@ -85,11 +101,19 @@ class TeacherRepository(BaseRepository):
             await session.flush()
 
         elif isinstance(request_data, TeacherPutRequest):
-            request_subj_and_hours: dict = {subj.id: subj.teaching_hours for subj in request_data.subjects}
-            existing_subjects_hours: dict = {subj.subject_id: subj.teaching_hours for subj in teacher.subjects}
+            request_subj_and_hours: dict = {
+                subj.id: subj.teaching_hours for subj in request_data.subjects
+            }
+            existing_subjects_hours: dict = {
+                subj.subject_id: subj.teaching_hours for subj in teacher.subjects
+            }
 
-            subjects_to_remove: set = existing_subjects_hours.keys() - request_subj_and_hours.keys()
-            subjects_to_add: set = request_subj_and_hours.keys() - existing_subjects_hours.keys()
+            subjects_to_remove: set = (
+                existing_subjects_hours.keys() - request_subj_and_hours.keys()
+            )
+            subjects_to_add: set = (
+                request_subj_and_hours.keys() - existing_subjects_hours.keys()
+            )
 
             subjects_to_update: set = {
                 id
@@ -99,7 +123,8 @@ class TeacherRepository(BaseRepository):
 
             if subjects_to_remove:
                 stmt = delete(TeacherSubject).where(
-                    (TeacherSubject.teacher_id == teacher.id) & (TeacherSubject.subject_id.in_(subjects_to_remove))
+                    (TeacherSubject.teacher_id == teacher.id)
+                    & (TeacherSubject.subject_id.in_(subjects_to_remove))
                 )
                 await session.execute(stmt)
 
@@ -107,7 +132,8 @@ class TeacherRepository(BaseRepository):
                 stmt = (
                     update(TeacherSubject)
                     .where(
-                        (TeacherSubject.teacher_id == teacher.id) & (TeacherSubject.subject_id.in_(subjects_to_update))
+                        (TeacherSubject.teacher_id == teacher.id)
+                        & (TeacherSubject.subject_id.in_(subjects_to_update))
                     )
                     .values(
                         teaching_hours=case(

@@ -8,7 +8,7 @@ from backend.core.config import settings
 from backend.core.database import session_manager
 from backend.core.logging_config import get_logger
 from backend.core.managers import DatabaseManager, ImportManager
-from fake.main import F
+from fake.main import Seeder
 
 logger = get_logger(__name__)
 
@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 
         if not await DatabaseManager.check_db_tables():
             await DatabaseManager.create_db_tables()
-            await F.generate_fake_data()
+            await Seeder.seed_all()
 
     ImportManager.import_routers(app)
     yield

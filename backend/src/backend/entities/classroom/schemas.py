@@ -11,7 +11,9 @@ from backend.entities.relations.schemas import SubjectIDRequest, SubjectIDRespon
 
 
 class ClassroomBaseSchema(CustomBaseModel):
-    name: str = Field(..., min_length=1, max_length=5, description="Название классной комнаты.")
+    name: str = Field(
+        ..., min_length=1, max_length=5, description="Название классной комнаты."
+    )
     capacity: Annotated[
         Optional[int],
         Field(
@@ -40,7 +42,11 @@ class ClassroomRequest(ClassroomBaseSchema):
         description="Закрепленные за классной комнатой предметы обучения.",
     )
 
-    model_config = {"json_schema_extra": {"example": {"name": "111-а", "capacity": 32, "subjects": []}}}
+    model_config = {
+        "json_schema_extra": {
+            "example": {"name": "111-а", "capacity": 32, "subjects": []}
+        }
+    }
 
 
 # INFO: UPDATErequest

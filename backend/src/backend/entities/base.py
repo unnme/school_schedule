@@ -56,11 +56,16 @@ class Base(DeclarativeBase):
                 if relation:
                     if isinstance(relation, list):
                         result[rel_name] = [
-                            r.to_dict(depth=depth - 1) if hasattr(r, "to_dict") else str(r) for r in relation
+                            r.to_dict(depth=depth - 1)
+                            if hasattr(r, "to_dict")
+                            else str(r)
+                            for r in relation
                         ]
                     else:
                         result[rel_name] = (
-                            relation.to_dict(depth=depth - 1) if hasattr(relation, "to_dict") else str(relation)
+                            relation.to_dict(depth=depth - 1)
+                            if hasattr(relation, "to_dict")
+                            else str(relation)
                         )
         return result
 
@@ -90,7 +95,9 @@ class BaseRepository:
     def __init__(self, sql_model: Type[Any]) -> None:
         self.sql_model = sql_model
 
-    async def get_by_id(self, session: AsyncSession, id: int, load_strategy: Optional[str] = None):
+    async def get_by_id(
+        self, session: AsyncSession, id: int, load_strategy: Optional[str] = None
+    ):
         stmt = select(self.sql_model).where(self.sql_model.id == id)
         if load_strategy is not None:
             stmt = self._apply_load_strategy(stmt, load_strategy)
@@ -121,7 +128,9 @@ class BaseRepository:
         result = await session.execute(count_stmt)
         return result.scalar()
 
-    def _apply_load_strategy(self, stmt: Select, load_strategy: Optional[str] = None) -> Select:
+    def _apply_load_strategy(
+        self, stmt: Select, load_strategy: Optional[str] = None
+    ) -> Select:
         model_relations = inspect(self.sql_model).relationships.keys()
         if not model_relations or load_strategy is None:
             return stmt
@@ -141,10 +150,14 @@ class BaseRepository:
         options = [load_method(getattr(self.sql_model, rel)) for rel in model_relations]
         return stmt.options(*options)
 
-    def _apply_pagination(self, stmt: Select, pagination: PaginationParamsDep) -> Select:
+    def _apply_pagination(
+        self, stmt: Select, pagination: PaginationParamsDep
+    ) -> Select:
         if pagination.order_by and hasattr(self.sql_model, pagination.order_by):
             order_clause = getattr(self.sql_model, pagination.order_by)
-            stmt = stmt.order_by(order_clause.desc() if pagination.desc else order_clause)
+            stmt = stmt.order_by(
+                order_clause.desc() if pagination.desc else order_clause
+            )
         return stmt.offset(pagination.offset).limit(pagination.limit)
 
 
